@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bảo Tàng Kỷ Niệm 19 Tháng Yêu Nhau</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            background-color: #050508; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none; -webkit-user-select: none;
+        }
+
+        /* Nút bật/tắt âm thanh góc trên */
+        #btn-sound-toggle {
+            position: absolute; top: 20px; right: 20px; z-index: 80;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(18, 12, 28, 0.65); border: 1px solid rgba(255, 182, 193, 0.35);
+            color: #fff; font-size: 18px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        #btn-sound-toggle:hover {
+            transform: scale(1.08); background: rgba(255, 105, 180, 0.25);
+            border-color: rgba(255, 182, 193, 0.7); box-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+        }
+        #btn-sound-toggle:active { transform: scale(0.95); }
+
+        /* Màn hình bắt đầu & Tải dữ liệu */
+        #setup-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 100dvh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, rgba(30, 15, 35, 0.85) 0%, #050508 100%);
+            color: #fff; z-index: 100; padding: 20px;
+        }
+        .setup-card {
+            background: rgba(18, 12, 26, 0.72); border: 1px solid rgba(255, 182, 193, 0.25);
+            border-radius: 28px; padding: 36px 32px; max-width: 520px; width: 100%;
+            text-align: center; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 117, 140, 0.15);
+            animation: fadeInCard 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .setup-badge {
+            display: inline-block; padding: 6px 16px; border-radius: 50px;
+            font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+            color: #ff9ebb; background: rgba(255, 117, 140, 0.15);
+            border: 1px solid rgba(255, 117, 140, 0.3); margin-bottom: 16px;
+        }
+        .setup-title {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 32px;
+            letter-spacing: 3px; font-weight: 700; margin: 0 0 8px 0;
+            background: linear-gradient(135deg, #ffffff 30%, #ffb6c1 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .setup-sub {
+            color: #b0a4be; font-size: 14px; margin-bottom: 24px; line-height: 1.6;
+        }
+        .controls-hint {
+            background: rgba(255, 255, 255, 0.04); padding: 14px 20px; border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08); text-align: center; color: #d0c8d8;
+            font-size: 13px; line-height: 1.8; margin-bottom: 24px;
+        }
+        .controls-hint b { color: #ff9ebb; }
+
+        /* Thanh tiến trình tải */
+        #loading-container {
+            width: 100%; margin-top: 10px; margin-bottom: 16px;
+        }
+        .loading-labels {
+            display: flex; justify-content: space-between; font-size: 12px;
+            color: #ffb6c1; margin-bottom: 8px; font-weight: 500;
+        }
+        .loading-track {
+            width: 100%; height: 6px; background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px; overflow: hidden; border: 1px solid rgba(255, 182, 193, 0.2);
+        }
+        #loading-bar-fill {
+            width: 0%; height: 100%;
+            background: linear-gradient(90deg, #ff758c, #ff7eb3, #00d2ff);
+            box-shadow: 0 0 12px rgba(255, 117, 140, 0.8);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Nút bắt đầu */
+        .btn-start {
+            width: 100%; padding: 16px 28px; font-size: 16px; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase; border-radius: 50px;
+            background: linear-gradient(135deg, #ff758c, #ff7eb3); color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4); cursor: pointer;
+            box-shadow: 0 8px 30px rgba(255, 117, 140, 0.45);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0.5; pointer-events: none;
+        }
+        .btn-start.ready {
+            opacity: 1; pointer-events: auto; animation: pulseBtn 2.2s infinite ease-in-out;
+        }
+        @keyframes pulseBtn {
+            0% { transform: scale(1); box-shadow: 0 8px 30px rgba(255, 117, 140, 0.45); }
+            50% { transform: scale(1.02); box-shadow: 0 10px 40px rgba(255, 117, 140, 0.7); }
+            100% { transform: scale(1); box-shadow: 0 8px 30px rgba(255, 117, 140, 0.45); }
+        }
+        .btn-start:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(255, 117, 140, 0.65);
+        }
+        .btn-start:active { transform: scale(0.97); }
+
+        /* Tâm ngắm định vị tương tác (Chỉ desktop) */
+        #crosshair {
+            position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
+            border-radius: 50%; background-color: rgba(255, 255, 255, 0.85);
+            transform: translate(-50%, -50%); z-index: 10; pointer-events: none;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+        }
+
+        /* Chữ Hologram 3D lơ lửng trên HUD */
+        #hologram-hud {
+            position: absolute; top: 32%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; pointer-events: none; z-index: 20;
+            color: #ffb6c1; text-shadow: 0 0 20px rgba(255, 117, 140, 0.9), 0 0 40px rgba(0, 210, 255, 0.5);
+            font-size: 24px; font-weight: 400; opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 2px; width: 85%; max-width: 800px; line-height: 1.8;
+            font-family: 'Playfair Display', Georgia, serif; font-style: italic;
+        }
+
+        /* Gợi ý tương tác bấm nút (Desktop) */
+        #interaction-prompt {
+            position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%);
+            color: #fff; background: rgba(18, 12, 26, 0.8); padding: 12px 26px;
+            border-radius: 30px; border: 1px solid rgba(255, 182, 193, 0.4); font-size: 14px;
+            letter-spacing: 1px; display: none; z-index: 30; pointer-events: none;
+            box-shadow: 0 4px 25px rgba(255, 105, 180, 0.3); backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        /* ĐIỀU KHIỂN CẢM ỨNG DI ĐỘNG (MOBILE TOUCH CONTROLS) */
+        #mobile-controls {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 40; display: none;
+        }
+        #joystick-zone {
+            position: absolute; bottom: 35px; left: 25px; width: 125px; height: 125px;
+            pointer-events: auto; touch-action: none;
+        }
+        #joystick-base {
+            width: 100%; height: 100%; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(255, 182, 193, 0.35);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 0 25px rgba(255, 117, 140, 0.25);
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        #joystick-thumb {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ff9ebb, #ff758c 60%, #e0456d 100%);
+            box-shadow: 0 0 16px rgba(255, 117, 140, 0.8), inset 0 2px 3px rgba(255, 255, 255, 0.6);
+            transform: translate(0px, 0px); pointer-events: none;
+        }
+        #btn-mobile-interact {
+            position: absolute; bottom: 40px; right: 25px; pointer-events: auto;
+            padding: 14px 24px; border-radius: 50px; font-weight: 600; font-size: 14px;
+            letter-spacing: 1px; color: #fff; background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 25px rgba(255, 117, 140, 0.55);
+            display: none; align-items: center; gap: 6px; cursor: pointer;
+            transition: transform 0.15s ease-out;
+        }
+        #btn-mobile-interact:active { transform: scale(0.93); }
+
+        /* Khung hiển thị phóng to 2D (Ảnh, Video, Thư) */
+        #media-popup {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 100dvh;
+            background: rgba(5, 5, 8, 0.94); display: flex; justify-content: center;
+            align-items: center; z-index: 90; opacity: 0; pointer-events: none;
+            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1); padding: 20px;
+        }
+        #media-popup.active { opacity: 1; pointer-events: auto; }
+        .popup-content {
+            position: relative; max-width: 90%; max-height: 90%; display: flex;
+            justify-content: center; align-items: center;
+        }
+        .popup-close {
+            position: absolute; top: -20px; right: -20px; width: 44px; height: 44px;
+            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white; font-size: 24px; cursor: pointer; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            transition: all 0.25s ease; z-index: 10; backdrop-filter: blur(10px);
+        }
+        .popup-close:hover {
+            background: #ff4772; transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 71, 114, 0.6);
+        }
+        .popup-close:active { transform: scale(0.95); }
+
+        #popup-img {
+            max-width: 100%; max-height: 82vh; border: 2px solid rgba(255, 182, 193, 0.5);
+            border-radius: 12px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 105, 180, 0.2);
+            display: none; object-fit: contain;
+        }
+        #popup-video {
+            max-width: 100%; max-height: 82vh; border: 2px solid rgba(255, 182, 193, 0.5);
+            border-radius: 12px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 105, 180, 0.2);
+            display: none;
+        }
+
+        /* Hộp Thư Tình Cảm Xúc (Phòng Kết) */
+        #popup-text-box {
+            color: #fff; background: linear-gradient(145deg, rgba(32, 16, 28, 0.96), rgba(16, 10, 22, 0.98));
+            padding: 40px 36px; border: 1px solid rgba(255, 182, 193, 0.4);
+            border-radius: 24px; max-width: 620px; width: 100%; max-height: 85vh;
+            overflow-y: auto; line-height: 1.9; font-size: 17px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 105, 180, 0.25);
+            text-align: center; display: none; backdrop-filter: blur(20px);
+        }
+        .letter-badge {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 3px;
+            color: #ff9ebb; margin-bottom: 12px; font-weight: 600;
+        }
+        .letter-title {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 26px;
+            margin: 0 0 24px 0; color: #fff; font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 40%, #ffb6c1 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .letter-body {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 18px;
+            line-height: 2.1; color: #fae8ef; text-align: justify; font-style: italic;
+            margin-bottom: 28px;
+        }
+        .btn-letter-pledge {
+            display: inline-block; padding: 14px 32px; border-radius: 50px;
+            background: linear-gradient(135deg, #ff4e78, #ff758c); color: #fff;
+            border: none; font-size: 15px; font-weight: 600; letter-spacing: 1px;
+            cursor: pointer; box-shadow: 0 8px 25px rgba(255, 78, 120, 0.5);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-letter-pledge:hover { transform: scale(1.04); box-shadow: 0 10px 30px rgba(255, 78, 120, 0.7); }
+        .btn-letter-pledge:active { transform: scale(0.96); }
+
+        @media (max-width: 768px) {
+            #crosshair { display: none !important; }
+            .setup-card { padding: 28px 20px; border-radius: 22px; }
+            .setup-title { font-size: 24px; }
+            #hologram-hud { font-size: 18px; width: 92%; }
+            #popup-text-box { padding: 28px 20px; font-size: 15px; }
+            .letter-body { font-size: 16px; line-height: 1.9; }
+            .popup-close { top: -15px; right: -10px; width: 38px; height: 38px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nút Bật/Tắt Âm Thanh -->
+    <button id="btn-sound-toggle" title="Bật/Tắt Âm Nhạc">
+        <span id="sound-icon">🎵</span>
+    </button>
+
+    <!-- Màn hình chờ bắt đầu & Thanh tiến trình -->
+    <div id="setup-screen">
+        <div class="setup-card">
+            <span class="setup-badge">Kỷ Niệm 19 Tháng Bên Nhau</span>
+            <h1 class="setup-title">MUSEUM OF OUR LOVE</h1>
+            <p class="setup-sub">Chuyến du hành qua từng góc không gian chất chứa những ký ức ngọt ngào nhất của đôi mình.</p>
+            
+            <div class="controls-hint" id="controls-hint-text">
+                <b>CÁCH ĐIỀU KHIỂN:</b><br>
+                Di chuyển: <b>W A S D</b> (hoặc Cần gạt trên Điện thoại)<br>
+                Góc nhìn: <b>Rê Chuột</b> (hoặc Vuốt màn hình)<br>
+                Tương tác: <b>Phím Space / Nhấp Chuột</b>
+            </div>
+
+            <div id="loading-container">
+                <div class="loading-labels">
+                    <span id="loading-status">Đang tải những kỷ niệm...</span>
+                    <span id="loading-percent">0%</span>
+                </div>
+                <div class="loading-track">
+                    <div id="loading-bar-fill"></div>
+                </div>
+            </div>
+
+            <button class="btn-start" id="btn-start">ĐANG CHUẨN BỊ...</button>
+        </div>
+    </div>
+
+    <!-- Tâm ngắm định vị tương tác -->
+    <div id="crosshair"></div>
+    <div id="hologram-hud"></div>
+    <div id="interaction-prompt">Nhấn SPACE để tương tác</div>
+
+    <!-- Cụm điều khiển cảm ứng di động -->
+    <div id="mobile-controls">
+        <div id="joystick-zone">
+            <div id="joystick-base">
+                <div id="joystick-thumb"></div>
+            </div>
+        </div>
+        <button id="btn-mobile-interact">✨ TƯƠNG TÁC</button>
+    </div>
+
+    <!-- Khung hiển thị phóng to (Ảnh, Video, Thư tình) -->
+    <div id="media-popup">
+        <div class="popup-content">
+            <button class="popup-close" id="btn-close-popup">×</button>
+            <img id="popup-img" src="" alt="Kỉ niệm">
+            <video id="popup-video" controls src="" playsinline></video>
+            <div id="popup-text-box"></div>
+        </div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // Nhận diện thiết bị cảm ứng
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia('(pointer: coarse)').matches;
+        
+        // Tải ảnh từ thư mục thumbnails (100 bức ảnh đầu tiên từ 1 đến 100)
+        const autoImagesArray = [];
+        for (let i = 1; i <= 100; i++) {
+            autoImagesArray.push(`assets/images/thumbnails/${i}.jpg`);
+        }
+
+        // ==========================================
+        // BẢNG ĐIỀU KHIỂN: ĐƯỜNG DẪN - KÍCH THƯỚC - TỌA ĐỘ
+        // ==========================================
+        const ASSETS_CONFIG = {
+            bgMusic: 'assets/audio/bg_music.mp3',
+            
+            // MÔ HÌNH PHÒNG MỞ ĐẦU (Tấm vé)
+            roomStart: {
+                model: 'assets/models/ve.glb',
+                scale: 1.0, x: 0, y: 0, z: 0
+            },
+
+            room1: [
+                { text: "Chào em, điểm dừng chân đầu tiên... lắng nghe anh nhé.", audioPath: 'assets/audio/voice_p1_1.mp3' },
+                { text: "Khoảng thời gian qua là điều vô giá nhất đối với cuộc đời anh.", audioPath: 'assets/audio/voice_p1_2.mp3' },
+                { text: "Cảm ơn em vì đã luôn kiên nhẫn và yêu thương anh vô điều kiện.", audioPath: 'assets/audio/voice_p1_3.mp3' }
+            ],
+            
+            room2: autoImagesArray,
+            
+            // MÔ HÌNH PHÒNG 3 (Đã cập nhật đúng file Table.glb)
+            room3: [
+                { 
+                    label: 'Máy Photobooth', video: 'assets/videos/video_photobooth.mp4', color: 0xff00ff, 
+                    models: [ { path: 'assets/models/photobooth.glb', scale: 1.5, x: 0, y: -0.6, z: 0 } ] 
+                },
+                { 
+                    label: 'Quán Cà Phê Kỷ Niệm', video: 'assets/videos/video_caphe.mp4', color: 0x8b5a2b, 
+                    models: [ 
+                        { path: 'assets/models/Table.glb', scale: 1.2, x: 0, y: -0.6, z: 0 },
+                        { path: 'assets/models/laptop.glb', scale: 0.8, x: -0.3, y: 0.2, z: 0 },
+                        { path: 'assets/models/caphe.glb', scale: 0.4, x: 0.4, y: 0.2, z: 0.2 }
+                    ] 
+                },
+                { 
+                    label: 'Chiếc Áo Đôi Đầu Tiên', video: 'assets/videos/video_aodoi.mp4', color: 0x00ff00, 
+                    models: [ { path: 'assets/models/aodoi.glb', scale: 1.5, x: 0, y: -0.6, z: 0 } ] 
+                }
+            ],
+            
+            // MÔ HÌNH PHÒNG KẾT (Bức thư)
+            roomEnd: {
+                text: "Gửi em, cô gái anh yêu.<br><br>19 tháng không phải là một hành trình quá dài, nhưng nó đủ để anh hiểu rằng em chính là mảnh ghép hoàn hảo nhất mà anh tìm kiếm.<br><br>Cảm ơn em vì đã đến, đã ở lại và cùng anh tô vẽ nên những ký ức tuyệt vời này. Mỗi ngày trôi qua có em bên cạnh đều là một ngày hạnh phúc.<br><br>Yêu em rất nhiều!",
+                audioPath: 'assets/audio/voice_phong_ket.mp3',
+                model: 'assets/models/thu.glb',
+                scale: 0.5, x: 0, y: 0, z: 0
+            }
+        };
+
+        const STATES = { START: 0, HL1: 1, R1: 2, HL2: 3, R2: 4, HL3: 5, R3: 6, HL4: 7, REND: 8, HL0: 9 };
+        let currentState = STATES.START;
+
+        // Trình quản lý tải tài nguyên (LoadingManager)
+        const loadingManager = new THREE.LoadingManager();
+        const gltfLoader = new GLTFLoader(loadingManager);
+        const textureLoader = new THREE.TextureLoader(loadingManager);
+        let audioLoader = null;
+
+        let scene, camera, renderer, controls, clock;
+        let audioListener, bgMusic, currentVoice = null;
+        let isMuted = false;
+        let raycaster, moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        
+        let activeElements = [];
+        let interactableObjects = [];
+        let spaceTarget = null;
+        let activeExitTrigger = null;
+        
+        let particles = null; 
+        let particleTrails = null;
+        let currentWarpSpeed = 2.0;
+
+        // Hệ thống cánh hoa đào & bụi sao lãng mạn
+        let romanticParticles = null;
+        const PETAL_COUNT = 100;
+        const petalData = [];
+        
+        let isViewingMedia = false; 
+        let roomBoundaryX = 15;
+
+        // Xoay góc nhìn cảm ứng di động
+        let touchLookId = null;
+        let lastTouchX = 0, lastTouchY = 0;
+        let touchYaw = 0, touchPitch = 0;
+
+        const hud = document.getElementById('hologram-hud');
+        const promptNode = document.getElementById('interaction-prompt');
+        const popup = document.getElementById('media-popup');
+        const pImg = document.getElementById('popup-img');
+        const pVid = document.getElementById('popup-video');
+        const pTxt = document.getElementById('popup-text-box');
+        const mobileControls = document.getElementById('mobile-controls');
+        const btnMobileInteract = document.getElementById('btn-mobile-interact');
+        const btnStart = document.getElementById('btn-start');
+        const loadingBarFill = document.getElementById('loading-bar-fill');
+        const loadingPercent = document.getElementById('loading-percent');
+        const loadingStatus = document.getElementById('loading-status');
+
+        // Cập nhật giao diện hướng dẫn cho Mobile nếu dùng điện thoại
+        if (isTouchDevice) {
+            document.getElementById('controls-hint-text').innerHTML = `
+                <b>CÁCH ĐIỀU KHIỂN TRÊN ĐIỆN THOẠI:</b><br>
+                Di chuyển: <b>Cần gạt Joystick (góc trái)</b><br>
+                Ngắm nhìn: <b>Vuốt ngón tay trên màn hình</b><br>
+                Tương tác: <b>Chạm nút "TƯƠNG TÁC" hoặc Chạm trực tiếp vào ảnh</b>
+            `;
+        }
+
+        // Quản lý tiến trình tải
+        loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            const percent = Math.min(100, Math.round((itemsLoaded / itemsTotal) * 100));
+            if (loadingBarFill) loadingBarFill.style.width = percent + '%';
+            if (loadingPercent) loadingPercent.innerText = percent + '%';
+        };
+
+        function onAssetsReady() {
+            if (loadingBarFill) loadingBarFill.style.width = '100%';
+            if (loadingPercent) loadingPercent.innerText = '100%';
+            if (loadingStatus) loadingStatus.innerText = 'Tất cả kỷ niệm đã sẵn sàng! ✨';
+            if (btnStart) {
+                btnStart.classList.add('ready');
+                btnStart.innerText = 'BƯỚC VÀO KHÔNG GIAN ❤️';
+            }
+        }
+
+        loadingManager.onLoad = () => {
+            onAssetsReady();
+        };
+
+        // Đảm bảo nút luôn mở sau tối đa 2.5 giây nếu có asset tải chậm
+        setTimeout(() => {
+            onAssetsReady();
+        }, 2500);
+
+        let isInitialized = false;
+        btnStart.addEventListener('click', () => {
+            if (!isInitialized) {
+                init3D();
+                initAudio();
+                initRomanticParticles();
+                setupRoomStart();
+                setupTouchControls();
+                animate();
+                isInitialized = true;
+                
+                controls.addEventListener('unlock', () => {
+                    if (!isViewingMedia && !isTouchDevice) {
+                        document.getElementById('setup-screen').style.display = 'flex';
+                        btnStart.innerText = "TIẾP TỤC TRẢI NGHIỆM";
+                    }
+                });
+            }
+
+            document.getElementById('setup-screen').style.display = 'none';
+
+            if (isTouchDevice) {
+                mobileControls.style.display = 'block';
+            } else {
+                controls.lock();
+            }
+        });
+
+        // Bật/Tắt Âm Thanh
+        document.getElementById('btn-sound-toggle').addEventListener('click', () => {
+            isMuted = !isMuted;
+            const soundIcon = document.getElementById('sound-icon');
+            if (audioListener) {
+                audioListener.setMasterVolume(isMuted ? 0 : 1.0);
+            }
+            soundIcon.innerText = isMuted ? '🔇' : '🎵';
+        });
+
+        function init3D() {
+            clock = new THREE.Clock();
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050508);
+            scene.fog = new THREE.FogExp2(0x050508, 0.022); 
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.1;
+            document.body.appendChild(renderer.domElement);
+
+            // Sàn nhà bảo tàng sang trọng với độ nhám và phản xạ nhẹ
+            const globalFloor = new THREE.Mesh(
+                new THREE.PlaneGeometry(500, 500),
+                new THREE.MeshStandardMaterial({ color: 0x0c0812, roughness: 0.6, metalness: 0.2 })
+            );
+            globalFloor.rotation.x = -Math.PI / 2;
+            scene.add(globalFloor);
+
+            // Ánh sáng môi trường nhẹ nhàng, ấm cúng
+            const ambientLight = new THREE.AmbientLight(0xffe6f0, 0.45);
+            scene.add(ambientLight);
+
+            const pCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            pCamera.rotation.order = 'YXZ';
+            controls = new PointerLockControls(pCamera, document.body);
+            scene.add(controls.getObject());
+            camera = pCamera;
+            resetPlayerPosition();
+
+            raycaster = new THREE.Raycaster();
+
+            window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keyup', onKeyUp);
+            window.addEventListener('mousedown', onMouseClick);
+            window.addEventListener('resize', onWindowResize);
+            document.getElementById('btn-close-popup').addEventListener('click', closePopup);
+        }
+
+        // Khởi tạo âm thanh & Cơ chế dự phòng thông minh
+        function initAudio() {
+            audioListener = new THREE.AudioListener();
+            camera.add(audioListener);
+
+            bgMusic = new THREE.Audio(audioListener);
+            audioLoader = new THREE.AudioLoader(loadingManager);
+
+            audioLoader.load(
+                ASSETS_CONFIG.bgMusic,
+                (buffer) => {
+                    bgMusic.setBuffer(buffer);
+                    bgMusic.setLoop(true);
+                    bgMusic.setVolume(0.4);
+                    bgMusic.play();
+                },
+                undefined,
+                (error) => {
+                    console.warn("Chưa có file bg_music.mp3 hoặc không tải được. Kích hoạt nhạc nền synthesizer.", error);
+                    startAmbientSynthesizer();
+                }
+            );
+        }
+
+        // Nhạc nền piano/ambient dự phòng bằng Web Audio API
+        let synthInterval = null;
+        function startAmbientSynthesizer() {
+            if (synthInterval) return;
+            try {
+                const ctx = audioListener.context;
+                if (!ctx) return;
+                
+                const chords = [
+                    [261.63, 329.63, 392.00, 523.25], // C Major
+                    [220.00, 261.63, 329.63, 440.00], // A Minor
+                    [174.61, 220.00, 261.63, 349.23], // F Major
+                    [196.00, 246.94, 293.66, 392.00]  // G Major
+                ];
+                let currentChordIndex = 0;
+
+                const playPadChord = () => {
+                    if (isMuted || (bgMusic && bgMusic.isPlaying)) return;
+                    const chord = chords[currentChordIndex];
+                    currentChordIndex = (currentChordIndex + 1) % chords.length;
+
+                    chord.forEach((freq) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+                        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 1.8);
+                        gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 4.8);
+
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+
+                        osc.start();
+                        osc.stop(ctx.currentTime + 5.0);
+                    });
+                };
+
+                playPadChord();
+                synthInterval = setInterval(playPadChord, 5200);
+            } catch (e) {
+                console.log("Web Audio synth fallback error:", e);
+            }
+        }
+
+        // HỆ THỐNG HẠT CÁNH HOA ĐÀO LÃNG MẠN
+        function createPetalTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.save();
+            ctx.translate(32, 32);
+            ctx.beginPath();
+            ctx.moveTo(0, -18);
+            ctx.bezierCurveTo(14, -24, 24, -8, 16, 12);
+            ctx.bezierCurveTo(10, 24, 0, 26, 0, 26);
+            ctx.bezierCurveTo(0, 26, -10, 24, -16, 12);
+            ctx.bezierCurveTo(-24, -8, -14, -24, 0, -18);
+            ctx.closePath();
+            
+            const grad = ctx.createRadialGradient(0, 0, 3, 0, 0, 24);
+            grad.addColorStop(0, 'rgba(255, 225, 238, 0.95)');
+            grad.addColorStop(0.5, 'rgba(255, 140, 180, 0.8)');
+            grad.addColorStop(1, 'rgba(255, 105, 180, 0)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.restore();
+            
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function initRomanticParticles() {
+            const petalGeo = new THREE.PlaneGeometry(0.3, 0.3);
+            const petalTex = createPetalTexture();
+            const petalMat = new THREE.MeshBasicMaterial({
+                map: petalTex,
+                transparent: true,
+                opacity: 0.85,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+                blending: THREE.NormalBlending
+            });
+            
+            romanticParticles = new THREE.Group();
+            petalData.length = 0;
+            
+            for (let i = 0; i < PETAL_COUNT; i++) {
+                const mesh = new THREE.Mesh(petalGeo, petalMat);
+                const x = (Math.random() - 0.5) * 35;
+                const y = Math.random() * 8 + 0.5;
+                const z = (Math.random() - 0.5) * 35;
+                mesh.position.set(x, y, z);
+                
+                mesh.rotation.x = Math.random() * Math.PI;
+                mesh.rotation.y = Math.random() * Math.PI;
+                mesh.rotation.z = Math.random() * Math.PI;
+                
+                const scale = 0.5 + Math.random() * 0.7;
+                mesh.scale.set(scale, scale, scale);
+                
+                romanticParticles.add(mesh);
+                petalData.push({
+                    mesh: mesh,
+                    speedY: 0.35 + Math.random() * 0.45,
+                    speedRotX: (Math.random() - 0.5) * 1.5,
+                    speedRotY: (Math.random() - 0.5) * 1.5,
+                    speedRotZ: (Math.random() - 0.5) * 1.5,
+                    phase: Math.random() * Math.PI * 2,
+                    swayRadius: 0.2 + Math.random() * 0.35
+                });
+            }
+            
+            scene.add(romanticParticles);
+        }
+
+        function updateRomanticParticles(delta, playerPos) {
+            if (!romanticParticles || !romanticParticles.visible) return;
+            const time = clock.getElapsedTime();
+            
+            for (let i = 0; i < petalData.length; i++) {
+                const p = petalData[i];
+                p.mesh.position.y -= p.speedY * delta;
+                p.mesh.position.x += Math.sin(time * 1.3 + p.phase) * delta * p.swayRadius;
+                p.mesh.position.z += Math.cos(time * 1.0 + p.phase) * delta * p.swayRadius;
+                
+                p.mesh.rotation.x += p.speedRotX * delta;
+                p.mesh.rotation.y += p.speedRotY * delta;
+                p.mesh.rotation.z += p.speedRotZ * delta;
+                
+                if (p.mesh.position.y < 0.1) {
+                    p.mesh.position.y = playerPos.y + 5 + Math.random() * 4;
+                    p.mesh.position.x = playerPos.x + (Math.random() - 0.5) * 22;
+                    p.mesh.position.z = playerPos.z + (Math.random() - 0.5) * 22;
+                }
+            }
+        }
+
+        // THIẾT LẬP ĐIỀU KHIỂN CẢM ỨNG DI ĐỘNG (JOYSTICK & TOUCH LOOK)
+        function setupTouchControls() {
+            const joystickZone = document.getElementById('joystick-zone');
+            const joystickThumb = document.getElementById('joystick-thumb');
+            let joystickTouchId = null;
+            let joyBaseX = 0, joyBaseY = 0;
+
+            joystickZone.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.changedTouches[0];
+                joystickTouchId = touch.identifier;
+                const rect = joystickZone.getBoundingClientRect();
+                joyBaseX = rect.left + rect.width / 2;
+                joyBaseY = rect.top + rect.height / 2;
+                handleJoystickMove(touch.clientX, touch.clientY);
+            }, { passive: false });
+
+            window.addEventListener('touchmove', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    if (touch.identifier === joystickTouchId) {
+                        e.preventDefault();
+                        handleJoystickMove(touch.clientX, touch.clientY);
+                    } else if (touch.identifier === touchLookId) {
+                        const deltaX = touch.clientX - lastTouchX;
+                        const deltaY = touch.clientY - lastTouchY;
+                        lastTouchX = touch.clientX;
+                        lastTouchY = touch.clientY;
+
+                        touchYaw -= deltaX * 0.004;
+                        touchPitch -= deltaY * 0.0035;
+                        touchPitch = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, touchPitch));
+                        camera.rotation.set(touchPitch, touchYaw, 0, 'YXZ');
+                    }
+                }
+            }, { passive: false });
+
+            const resetJoystick = () => {
+                joystickThumb.style.transform = `translate(0px, 0px)`;
+                moveForward = false;
+                moveBackward = false;
+                moveLeft = false;
+                moveRight = false;
+                joystickTouchId = null;
+            };
+
+            window.addEventListener('touchend', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    if (touch.identifier === joystickTouchId) resetJoystick();
+                    if (touch.identifier === touchLookId) touchLookId = null;
+                }
+            });
+            window.addEventListener('touchcancel', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    if (touch.identifier === joystickTouchId) resetJoystick();
+                    if (touch.identifier === touchLookId) touchLookId = null;
+                }
+            });
+
+            function handleJoystickMove(clientX, clientY) {
+                let dx = clientX - joyBaseX;
+                let dy = clientY - joyBaseY;
+                const dist = Math.hypot(dx, dy);
+                const maxRadius = 42;
+
+                if (dist > maxRadius) {
+                    dx = (dx / dist) * maxRadius;
+                    dy = (dy / dist) * maxRadius;
+                }
+
+                joystickThumb.style.transform = `translate(${dx}px, ${dy}px)`;
+
+                const inHL = (currentState === STATES.HL1 || currentState === STATES.HL2 || currentState === STATES.HL3 || currentState === STATES.HL4 || currentState === STATES.HL0);
+                const normX = dx / maxRadius;
+                const normY = dy / maxRadius;
+
+                moveForward = normY < -0.25;
+                moveBackward = !inHL && normY > 0.25;
+                moveLeft = !inHL && normX < -0.25;
+                moveRight = !inHL && normX > 0.25;
+            }
+
+            // Vuốt ngón tay bên phải để xoay góc nhìn camera
+            window.addEventListener('touchstart', (e) => {
+                if (!isTouchDevice || isViewingMedia) return;
+                const targetEl = e.target;
+                if (joystickZone.contains(targetEl) || targetEl === btnMobileInteract || targetEl.closest('#btn-sound-toggle') || popup.classList.contains('active')) return;
+
+                const touch = e.changedTouches[0];
+                touchLookId = touch.identifier;
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+
+                // Tự động đồng bộ góc hiện tại của camera
+                touchYaw = camera.rotation.y;
+                touchPitch = camera.rotation.x;
+            }, { passive: true });
+
+            // Chạm trực tiếp vào ảnh trong phòng 2 để mở xem phóng to
+            window.addEventListener('touchend', (e) => {
+                if (!isTouchDevice || isViewingMedia || currentState !== STATES.R2) return;
+                const touch = e.changedTouches[0];
+                if (joystickZone.contains(e.target) || e.target === btnMobileInteract) return;
+
+                const mouseCoords = new THREE.Vector2(
+                    (touch.clientX / window.innerWidth) * 2 - 1,
+                    -(touch.clientY / window.innerHeight) * 2 + 1
+                );
+                raycaster.setFromCamera(mouseCoords, camera);
+                const intersects = raycaster.intersectObjects(interactableObjects);
+                if (intersects.length > 0) {
+                    const target = intersects[0].object;
+                    if (target.userData.type === 'gallery_photo') {
+                        openPhotoPopup(target.userData.path);
+                    }
+                }
+            });
+
+            // Nút bấm tương tác trên Mobile
+            btnMobileInteract.addEventListener('click', () => {
+                triggerActiveMobileInteraction();
+            });
+        }
+
+        function triggerActiveMobileInteraction() {
+            if (currentState === STATES.START) {
+                triggerTicketInteraction();
+            } else if (currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
+                createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
+                promptNode.style.display = 'none';
+                btnMobileInteract.style.display = 'none';
+            } else if (currentState === STATES.REND) {
+                triggerLetterInteraction();
+            }
+        }
+
+        function resetPlayerPosition() {
+            controls.getObject().position.set(0, 1.6, 12);
+            controls.getObject().rotation.set(0, 0, 0);
+            touchYaw = 0;
+            touchPitch = 0;
+        }
+
+        function clearActiveScene() {
+            activeElements.forEach(obj => {
+                if (obj.userData && obj.userData.videoElement) {
+                    obj.userData.videoElement.pause();
+                    obj.userData.videoElement.src = ""; 
+                    obj.userData.videoElement.load();
+                }
+                if (obj.children) {
+                    obj.children.forEach(child => {
+                        if (child.type === 'PositionalAudio') {
+                            if (child.isPlaying) child.stop();
+                            child.disconnect(); 
+                        }
+                    });
+                }
+                scene.remove(obj);
+            });
+            
+            activeElements = [];
+            interactableObjects = [];
+            spaceTarget = null;
+            activeExitTrigger = null;
+            promptNode.style.display = 'none';
+            btnMobileInteract.style.display = 'none';
+
+            if (particles) { 
+                scene.remove(particles); 
+                scene.remove(particleTrails); 
+                particles = null; 
+                particleTrails = null; 
+            }
+            roomBoundaryX = 15;
+        }
+
+        function showHUDText(text, duration = 4000, callback = null) {
+            hud.innerHTML = text;
+            hud.style.opacity = 1;
+            setTimeout(() => {
+                hud.style.opacity = 0;
+                if(callback) setTimeout(callback, 1000);
+            }, duration);
+        }
+
+        function spawnFairyGuides(startX, startZ, endX, endZ, count) {
+            for (let i = 1; i <= count; i++) {
+                const fraction = i / (count + 1);
+                const x = startX + (endX - startX) * fraction;
+                const z = startZ + (endZ - startZ) * fraction;
+
+                const orbGeo = new THREE.SphereGeometry(0.08, 16, 16);
+                const orbMat = new THREE.MeshBasicMaterial({ color: 0xffb6c1 }); 
+                const orb = new THREE.Mesh(orbGeo, orbMat);
+                orb.position.set(x, 1.2, z);
+                orb.userData = { type: 'fairy_light', randomOffset: Math.random() * Math.PI * 2 };
+
+                const glow = new THREE.PointLight(0xff9ebb, 3, 3.5);
+                glow.position.set(0, 0, 0);
+                orb.add(glow);
+
+                scene.add(orb);
+                activeElements.push(orb);
+            }
+        }
+
+        // --- PHÒNG MỞ ĐẦU ---
+        function setupRoomStart() {
+            currentState = STATES.START;
+            clearActiveScene();
+            resetPlayerPosition();
+            unlockMouseLook();
+
+            if (romanticParticles) romanticParticles.visible = true;
+
+            const ticketGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2); 
+            const ticketMat = new THREE.MeshBasicMaterial({ visible: false }); 
+            const hitbox = new THREE.Mesh(ticketGeo, ticketMat);
+            hitbox.position.set(0, 1.0, 0); 
+            hitbox.userData = { type: 'ticket' };
+
+            // TẢI MÔ HÌNH VÉ MỜI THẬT (.GLB)
+            gltfLoader.load(ASSETS_CONFIG.roomStart.model, (gltf) => {
+                const model3D = gltf.scene;
+                const config = ASSETS_CONFIG.roomStart;
+                model3D.scale.set(config.scale, config.scale, config.scale); 
+                model3D.position.set(config.x, config.y, config.z);
+                hitbox.add(model3D);
+            });
+
+            const radius = 2.0; 
+            const height = 4.0; 
+            const lightPositions = [
+                { dx: -radius, dz: -radius }, { dx: radius, dz: -radius },
+                { dx: -radius, dz: radius }, { dx: radius, dz: radius }
+            ];
+
+            lightPositions.forEach(offset => {
+                const spot = new THREE.SpotLight(0xfff0f5, 55, 10, Math.PI/5, 0.6, 1);
+                spot.position.set(offset.dx, height, offset.dz);
+                spot.target = hitbox; 
+                scene.add(spot);
+                activeElements.push(spot);
+            });
+
+            scene.add(hitbox);
+            activeElements.push(hitbox);
+            interactableObjects.push(hitbox); 
+
+            if (isTouchDevice) {
+                btnMobileInteract.innerHTML = `🎫 MỞ VÉ MỜI`;
+                btnMobileInteract.style.display = 'flex';
+            }
+        }
+
+        function triggerTicketInteraction() {
+            interactableObjects = []; 
+            btnMobileInteract.style.display = 'none';
+            showHUDText("Chào mừng em đến với bảo tàng của chúng ta...", 4000, () => {
+                showHUDText("Em hãy bước tiếp vào trong bóng tối để nghe điều sâu thẳm nhất trong tim anh", 4000, () => {
+                    enterHallway(STATES.HL1);
+                });
+            });
+        }
+
+        function enterHallway(hlState) {
+            currentState = hlState;
+            clearActiveScene();
+            resetPlayerPosition();
+            lockMouseLook(); 
+
+            if (romanticParticles) romanticParticles.visible = false;
+            if(hlState === STATES.HL2 && bgMusic) bgMusic.setVolume(0.4);
+            setupSpaceParticles();
+        }
+
+        // --- PHÒNG 1: GIỌNG NÓI PODCAST ---
+        function setupRoom1() {
+            currentState = STATES.R1;
+            clearActiveScene();
+            resetPlayerPosition();
+            unlockMouseLook();
+
+            if (romanticParticles) romanticParticles.visible = true;
+
+            const positionsZ = [6, 0, -6];
+            ASSETS_CONFIG.room1.forEach((data, index) => {
+                const zPos = positionsZ[index];
+                
+                const pLight = new THREE.PointLight(0xff758c, 10, 5);
+                pLight.position.set(0, 2, zPos);
+                scene.add(pLight);
+                activeElements.push(pLight);
+
+                const nodeGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.1, 16);
+                const nodeMat = new THREE.MeshBasicMaterial({ color: 0xff758c, transparent: true, opacity: 0.65 });
+                const node = new THREE.Mesh(nodeGeo, nodeMat);
+                node.position.set(0, 0.05, zPos);
+                node.userData = { type: 'podcast_node', text: data.text, audioPath: data.audioPath, triggered: false, index: index };
+                scene.add(node);
+                activeElements.push(node);
+            });
+        }
+
+        function triggerPodcastNode(node) {
+            node.userData.triggered = true;
+            node.material.color.setHex(0xffb6c1); 
+            if(bgMusic) bgMusic.setVolume(0.08); 
+
+            showHUDText(node.userData.text, 6000);
+
+            if(currentVoice) currentVoice.stop();
+            currentVoice = new THREE.Audio(audioListener);
+            
+            audioLoader.load(node.userData.audioPath,
+                (buffer) => { 
+                    currentVoice.setBuffer(buffer);
+                    currentVoice.setVolume(1.0);
+                    currentVoice.play();
+                    showHUDText(node.userData.text, buffer.duration * 1000);
+                },
+                undefined,
+                (error) => { 
+                    console.warn("Chưa có file Audio, hiển thị văn bản thay thế.");
+                    showHUDText(node.userData.text, 6500);
+                } 
+            );
+
+            if(node.userData.index === ASSETS_CONFIG.room1.length - 1) {
+                spawnRoom1Exit();
+            }
+        }
+
+        function spawnRoom1Exit() {
+            spawnFairyGuides(0, -6, 0, -15, 7);
+            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 4), new THREE.MeshBasicMaterial({ visible: false }));
+            exitTrigger.position.set(0, 1, -15);
+            exitTrigger.userData = { type: 'room1_exit_trigger' };
+            scene.add(exitTrigger);
+            activeElements.push(exitTrigger);
+        }
+
+        // --- PHÒNG 2: ALBUM HÌNH ẢNH (GALAXY OF MEMORIES) ---
+        function setupRoom2() {
+            currentState = STATES.R2;
+            clearActiveScene();
+            resetPlayerPosition();
+            unlockMouseLook();
+
+            if (romanticParticles) romanticParticles.visible = true;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(256, 256, 0, 256, 256, 256);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); 
+            gradient.addColorStop(0.15, 'rgba(255, 182, 193, 1)'); 
+            gradient.addColorStop(0.45, 'rgba(255, 105, 180, 0.45)'); 
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); 
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 512, 512);
+
+            const glowTex = new THREE.CanvasTexture(canvas);
+            const glowMat = new THREE.MeshBasicMaterial({ 
+                map: glowTex, 
+                transparent: true, 
+                blending: THREE.AdditiveBlending, 
+                depthWrite: false, 
+                side: THREE.DoubleSide 
+            });
+            const sunGlow = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), glowMat);
+            sunGlow.rotation.x = -Math.PI/2;
+            sunGlow.position.set(0, 0.05, 4);
+            sunGlow.userData = { type: 'trigger_album', triggered: false };
+            
+            scene.add(sunGlow);
+            activeElements.push(sunGlow);
+        }
+
+        function spawnAlbumImages() {
+            const total = ASSETS_CONFIG.room2.length;
+            const centerX = 0;
+            const centerZ = 4;
+
+            ASSETS_CONFIG.room2.forEach((path, index) => {
+                const phi = index * 137.5 * (Math.PI / 180);
+                const radius = 3.5 + (index * 0.1);
+                
+                const x = centerX + Math.cos(phi) * radius;
+                const z = centerZ + Math.sin(phi) * radius;
+                const y = 0.5 + Math.random() * 3.5;
+
+                const defaultH = 1.2;
+                const defaultW = 1.6;
+                const imgGeo = new THREE.PlaneGeometry(defaultW, defaultH);
+                
+                const fallbackMat = new THREE.MeshBasicMaterial({ color: 0x331022, side: THREE.DoubleSide, wireframe: true });
+                const mesh = new THREE.Mesh(imgGeo, fallbackMat);
+                
+                mesh.position.set(x, y, z);
+                mesh.lookAt(centerX, 1.8, centerZ);
+                mesh.userData = { type: 'gallery_photo', path: path };
+                
+                scene.add(mesh);
+                activeElements.push(mesh);
+                interactableObjects.push(mesh);
+
+                textureLoader.load(
+                    path,
+                    (texture) => {
+                        texture.colorSpace = THREE.SRGBColorSpace;
+                        const aspect = (texture.image && texture.image.width && texture.image.height) 
+                            ? (texture.image.width / texture.image.height) : 1.33;
+                        mesh.geometry.dispose();
+                        mesh.geometry = new THREE.PlaneGeometry(defaultH * aspect, defaultH);
+                        mesh.material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+                    },
+                    undefined,
+                    (err) => { /* Bỏ qua ảnh thiếu */ }
+                );
+            });
+
+            const maxRadius = 3.5 + (total * 0.1);
+            const exitZ = centerZ - maxRadius - 2;
+
+            roomBoundaryX = maxRadius + 15;
+
+            spawnFairyGuides(centerX, centerZ - 3, centerX, exitZ, 8);
+                
+            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 4), new THREE.MeshBasicMaterial({ visible: false }));
+            exitTrigger.position.set(centerX, 1, exitZ - 2);
+            exitTrigger.userData = { type: 'room2_exit_trigger' };
+            scene.add(exitTrigger);
+            activeElements.push(exitTrigger);
+        }
+
+        function openPhotoPopup(thumbnailPath) {
+            isViewingMedia = true;
+            // Thay thế thumbnails bằng fullsize để xem ảnh chất lượng cao
+            pImg.src = thumbnailPath.replace('thumbnails', 'fullsize');
+            pImg.style.display = 'block';
+            popup.classList.add('active');
+            if (mobileControls) mobileControls.style.display = 'none';
+            if (!isTouchDevice) controls.unlock();
+        }
+
+        // --- PHÒNG 3: VẬT THỂ VIDEO KỈ NIỆM ---
+        function setupRoom3() {
+            currentState = STATES.R3;
+            clearActiveScene();
+            resetPlayerPosition();
+            unlockMouseLook();
+
+            if (romanticParticles) romanticParticles.visible = true;
+
+            const xPositions = [-2.5, 2.5, -2.5];
+            const zPositions = [6, 1, -4];
+
+            ASSETS_CONFIG.room3.forEach((data, index) => {
+                const geo = new THREE.CylinderGeometry(0.8, 0.8, 1.5, 8);
+                const mat = new THREE.MeshBasicMaterial({ visible: false }); 
+                const hitbox = new THREE.Mesh(geo, mat);
+                hitbox.position.set(xPositions[index], 0.6, zPositions[index]);
+                hitbox.userData = { type: 'video_item', label: data.label, videoSrc: data.video, index: index, activeHologram: false };
+
+                data.models.forEach(modelData => {
+                    gltfLoader.load(modelData.path, (gltf) => {
+                        const model3D = gltf.scene;
+                        model3D.scale.set(modelData.scale, modelData.scale, modelData.scale); 
+                        model3D.position.set(modelData.x, modelData.y, modelData.z); 
+                        hitbox.add(model3D); 
+                    }, undefined, (err) => {
+                        console.warn("Lỗi tải model:", modelData.path, err);
+                    });
+                });
+                
+                const radius = 1.8; 
+                const height = 3.5; 
+                const lightPositions = [
+                    { dx: -radius, dz: -radius }, { dx: radius, dz: -radius },
+                    { dx: -radius, dz: radius }, { dx: radius, dz: radius }
+                ];
+
+                lightPositions.forEach(offset => {
+                    const spot = new THREE.SpotLight(0xfff0f5, 50, 10, Math.PI/5, 0.6, 1);
+                    spot.position.set(xPositions[index] + offset.dx, height, zPositions[index] + offset.dz);
+                    spot.target = hitbox; 
+                    scene.add(spot);
+                    activeElements.push(spot);
+                });
+
+                scene.add(hitbox);
+                activeElements.push(hitbox);
+            });
+        }
+
+        function createVideoHologramMesh(parentMesh, videoSrc) {
+            const video = document.createElement('video');
+            video.src = videoSrc;
+            video.loop = true;
+            video.playsInline = true;
+            video.play().catch(e => console.log("Video auto play prevented", e));
+
+            const videoTex = new THREE.VideoTexture(video);
+            videoTex.colorSpace = THREE.SRGBColorSpace;
+
+            const holoGeo = new THREE.PlaneGeometry(1.6, 1.0);
+            const holoMat = new THREE.MeshBasicMaterial({ map: videoTex, side: THREE.DoubleSide });
+            const holoMesh = new THREE.Mesh(holoGeo, holoMat);
+            
+            holoMesh.position.set(parentMesh.position.x, 1.8, parentMesh.position.z);
+            holoMesh.lookAt(0, 1.8, parentMesh.position.z + 3);
+
+            const positionalAudio = new THREE.PositionalAudio(audioListener);
+            positionalAudio.setMediaElementSource(video); 
+            positionalAudio.setDistanceModel('linear'); 
+            positionalAudio.setRefDistance(1.5); 
+            positionalAudio.setMaxDistance(4.0); 
+            
+            holoMesh.add(positionalAudio); 
+            holoMesh.userData = { type: 'floating_hologram_video', videoElement: video, videoSrc: videoSrc };
+
+            scene.add(holoMesh);
+            activeElements.push(holoMesh);
+            interactableObjects.push(holoMesh);
+            
+            parentMesh.userData.activeHologram = true;
+
+            let allOpened = true;
+            activeElements.forEach(el => {
+                if(el.userData.type === 'video_item' && !el.userData.activeHologram) allOpened = false;
+            });
+            if(allOpened) spawnRoom3Exit();
+        }
+
+        function spawnRoom3Exit() {
+            for(let i = 0; i < 3; i++) {
+                const arrow = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.05, 0.4), new THREE.MeshBasicMaterial({ color: 0xff758c }));
+                arrow.position.set(0, 0.02, -7 - (i * 1.2));
+                scene.add(arrow);
+                activeElements.push(arrow);
+            }
+            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshBasicMaterial({ visible: false }));
+            exitTrigger.position.set(0, 1, -10);
+            exitTrigger.userData = { type: 'room3_exit_trigger' };
+            scene.add(exitTrigger);
+            activeElements.push(exitTrigger);
+        }
+
+        // --- PHÒNG KẾT: BỨC THƯ TÌNH CẢM XÚC ---
+        function setupRoomEnd() {
+            currentState = STATES.REND;
+            clearActiveScene();
+            resetPlayerPosition();
+            unlockMouseLook();
+
+            if (romanticParticles) romanticParticles.visible = true;
+
+            const letterGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+            const letterMat = new THREE.MeshBasicMaterial({ visible: false });
+            const hitbox = new THREE.Mesh(letterGeo, letterMat);
+            hitbox.position.set(0, 1.2, 0);
+            hitbox.userData = { type: 'love_letter' };
+
+            gltfLoader.load(ASSETS_CONFIG.roomEnd.model, (gltf) => {
+                const model3D = gltf.scene;
+                const config = ASSETS_CONFIG.roomEnd;
+                model3D.scale.set(config.scale, config.scale, config.scale); 
+                model3D.position.set(config.x, config.y, config.z);
+                hitbox.add(model3D);
+            });
+
+            const radius = 2.5;
+            const height = 4.5;
+            const lightPositions = [
+                { dx: -radius, dz: -radius }, { dx: radius, dz: -radius },
+                { dx: -radius, dz: radius }, { dx: radius, dz: radius }
+            ];
+
+            lightPositions.forEach(offset => {
+                const spot = new THREE.SpotLight(0xfff5fa, 14, 10, Math.PI/5, 0.6, 1);
+                spot.position.set(offset.dx, height, offset.dz);
+                spot.target = hitbox;
+                scene.add(spot);
+                activeElements.push(spot);
+            });
+
+            scene.add(hitbox);
+            activeElements.push(hitbox);
+            interactableObjects.push(hitbox);
+
+            if (isTouchDevice) {
+                btnMobileInteract.innerHTML = `💌 ĐỌC THƯ TÌNH`;
+                btnMobileInteract.style.display = 'flex';
+            }
+        }
+
+        function triggerLetterInteraction() {
+            if(bgMusic) bgMusic.setVolume(0.05);
+
+            pTxt.innerHTML = `
+                <div class="letter-badge">✦ BẢO TÀNG TÌNH YÊU ✦</div>
+                <h2 class="letter-title">KỶ NIỆM 19 THÁNG YÊU NHAU</h2>
+                <div class="letter-body">${ASSETS_CONFIG.roomEnd.text}</div>
+                <button class="btn-letter-pledge" id="btn-letter-pledge">❤️ MÃI YÊU EM - 19 THÁNG VÀ MÃI MÃI</button>
+            `;
+            pTxt.style.display = 'block';
+            popup.classList.add('active');
+            if (mobileControls) mobileControls.style.display = 'none';
+            if (!isTouchDevice) controls.unlock();
+
+            document.getElementById('btn-letter-pledge').addEventListener('click', () => {
+                closePopup();
+            });
+
+            if(currentVoice) currentVoice.stop();
+            currentVoice = new THREE.Audio(audioListener);
+            audioLoader.load(
+                ASSETS_CONFIG.roomEnd.audioPath, 
+                (buffer) => {
+                    currentVoice.setBuffer(buffer);
+                    currentVoice.setVolume(1.0);
+                    currentVoice.play();
+                    setTimeout(() => {
+                        spawnFinalLoopExit();
+                    }, buffer.duration * 1000);
+                },
+                undefined,
+                (err) => {
+                    console.warn("Chưa có file voice thư tình, hẹn giờ xuất hiện lối ra.");
+                    setTimeout(() => {
+                        spawnFinalLoopExit();
+                    }, 5000);
+                }
+            );
+        }
+
+        function spawnFinalLoopExit() {
+            for(let i = 0; i < 3; i++) {
+                const arrow = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.05, 0.4), new THREE.MeshBasicMaterial({ color: 0xff4e78 }));
+                arrow.position.set(0, 0.02, -3 - (i * 1.2));
+                scene.add(arrow);
+                activeElements.push(arrow);
+            }
+            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshBasicMaterial({ visible: false }));
+            exitTrigger.position.set(0, 1, -6);
+            exitTrigger.userData = { type: 'phong_ket_exit_trigger' };
+            scene.add(exitTrigger);
+            activeElements.push(exitTrigger);
+        }
+
+        // --- HÀNH LANG 0: LẶP LẠI VÔ TẬN & BƯỚC NHẢY KHÔNG GIAN ---
+        function setupSpaceParticles() {
+            const particleCount = 400;
+            
+            const geoPoints = new THREE.BufferGeometry();
+            const posPoints = new Float32Array(particleCount * 3);
+            
+            const geoTrails = new THREE.BufferGeometry();
+            const posTrails = new Float32Array(particleCount * 6);
+
+            for(let i = 0; i < particleCount; i++) {
+                const x = (Math.random() - 0.5) * 8;
+                const y = (Math.random() - 0.5) * 6 + 1;
+                const z = Math.random() * -30;
+
+                posPoints[i*3] = x; posPoints[i*3+1] = y; posPoints[i*3+2] = z;
+
+                posTrails[i*6] = x; posTrails[i*6+1] = y; posTrails[i*6+2] = z;
+                posTrails[i*6+3] = x; posTrails[i*6+4] = y; posTrails[i*6+5] = z;
+            }
+
+            geoPoints.setAttribute('position', new THREE.BufferAttribute(posPoints, 3));
+            geoTrails.setAttribute('position', new THREE.BufferAttribute(posTrails, 3));
+
+            const matPoints = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.9 });
+            particles = new THREE.Points(geoPoints, matPoints);
+            
+            const matTrails = new THREE.LineBasicMaterial({ color: 0xffb6c1, transparent: true, opacity: 0.4 });
+            particleTrails = new THREE.LineSegments(geoTrails, matTrails);
+
+            scene.add(particles);
+            scene.add(particleTrails);
+        }
+
+        function updateSpaceParticles(delta) {
+            if(!particles || !particleTrails) return;
+            
+            const minSpeed = 2.0;
+            const maxSpeed = 70.0;
+            const accel = 40.0;
+            
+            if (moveForward) {
+                currentWarpSpeed += accel * delta;
+                if(currentWarpSpeed > maxSpeed) currentWarpSpeed = maxSpeed;
+            } else {
+                currentWarpSpeed -= accel * 1.5 * delta; 
+                if(currentWarpSpeed < minSpeed) currentWarpSpeed = minSpeed;
+            }
+
+            const trailLength = (currentWarpSpeed - minSpeed) * 0.12; 
+
+            const pPos = particles.geometry.attributes.position.array;
+            const tPos = particleTrails.geometry.attributes.position.array;
+
+            for(let i = 0; i < pPos.length / 3; i++) {
+                pPos[i*3 + 2] += currentWarpSpeed * delta;
+                
+                if(pPos[i*3 + 2] > 10) {
+                    pPos[i*3 + 2] = -30;
+                }
+
+                tPos[i*6] = pPos[i*3];
+                tPos[i*6+1] = pPos[i*3+1];
+                tPos[i*6+2] = pPos[i*3+2];
+                
+                tPos[i*6+3] = pPos[i*3];
+                tPos[i*6+4] = pPos[i*3+1];
+                tPos[i*6+5] = pPos[i*3+2] - trailLength; 
+            }
+
+            particles.geometry.attributes.position.needsUpdate = true;
+            particleTrails.geometry.attributes.position.needsUpdate = true;
+        }
+
+        function lockMouseLook() {
+            controls.getObject().rotation.set(0, 0, 0);
+            controls.minPolarAngle = Math.PI/2;
+            controls.maxPolarAngle = Math.PI/2;
+            touchYaw = 0;
+            touchPitch = 0;
+        }
+
+        function unlockMouseLook() {
+            controls.minPolarAngle = 0;
+            controls.maxPolarAngle = Math.PI;
+        }
+
+        function onKeyDown(event) {
+            const inHL = (currentState === STATES.HL1 || currentState === STATES.HL2 || currentState === STATES.HL3 || currentState === STATES.HL4 || currentState === STATES.HL0);
+            switch (event.code) {
+                case 'KeyW': moveForward = true; break;
+                case 'KeyS': if(!inHL) moveBackward = true; break; 
+                case 'KeyA': if(!inHL) moveLeft = true; break;     
+                case 'KeyD': if(!inHL) moveRight = true; break;
+                case 'Space':
+                    if(currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
+                        createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
+                        promptNode.style.display = 'none';
+                        if (btnMobileInteract) btnMobileInteract.style.display = 'none';
+                    }
+                    break;
+            }
+        }
+
+        function onKeyUp(event) {
+            switch (event.code) {
+                case 'KeyW': moveForward = false; break;
+                case 'KeyS': moveBackward = false; break;
+                case 'KeyA': moveLeft = false; break;
+                case 'KeyD': moveRight = false; break;
+            }
+        }
+
+        function onMouseClick() {
+            if ((!controls.isLocked && !isTouchDevice) || popup.classList.contains('active')) return;
+
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const intersects = raycaster.intersectObjects(interactableObjects);
+
+            if (intersects.length > 0) {
+                const target = intersects[0].object;
+                
+                if(target.userData.type === 'ticket') {
+                    triggerTicketInteraction();
+                }
+                else if(target.userData.type === 'gallery_photo') {
+                    openPhotoPopup(target.userData.path);
+                }
+                else if(target.userData.type === 'floating_hologram_video') {
+                    isViewingMedia = true; 
+                    target.userData.videoElement.muted = true;
+                    pVid.src = target.userData.videoSrc;
+                    pVid.style.display = 'block';
+                    popup.classList.add('active');
+                    pVid.play();
+                    if (mobileControls) mobileControls.style.display = 'none';
+                    if (!isTouchDevice) controls.unlock();
+                }
+                else if(target.userData.type === 'love_letter') {
+                    triggerLetterInteraction();
+                }
+            }
+        }
+
+        function closePopup() {
+            popup.classList.remove('active');
+            pImg.style.display = 'none';
+            pVid.style.display = 'none';
+            pVid.pause();
+            pTxt.style.display = 'none';
+            
+            activeElements.forEach(el => {
+                if(el.userData.type === 'floating_hologram_video') {
+                    el.userData.videoElement.muted = false;
+                }
+            });
+            
+            if(currentState === STATES.REND) {
+                if(currentVoice) currentVoice.stop();
+                if(bgMusic) bgMusic.setVolume(0.4);
+                spawnFinalLoopExit();
+            }
+
+            isViewingMedia = false;
+            if (isTouchDevice) {
+                if (mobileControls) mobileControls.style.display = 'block';
+            } else {
+                setTimeout(() => { controls.lock(); }, 100);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const player = controls.getObject();
+
+            camera = player;
+
+            const isDriving = controls.isLocked || isTouchDevice;
+
+            if (isDriving && !isViewingMedia) {
+                const speed = 4.0;
+                
+                const inHL = (currentState === STATES.HL1 || currentState === STATES.HL2 || currentState === STATES.HL3 || currentState === STATES.HL4 || currentState === STATES.HL0);
+                if(inHL) {
+                    player.rotation.y = 0;
+                    updateSpaceParticles(delta); 
+                }
+
+                if (moveForward) controls.moveForward(speed * delta);
+                if (moveBackward) controls.moveForward(-speed * delta);
+                if (moveLeft) controls.moveRight(-speed * delta);
+                if (moveRight) controls.moveRight(speed * delta);
+
+                const pos = player.position;
+
+                if (!inHL) {
+                    if (pos.x > roomBoundaryX) pos.x = roomBoundaryX;
+                    if (pos.x < -roomBoundaryX) pos.x = -roomBoundaryX;
+                    if (pos.z > 15) pos.z = 15;
+                }
+
+                if(currentState === STATES.HL1 && pos.z < -2) setupRoom1();
+                if(currentState === STATES.HL2 && pos.z < -2) setupRoom2();
+                if(currentState === STATES.HL3 && pos.z < -2) setupRoom3();
+                if(currentState === STATES.HL4 && pos.z < -2) setupRoomEnd();
+
+                if(currentState === STATES.HL0) {
+                    updateSpaceParticles(delta);
+                    if(pos.z < -4) {
+                        setupRoomStart();
+                    }
+                }
+
+                if(currentState === STATES.R1) {
+                    activeElements.forEach(el => {
+                        if(el.userData.type === 'podcast_node' && !el.userData.triggered) {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 1.5) triggerPodcastNode(el);
+                        }
+                        if(el.userData.type === 'room1_exit_trigger') {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 2.5) {
+                                el.userData.type = 'done'; 
+                                showHUDText("Em hãy bước tiếp vào trong bóng tối để nhìn thấy khoảnh khắc chúng ta", 4000, () => {
+                                    enterHallway(STATES.HL2);
+                                });
+                            }
+                        }
+                    });
+                }
+
+                if(currentState === STATES.R2) {
+                    activeElements.forEach(el => {
+                        if(el.userData.type === 'trigger_album' && !el.userData.triggered) {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 1.5) {
+                                el.userData.triggered = true;
+                                spawnAlbumImages();
+                            }
+                        }
+                        if(el.userData.type === 'room2_exit_trigger') {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 2.5) {
+                                el.userData.type = 'done'; 
+                                showHUDText("Em hãy bước tiếp vào trong bóng tối để tìm những kỉ niệm", 4000, () => {
+                                    enterHallway(STATES.HL3);
+                                });
+                            }
+                        }
+                    });
+                }
+
+                if(currentState === STATES.R3) {
+                    let nearAnyItem = false;
+                    activeElements.forEach(el => {
+                        if(el.userData.type === 'video_item' && !el.userData.activeHologram) {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 2.2) {
+                                nearAnyItem = true;
+                                spaceTarget = el;
+                                promptNode.innerHTML = `Nhấn SPACE để xem kỉ niệm [ ${el.userData.label} ]`;
+                                promptNode.style.display = 'block';
+
+                                if (isTouchDevice) {
+                                    btnMobileInteract.innerHTML = `🎬 XEM KỶ NIỆM [ ${el.userData.label} ]`;
+                                    btnMobileInteract.style.display = 'flex';
+                                }
+                            }
+                        }
+                        if(el.userData.type === 'room3_exit_trigger') {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 2.5) {
+                                el.userData.type = 'done'; 
+                                showHUDText("Em hãy bước tiếp đi nhé...", 4000, () => {
+                                    enterHallway(STATES.HL4);
+                                });
+                            }
+                        }
+                    });
+                    if(!nearAnyItem) { 
+                        spaceTarget = null; 
+                        promptNode.style.display = 'none'; 
+                        if (isTouchDevice) btnMobileInteract.style.display = 'none';
+                    }
+                }
+
+                if(currentState === STATES.REND) {
+                    activeElements.forEach(el => {
+                        if(el.userData.type === 'phong_ket_exit_trigger') {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 2.5) {
+                                el.userData.type = 'done'; 
+                                showHUDText("Những kỉ niệm này sẽ còn mãi trong anh và em...", 4000, () => {
+                                    enterHallway(STATES.HL0);
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+
+            const elapsedTime = clock.getElapsedTime();
+            activeElements.forEach(el => {
+                if (el.userData.type === 'ticket' || el.userData.type === 'love_letter') {
+                    el.position.y = 1.0 + Math.sin(elapsedTime * 2) * 0.05;
+                    el.rotation.y += 0.012;
+                }
+                if (el.userData.type === 'gallery_photo' || el.userData.type === 'floating_hologram_video') {
+                    el.position.y = 1.8 + Math.sin(elapsedTime * 1.5 + el.position.x) * 0.05;
+                }
+                if (el.userData.type === 'fairy_light') {
+                    el.position.y = 1.2 + Math.sin(elapsedTime * 3 + el.userData.randomOffset) * 0.15;
+                }
+            });
+
+            // Cập nhật hệ thống hạt hoa đào lơ lửng
+            updateRomanticParticles(delta, player.position);
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    </script>
+</body>
+</html>

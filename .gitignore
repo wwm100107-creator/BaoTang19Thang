@@ -1,0 +1,13 @@
+# Backup & temporary files
+index.html.bak
+*.tmp
+*.log
+
+# OS generated
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Deployment / local config
+.vercel/
+node_modules/
