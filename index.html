@@ -844,36 +844,202 @@
             });
         }
 
-        // --- PHÒNG 1: PODCAST LỜI YÊU ---
+        // Tạo Huy hiệu tên mốc kỷ niệm lơ lửng (MỐC 01, MỐC 02, MỐC 03)
+        function createMilestoneBadge(text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            
+            // Khung viền mờ bo góc
+            const x = 16, y = 20, w = 224, h = 88, r = 24;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            
+            ctx.fillStyle = 'rgba(28, 14, 32, 0.78)';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(255, 182, 193, 0.75)';
+            ctx.stroke();
+
+            ctx.font = 'bold 36px "Playfair Display", Georgia, serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 128, 64);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.scale.set(1.4, 0.7, 1.0);
+            return sprite;
+        }
+
+        // --- PHÒNG 1: PODCAST LỜI YÊU (CON ĐƯỜNG SPOTLIGHT KỶ NIỆM) ---
         function setupRoom1(center, walkDir) {
             currentState = STATES.R1;
             currentRoomCenter.copy(center);
             clearOldRoom();
 
-            const distances = [-5, 0, 5];
+            const distances = [-8, 0, 8];
             ASSETS_CONFIG.room1.forEach((data, index) => {
                 const nodePos = new THREE.Vector3().copy(center).addScaledVector(walkDir, distances[index]);
 
-                const pLight = new THREE.PointLight(0xff758c, 10, 5);
-                pLight.position.set(nodePos.x, 2, nodePos.z);
-                scene.add(pLight);
-                activeElements.push(pLight);
+                // 1. Đèn Spotlight treo cao trên trời (y = 7.5m) chiếu thẳng xuống mốc
+                const spot = new THREE.SpotLight(0xfff4ee, 0, 18, Math.PI / 5.2, 0.85, 1.0);
+                spot.position.set(nodePos.x, 7.5, nodePos.z);
+                
+                const spotTarget = new THREE.Object3D();
+                spotTarget.position.set(nodePos.x, 0, nodePos.z);
+                scene.add(spotTarget);
+                activeElements.push(spotTarget);
+                
+                spot.target = spotTarget;
+                scene.add(spot);
+                activeElements.push(spot);
 
-                const nodeGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.1, 16);
-                const nodeMat = new THREE.MeshBasicMaterial({ color: 0xff758c, transparent: true, opacity: 0.65 });
-                const node = new THREE.Mesh(nodeGeo, nodeMat);
-                node.position.set(nodePos.x, 0.05, nodePos.z);
-                node.userData = { type: 'podcast_node', text: data.text, audioPath: data.audioPath, triggered: false, index: index };
-                scene.add(node);
-                activeElements.push(node);
+                // 2. Chùm tia sáng 3D hình nón rọi xuống (Volumetric Light Cone)
+                const beamGeo = new THREE.CylinderGeometry(0.2, 1.75, 7.5, 32, 1, true);
+                const beamMat = new THREE.MeshBasicMaterial({
+                    color: 0xffeedd,
+                    transparent: true,
+                    opacity: 0.0,
+                    blending: THREE.AdditiveBlending,
+                    side: THREE.DoubleSide,
+                    depthWrite: false
+                });
+                const beam = new THREE.Mesh(beamGeo, beamMat);
+                beam.position.set(nodePos.x, 3.75, nodePos.z);
+                scene.add(beam);
+                activeElements.push(beam);
+
+                // 3. Bụi ánh sáng lấp lánh bên trong cột đèn (Light motes)
+                const dustCount = 24;
+                const dustGeo = new THREE.BufferGeometry();
+                const dustPositions = new Float32Array(dustCount * 3);
+                for (let d = 0; d < dustCount; d++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const h = Math.random() * 7.0 + 0.2;
+                    const r = (0.2 + (1.0 - h / 7.5) * 1.4) * Math.random();
+                    dustPositions[d * 3] = Math.cos(angle) * r;
+                    dustPositions[d * 3 + 1] = h;
+                    dustPositions[d * 3 + 2] = Math.sin(angle) * r;
+                }
+                dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+                const dustMat = new THREE.PointsMaterial({
+                    color: 0xffebd6,
+                    size: 0.12,
+                    transparent: true,
+                    opacity: 0.0,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+                const dustParticles = new THREE.Points(dustGeo, dustMat);
+                dustParticles.position.set(nodePos.x, 0, nodePos.z);
+                scene.add(dustParticles);
+                activeElements.push(dustParticles);
+
+                // 4. Bục mốc kỷ niệm & vòng hào quang dưới sàn
+                const pedestal = createExhibitionPedestal(0.85, 0.08, 0xff758c);
+                pedestal.position.set(nodePos.x, 0, nodePos.z);
+                scene.add(pedestal);
+                activeElements.push(pedestal);
+
+                const haloGeo = new THREE.RingGeometry(0.88, 1.45, 32);
+                const haloMat = new THREE.MeshBasicMaterial({
+                    color: 0xff758c,
+                    transparent: true,
+                    opacity: 0.28,
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+                const halo = new THREE.Mesh(haloGeo, haloMat);
+                halo.rotation.x = -Math.PI / 2;
+                halo.position.set(nodePos.x, 0.02, nodePos.z);
+                scene.add(halo);
+                activeElements.push(halo);
+
+                // 5. Tinh thể ký ức lơ lửng & Đèn dịu nhẹ
+                const crystalGeo = new THREE.OctahedronGeometry(0.22, 0);
+                const crystalMat = new THREE.MeshStandardMaterial({
+                    color: 0xffb6c1,
+                    metalness: 0.85,
+                    roughness: 0.15,
+                    emissive: 0x3a1420,
+                    emissiveIntensity: 0.4
+                });
+                const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+                crystal.position.set(nodePos.x, 0.85, nodePos.z);
+                scene.add(crystal);
+                activeElements.push(crystal);
+
+                const crystalGlow = new THREE.PointLight(0xff758c, 1.0, 3.5);
+                crystalGlow.position.set(nodePos.x, 0.85, nodePos.z);
+                scene.add(crystalGlow);
+                activeElements.push(crystalGlow);
+
+                // 6. Huy hiệu tên mốc lơ lửng (MỐC 01, MỐC 02, MỐC 03)
+                const badge = createMilestoneBadge(`MỐC 0${index + 1}`);
+                badge.position.set(nodePos.x, 1.35, nodePos.z);
+                scene.add(badge);
+                activeElements.push(badge);
+
+                // 7. Hitbox tương tác mốc
+                const nodeHitbox = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.9, 0.9, 2.0, 16),
+                    new THREE.MeshBasicMaterial({ visible: false })
+                );
+                nodeHitbox.position.set(nodePos.x, 1.0, nodePos.z);
+                nodeHitbox.userData = {
+                    type: 'podcast_node',
+                    text: data.text,
+                    audioPath: data.audioPath,
+                    triggered: false,
+                    index: index,
+                    spot: spot,
+                    targetSpotIntensity: 0,
+                    beam: beam,
+                    targetBeamOpacity: 0,
+                    dust: dustParticles,
+                    halo: halo,
+                    crystal: crystal,
+                    crystalGlow: crystalGlow,
+                    badge: badge
+                };
+                scene.add(nodeHitbox);
+                activeElements.push(nodeHitbox);
             });
         }
 
         function triggerPodcastNode(node) {
             node.userData.triggered = true;
-            node.material.color.setHex(0xffb6c1); 
-            targetMusicVolume = 0.08;
+            
+            // BẬT SPOTLIGHT VÀ CHÙM TIA SÁNG CHIẾU THẲNG XUỐNG MỐC KỶ NIỆM
+            node.userData.targetSpotIntensity = 65; // Spotlight chiếu rọi rực sáng từ trên cao
+            node.userData.targetBeamOpacity = 0.24;  // Chùm tia sáng hình nón hiện rõ trong không gian
+            
+            if (node.userData.halo) {
+                node.userData.halo.material.color.setHex(0xffffff);
+            }
+            if (node.userData.crystal) {
+                node.userData.crystal.material.emissive.setHex(0xff758c);
+                node.userData.crystal.material.emissiveIntensity = 1.2;
+            }
+            if (node.userData.crystalGlow) {
+                node.userData.crystalGlow.intensity = 5.0;
+                node.userData.crystalGlow.color.setHex(0xffe4e8);
+            }
 
+            targetMusicVolume = 0.08;
             showHUDText(node.userData.text, 6000);
 
             if (currentVoice) currentVoice.stop();
@@ -1712,12 +1878,12 @@
                 // KIỂM TRA CHUYỂN PHÒNG LIỀN MẠCH 360 ĐỘ
                 checkSeamlessProgression(pos);
 
-                // Cự ly tương tác phòng 1
+                // Cự ly tương tác phòng 1 (nhận diện khi đi qua mốc < 2.5m)
                 if (currentState === STATES.R1) {
                     activeElements.forEach(el => {
-                        if(el.userData.type === 'podcast_node' && !el.userData.triggered) {
+                        if(el.userData && el.userData.type === 'podcast_node' && !el.userData.triggered) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 1.6) triggerPodcastNode(el);
+                            if(dist < 2.5) triggerPodcastNode(el);
                         }
                     });
                 }
@@ -1792,6 +1958,39 @@
                 }
                 if (el.userData.type === 'fairy_light') {
                     el.position.y = 1.2 + Math.sin(elapsedTime * 3 + el.userData.randomOffset) * 0.15;
+                }
+                if (el.userData.type === 'podcast_node') {
+                    const u = el.userData;
+                    // Làm mượt độ sáng spotlight từ trên trời rọi xuống
+                    if (u.spot && Math.abs(u.spot.intensity - u.targetSpotIntensity) > 0.1) {
+                        u.spot.intensity = THREE.MathUtils.lerp(u.spot.intensity, u.targetSpotIntensity, delta * 3.5);
+                    }
+                    // Làm mượt độ rõ của chùm tia sáng hình nón 3D
+                    if (u.beam && Math.abs(u.beam.material.opacity - u.targetBeamOpacity) > 0.005) {
+                        u.beam.material.opacity = THREE.MathUtils.lerp(u.beam.material.opacity, u.targetBeamOpacity, delta * 3.5);
+                    }
+                    // Bụi sao lấp lánh xoay nhẹ và sáng lên trong cột đèn
+                    if (u.dust) {
+                        u.dust.rotation.y += delta * 0.15;
+                        if (u.triggered) {
+                            u.dust.material.opacity = THREE.MathUtils.lerp(u.dust.material.opacity, 0.75, delta * 3.0);
+                        }
+                    }
+                    // Tinh thể pha lê xoay nhẹ và lơ lửng bồng bềnh
+                    if (u.crystal) {
+                        u.crystal.rotation.y += delta * 1.4;
+                        u.crystal.position.y = 0.85 + Math.sin(elapsedTime * 2.5 + u.index) * 0.08;
+                        if (u.crystalGlow) u.crystalGlow.position.y = u.crystal.position.y;
+                    }
+                    // Huy hiệu tên mốc nhấp nhô nhẹ
+                    if (u.badge) {
+                        u.badge.position.y = 1.35 + Math.sin(elapsedTime * 2.0 + u.index) * 0.05;
+                    }
+                    // Hào quang dưới sàn đập nhẹ
+                    if (u.halo) {
+                        const baseOp = u.triggered ? 0.6 : 0.28;
+                        u.halo.material.opacity = baseOp + Math.sin(elapsedTime * 3.0 + u.index) * 0.12;
+                    }
                 }
             });
 
