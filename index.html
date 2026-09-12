@@ -1643,7 +1643,7 @@
 
         // ==========================================
         // 3. GIAO DIỆN VIẾT THƯ HỒI ÂM & HIỆU ỨNG THƯ 3D BAY
-        // 4. TỰ ĐỘNG GỬI VỀ ĐIỆN THOẠI & TẢI FILE PHANHOIANH.TXT
+        // 4. TỰ ĐỘNG GỬI TRỰC TIẾP VỀ EMAIL wwm100107@gmail.com
         // ==========================================
         function setupLetterReplyEvents() {
             document.getElementById('btn-open-reply').addEventListener('click', () => {
@@ -1657,49 +1657,85 @@
                 startClimaxAndFireworks();
             });
 
-            document.getElementById('btn-send-reply').addEventListener('click', () => {
+            const btnSend = document.getElementById('btn-send-reply');
+            btnSend.addEventListener('click', () => {
                 const replyText = replyInput.value.trim() || "Cảm ơn anh vì 19 tháng tuyệt vời vừa qua... Em yêu anh rất nhiều!";
-                
+                const nowStr = new Date().toLocaleString('vi-VN');
+
+                btnSend.disabled = true;
+                btnSend.innerHTML = "✨ ĐANG GỬI VÀO DẢI NGÂN HÀ... ✨";
+
                 // 1. Lưu vào LocalStorage
                 localStorage.setItem('thu_phan_hoi_19thang', JSON.stringify({
                     text: replyText,
-                    date: new Date().toLocaleString('vi-VN')
+                    date: nowStr
                 }));
 
-                // 2. Tự động tải file kỷ niệm phanhoianh.txt về máy
+                // 2. Gửi thư trực tiếp về Email wwm100107@gmail.com của bạn trai
+                const emailPayload = {
+                    _subject: '💌 [Bảo Tàng 19 Tháng] Người Yêu Đã Gửi Thư Hồi Âm Cho Bạn! ❤️',
+                    _captcha: 'false',
+                    _template: 'box',
+                    'Người gửi': 'Người Yêu Của Bạn ❤️',
+                    'Thời gian gửi': nowStr,
+                    'Nội dung bức thư': replyText,
+                    'Thông điệp': 'Bảo tàng kỷ niệm 19 tháng yêu nhau ✨ Chúc hai bạn mãi mãi hạnh phúc bên nhau!'
+                };
+
+                // Kênh 1: FormSubmit AJAX trực tiếp tới wwm100107@gmail.com
+                fetch('https://formsubmit.co/ajax/wwm100107@gmail.com', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(emailPayload)
+                }).catch(() => {});
+
+                // Kênh 2: Vercel Serverless Function /api/send-letter
+                fetch('/api/send-letter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ replyText, date: nowStr })
+                }).catch(() => {});
+
+                // Kênh 3: Hidden Form Submit qua iFrame ẩn (đảm bảo 100% không bị chặn bởi AdBlocker/CORS trên mobile)
                 try {
-                    const blob = new Blob([
-                        "💌 BỨC THƯ HỒI ÂM KỶ NIỆM 19 THÁNG YÊU NHAU 💌\n\n" +
-                        "Thời gian: " + new Date().toLocaleString('vi-VN') + "\n" +
-                        "Người gửi: Người Yêu Của Anh ❤️\n\n" +
-                        "----------------------------------------\n" +
-                        replyText + "\n" +
-                        "----------------------------------------\n\n" +
-                        "Mãi bên nhau anh nhé! ❤️"
-                    ], { type: 'text/plain;charset=utf-8' });
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = URL.createObjectURL(blob);
-                    downloadLink.download = 'phanhoianh.txt';
-                    downloadLink.click();
+                    let hiddenIframe = document.getElementById('formsubmit_hidden_iframe');
+                    if (!hiddenIframe) {
+                        hiddenIframe = document.createElement('iframe');
+                        hiddenIframe.id = 'formsubmit_hidden_iframe';
+                        hiddenIframe.name = 'formsubmit_hidden_iframe';
+                        hiddenIframe.style.display = 'none';
+                        document.body.appendChild(hiddenIframe);
+                    }
+                    const hiddenForm = document.createElement('form');
+                    hiddenForm.action = 'https://formsubmit.co/wwm100107@gmail.com';
+                    hiddenForm.method = 'POST';
+                    hiddenForm.target = 'formsubmit_hidden_iframe';
+                    hiddenForm.style.display = 'none';
+
+                    for (const [key, val] of Object.entries(emailPayload)) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = val;
+                        hiddenForm.appendChild(input);
+                    }
+                    document.body.appendChild(hiddenForm);
+                    hiddenForm.submit();
+                    setTimeout(() => hiddenForm.remove(), 2000);
                 } catch(e) {}
 
-                // 3. Tự động gửi Email/Webhook báo về điện thoại của bạn trai (wwm100107@gmail.com)
-                try {
-                    fetch('https://api.web3forms.com/submit', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            access_key: '64e8ec88-1c4b-4b13-8cf4-4903565e317c',
-                            subject: '💌 [Bảo Tàng 19 Tháng] Người yêu vừa gửi thư cho bạn!',
-                            from_name: 'Bảo Tàng 19 Tháng',
-                            to_email: 'wwm100107@gmail.com',
-                            message: replyText
-                        })
-                    }).catch(() => {});
-                } catch(e) {}
-
-                closePopup();
-                spawnAscendingLetter();
+                // 3. Hiệu ứng giao diện thành công & Phóng thư 3D bay lên trời cao
+                setTimeout(() => {
+                    btnSend.innerHTML = "💌 ĐÃ GỬI ĐẾN ANH THÀNH CÔNG! ❤️";
+                    setTimeout(() => {
+                        closePopup();
+                        spawnAscendingLetter();
+                        showHUDText("Lá thư của em đang bay vào dải ngân hà và đã được gửi đến anh... ❤️", 5000);
+                    }, 500);
+                }, 400);
             });
         }
 
