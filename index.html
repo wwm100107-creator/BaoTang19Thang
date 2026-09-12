@@ -1187,12 +1187,11 @@
             );
             coreGlow.rotation.x = -Math.PI / 2;
             coreGlow.position.set(center.x, 0.04, center.z);
-            coreGlow.userData = { type: 'trigger_album', triggered: true };
+            coreGlow.userData = { type: 'trigger_album', triggered: false };
             scene.add(coreGlow);
             activeElements.push(coreGlow);
 
-            // Tự động kích hoạt tải và lướt ảnh xoắn ốc ngay khi vào Phòng 2
-            spawnAlbumImages(center);
+            showHUDText("Em hãy bước vào vòng tròn ánh sáng ở trung tâm ngân hà... ✨", 4500);
         }
 
         // ==========================================
@@ -2881,12 +2880,13 @@
                     });
                 }
 
-                // Cự ly tương tác phòng 2 (Kích hoạt khi bước vào vùng lõi ngân hà)
+                // Cự ly tương tác phòng 2 (CHỈ KÍCH HOẠT KHI THỰC SỰ BƯỚC VÀO VÒNG TRÒN CHÍNH GIỮA)
                 if (currentState === STATES.R2) {
                     activeElements.forEach(el => {
                         if(el.userData.type === 'trigger_album' && !el.userData.triggered) {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 18.0) {
+                            const dist = Math.hypot(pos.x - el.position.x, pos.z - el.position.z);
+                            // Bán kính vòng tròn trung tâm là 4.5m -> chỉ kích hoạt khi đặt chân vào trong vòng tròn
+                            if(dist <= 4.5) {
                                 el.userData.triggered = true;
                                 spawnAlbumImages(currentRoomCenter);
                             }
