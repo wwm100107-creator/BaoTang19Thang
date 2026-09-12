@@ -123,6 +123,12 @@
             border-radius: 50%; background-color: rgba(255, 255, 255, 0.85);
             transform: translate(-50%, -50%); z-index: 10; pointer-events: none;
             box-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
+            transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        #crosshair.hovering {
+            background-color: #ff758c;
+            transform: translate(-50%, -50%) scale(2.2);
+            box-shadow: 0 0 14px #ff758c, 0 0 25px #ff9ebb;
         }
 
         /* Chữ Hologram 3D lơ lửng trên HUD */
@@ -402,7 +408,7 @@
         const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia('(pointer: coarse)').matches;
         
         const autoImagesArray = [];
-        for (let i = 1; i <= 100; i++) {
+        for (let i = 1; i <= 149; i++) {
             autoImagesArray.push(`assets/images/thumbnails/${i}.jpg`);
         }
 
@@ -670,9 +676,15 @@
 
             window.addEventListener('keydown', onKeyDown);
             window.addEventListener('keyup', onKeyUp);
-            window.addEventListener('mousedown', onMouseClick);
+            window.addEventListener('click', onMouseClick);
+            window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('resize', onWindowResize);
             document.getElementById('btn-close-popup').addEventListener('click', closePopup);
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup || (e.target && e.target.classList && e.target.classList.contains('popup-content'))) {
+                    closePopup();
+                }
+            });
         }
 
         function initAudio() {
@@ -1194,7 +1206,7 @@
             );
             coreGlow.rotation.x = -Math.PI / 2;
             coreGlow.position.set(center.x, 0.04, center.z);
-            coreGlow.userData = { type: 'trigger_album', triggered: false };
+            coreGlow.userData = { type: 'trigger_album', triggered: true };
             scene.add(coreGlow);
             activeElements.push(coreGlow);
 
@@ -1239,6 +1251,9 @@
             boundaryStars.userData = { type: 'room2_boundary_stars' };
             scene.add(boundaryStars);
             activeElements.push(boundaryStars);
+
+            // Tự động kích hoạt tải và lướt ảnh xoắn ốc ngay khi vào Phòng 2
+            spawnAlbumImages(center);
         }
 
         // ==========================================
@@ -1323,6 +1338,7 @@
 
                         scene.add(mesh);
                         activeElements.push(mesh);
+                        interactableObjects.push(mesh);
 
                         loadedCount++;
                         if (loadedCount >= Math.min(25, total)) {
@@ -1341,12 +1357,22 @@
         }
 
         function openPhotoPopup(thumbnailPath) {
+            if (!thumbnailPath) return;
             isViewingMedia = true;
-            pImg.src = thumbnailPath.replace('thumbnails', 'fullsize');
+            const fullPath = thumbnailPath.includes('thumbnails')
+                ? thumbnailPath.replace('thumbnails', 'fullsize')
+                : thumbnailPath;
+            pImg.src = fullPath;
+            pImg.onerror = () => {
+                pImg.onerror = null;
+                pImg.src = thumbnailPath;
+            };
             pImg.style.display = 'block';
+            pVid.style.display = 'none';
+            pTxt.style.display = 'none';
             popup.classList.add('active');
             if (mobileControls) mobileControls.style.display = 'none';
-            if (!isTouchDevice) controls.unlock();
+            if (!isTouchDevice && controls.isLocked) controls.unlock();
         }
 
         // ==========================================
@@ -2493,15 +2519,19 @@
                 moveRight = normX > 0.25;
             }
 
+            let touchStartX = 0, touchStartY = 0;
+
             window.addEventListener('touchstart', (e) => {
                 if (!isTouchDevice || isViewingMedia) return;
                 const tEl = e.target;
-                if (joystickZone.contains(tEl) || tEl === btnMobileInteract || tEl.closest('#btn-sound-toggle') || popup.classList.contains('active')) return;
+                if (joystickZone.contains(tEl) || tEl === btnMobileInteract || tEl.closest('#btn-sound-toggle') || tEl.closest('#btn-fullscreen-toggle') || popup.classList.contains('active')) return;
 
                 const touch = e.changedTouches[0];
                 touchLookId = touch.identifier;
                 lastTouchX = touch.clientX;
                 lastTouchY = touch.clientY;
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
                 touchYaw = camera.rotation.y;
                 touchPitch = camera.rotation.x;
             }, { passive: true });
@@ -2511,32 +2541,19 @@
                 const touch = e.changedTouches[0];
                 if (joystickZone.contains(e.target) || e.target === btnMobileInteract) return;
 
+                const distMoved = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
+                if (distMoved > 15) return; // Vuốt xoay góc nhìn, không phải chạm tương tác
+
                 const mouseCoords = new THREE.Vector2(
                     (touch.clientX / window.innerWidth) * 2 - 1,
                     -(touch.clientY / window.innerHeight) * 2 + 1
                 );
                 raycaster.setFromCamera(mouseCoords, camera);
-                const intersects = raycaster.intersectObjects(interactableObjects);
+                const intersects = raycaster.intersectObjects(interactableObjects, true);
                 if (intersects.length > 0) {
-                    const target = intersects[0].object;
-                    if (target.userData.type === 'gallery_photo') {
-                        openPhotoPopup(target.userData.path);
-                    } else if (target.userData.type === 'ticket') {
-                        triggerTicketInteraction();
-                    } else if (target.userData.type === 'love_letter') {
-                        triggerLetterInteraction();
-                    } else if (target.userData.type === 'video_item' && !target.userData.activeHologram) {
-                        createVideoHologramMesh(target, target.userData.videoSrc);
-                        promptNode.style.display = 'none';
-                        if (btnMobileInteract) btnMobileInteract.style.display = 'none';
-                    } else if (target.userData.type === 'floating_hologram_video') {
-                        isViewingMedia = true; 
-                        target.userData.videoElement.muted = true;
-                        pVid.src = target.userData.videoSrc;
-                        pVid.style.display = 'block';
-                        popup.classList.add('active');
-                        pVid.play();
-                        if (mobileControls) mobileControls.style.display = 'none';
+                    const target = findInteractableTarget(intersects[0].object);
+                    if (target && handleInteractableTarget(target)) {
+                        return;
                     }
                 } else if (currentState === STATES.REND && isClimaxActive) {
                     const touchDir = raycaster.ray.direction.clone();
@@ -2560,6 +2577,10 @@
         }
 
         function onKeyDown(event) {
+            if (event.key === 'Escape' && popup.classList.contains('active')) {
+                closePopup();
+                return;
+            }
             switch (event.code) {
                 case 'KeyW': moveForward = true; break;
                 case 'KeyS': moveBackward = true; break; 
@@ -2586,36 +2607,105 @@
             }
         }
 
-        function onMouseClick() {
-            if ((!controls.isLocked && !isTouchDevice) || popup.classList.contains('active')) return;
+        function findInteractableTarget(obj) {
+            let curr = obj;
+            while (curr) {
+                if (curr.userData && curr.userData.type) {
+                    return curr;
+                }
+                curr = curr.parent;
+            }
+            return null;
+        }
 
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const intersects = raycaster.intersectObjects(interactableObjects);
+        function handleInteractableTarget(target) {
+            if (!target || !target.userData) return false;
+            if (target.userData.type === 'ticket') {
+                triggerTicketInteraction();
+                return true;
+            } else if (target.userData.type === 'gallery_photo') {
+                openPhotoPopup(target.userData.path);
+                return true;
+            } else if (target.userData.type === 'video_item' && !target.userData.activeHologram) {
+                createVideoHologramMesh(target, target.userData.videoSrc);
+                promptNode.style.display = 'none';
+                if (btnMobileInteract) btnMobileInteract.style.display = 'none';
+                return true;
+            } else if (target.userData.type === 'floating_hologram_video') {
+                isViewingMedia = true; 
+                target.userData.videoElement.muted = true;
+                pVid.src = target.userData.videoSrc;
+                pVid.style.display = 'block';
+                popup.classList.add('active');
+                pVid.play();
+                if (mobileControls) mobileControls.style.display = 'none';
+                if (!isTouchDevice && controls.isLocked) controls.unlock();
+                return true;
+            } else if (target.userData.type === 'love_letter') {
+                triggerLetterInteraction();
+                return true;
+            }
+            return false;
+        }
+
+        function onMouseMove(event) {
+            if (controls.isLocked || isTouchDevice || popup.classList.contains('active')) {
+                document.body.style.cursor = 'default';
+                return;
+            }
+            const mouseCoords = new THREE.Vector2(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+            );
+            raycaster.setFromCamera(mouseCoords, camera);
+            const intersects = raycaster.intersectObjects(interactableObjects, true);
+            if (intersects.length > 0 && findInteractableTarget(intersects[0].object)) {
+                document.body.style.cursor = 'pointer';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        function onMouseClick(event) {
+            if (isTouchDevice) return;
+            if (popup.classList.contains('active')) return;
+            if (event && event.button !== undefined && event.button !== 0) return;
+            if (event && event.target) {
+                if (event.target.closest('#btn-fullscreen-toggle') || 
+                    event.target.closest('#btn-sound-toggle') || 
+                    event.target.closest('#setup-screen') ||
+                    event.target.closest('#media-popup') ||
+                    event.target.closest('#mobile-controls')) {
+                    return;
+                }
+            }
+
+            let mouseCoords;
+            if (controls.isLocked) {
+                mouseCoords = new THREE.Vector2(0, 0);
+            } else if (event && event.clientX !== undefined) {
+                mouseCoords = new THREE.Vector2(
+                    (event.clientX / window.innerWidth) * 2 - 1,
+                    -(event.clientY / window.innerHeight) * 2 + 1
+                );
+            } else {
+                mouseCoords = new THREE.Vector2(0, 0);
+            }
+
+            raycaster.setFromCamera(mouseCoords, camera);
+            const intersects = raycaster.intersectObjects(interactableObjects, true);
 
             if (intersects.length > 0) {
-                const target = intersects[0].object;
-                if(target.userData.type === 'ticket') {
-                    triggerTicketInteraction();
-                } else if(target.userData.type === 'gallery_photo') {
-                    openPhotoPopup(target.userData.path);
-                } else if(target.userData.type === 'video_item' && !target.userData.activeHologram) {
-                    createVideoHologramMesh(target, target.userData.videoSrc);
-                    promptNode.style.display = 'none';
-                    if (btnMobileInteract) btnMobileInteract.style.display = 'none';
-                } else if(target.userData.type === 'floating_hologram_video') {
-                    isViewingMedia = true; 
-                    target.userData.videoElement.muted = true;
-                    pVid.src = target.userData.videoSrc;
-                    pVid.style.display = 'block';
-                    popup.classList.add('active');
-                    pVid.play();
-                    if (mobileControls) mobileControls.style.display = 'none';
-                    if (!isTouchDevice) controls.unlock();
-                } else if(target.userData.type === 'love_letter') {
-                    triggerLetterInteraction();
+                const target = findInteractableTarget(intersects[0].object);
+                if (target && handleInteractableTarget(target)) {
+                    return;
                 }
-            } else if (currentState === STATES.REND && isClimaxActive) {
+            }
+
+            if (currentState === STATES.REND && isClimaxActive) {
                 launchInteractiveFirework();
+            } else if (!controls.isLocked && !isViewingMedia) {
+                controls.lock();
             }
         }
 
@@ -2642,7 +2732,7 @@
             if (isTouchDevice) {
                 if (mobileControls) mobileControls.style.display = 'block';
             } else {
-                setTimeout(() => { controls.lock(); }, 100);
+                controls.lock();
             }
         }
 
@@ -2652,6 +2742,20 @@
             const player = controls.getObject();
 
             camera = player;
+
+            if (controls.isLocked) {
+                raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+                const intersects = raycaster.intersectObjects(interactableObjects, true);
+                const crosshairEl = document.getElementById('crosshair');
+                if (crosshairEl) {
+                    const target = (intersects.length > 0) ? findInteractableTarget(intersects[0].object) : null;
+                    if (target) {
+                        crosshairEl.classList.add('hovering');
+                    } else {
+                        crosshairEl.classList.remove('hovering');
+                    }
+                }
+            }
 
             if (bgMusic && bgMusic.isPlaying && !isMuted) {
                 const currentV = bgMusic.getVolume();
@@ -2785,7 +2889,6 @@
 
                         if (el.userData.animProgress >= 1.0) {
                             el.userData.isGliding = false;
-                            interactableObjects.push(el);
                         }
                     } else {
                         el.position.y = (el.userData.baseY || 1.85) + Math.sin(elapsedTime * 1.2 + (el.userData.phi || 0)) * 0.06;
