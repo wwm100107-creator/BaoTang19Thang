@@ -11,7 +11,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
-            background-color: #050508; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #030305; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             user-select: none; -webkit-user-select: none;
         }
 
@@ -35,11 +35,11 @@
         #setup-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 100dvh;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: radial-gradient(circle at center, rgba(30, 15, 35, 0.85) 0%, #050508 100%);
+            background: radial-gradient(circle at center, rgba(30, 15, 35, 0.85) 0%, #030305 100%);
             color: #fff; z-index: 100; padding: 20px;
         }
         .setup-card {
-            background: rgba(18, 12, 26, 0.72); border: 1px solid rgba(255, 182, 193, 0.25);
+            background: rgba(18, 12, 26, 0.75); border: 1px solid rgba(255, 182, 193, 0.25);
             border-radius: 28px; padding: 36px 32px; max-width: 520px; width: 100%;
             text-align: center; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 117, 140, 0.15);
@@ -72,9 +72,7 @@
         .controls-hint b { color: #ff9ebb; }
 
         /* Thanh tiến trình tải */
-        #loading-container {
-            width: 100%; margin-top: 10px; margin-bottom: 16px;
-        }
+        #loading-container { width: 100%; margin-top: 10px; margin-bottom: 16px; }
         .loading-labels {
             display: flex; justify-content: space-between; font-size: 12px;
             color: #ffb6c1; margin-bottom: 8px; font-weight: 500;
@@ -108,13 +106,10 @@
             50% { transform: scale(1.02); box-shadow: 0 10px 40px rgba(255, 117, 140, 0.7); }
             100% { transform: scale(1); box-shadow: 0 8px 30px rgba(255, 117, 140, 0.45); }
         }
-        .btn-start:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 12px 40px rgba(255, 117, 140, 0.65);
-        }
+        .btn-start:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 40px rgba(255, 117, 140, 0.65); }
         .btn-start:active { transform: scale(0.97); }
 
-        /* Tâm ngắm định vị tương tác (Chỉ desktop) */
+        /* Tâm ngắm định vị tương tác */
         #crosshair {
             position: absolute; top: 50%; left: 50%; width: 8px; height: 8px;
             border-radius: 50%; background-color: rgba(255, 255, 255, 0.85);
@@ -124,26 +119,26 @@
 
         /* Chữ Hologram 3D lơ lửng trên HUD */
         #hologram-hud {
-            position: absolute; top: 32%; left: 50%; transform: translate(-50%, -50%);
+            position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);
             text-align: center; pointer-events: none; z-index: 20;
-            color: #ffb6c1; text-shadow: 0 0 20px rgba(255, 117, 140, 0.9), 0 0 40px rgba(0, 210, 255, 0.5);
+            color: #ffb6c1; text-shadow: 0 0 25px rgba(255, 117, 140, 0.95), 0 0 50px rgba(0, 210, 255, 0.6);
             font-size: 24px; font-weight: 400; opacity: 0;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            letter-spacing: 2px; width: 85%; max-width: 800px; line-height: 1.8;
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 2px; width: 85%; max-width: 850px; line-height: 1.8;
             font-family: 'Playfair Display', Georgia, serif; font-style: italic;
         }
 
-        /* Gợi ý tương tác bấm nút (Desktop) */
+        /* Gợi ý tương tác bấm nút */
         #interaction-prompt {
             position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%);
-            color: #fff; background: rgba(18, 12, 26, 0.8); padding: 12px 26px;
+            color: #fff; background: rgba(18, 12, 26, 0.82); padding: 12px 26px;
             border-radius: 30px; border: 1px solid rgba(255, 182, 193, 0.4); font-size: 14px;
             letter-spacing: 1px; display: none; z-index: 30; pointer-events: none;
             box-shadow: 0 4px 25px rgba(255, 105, 180, 0.3); backdrop-filter: blur(10px);
             font-weight: 500;
         }
 
-        /* ĐIỀU KHIỂN CẢM ỨNG DI ĐỘNG (MOBILE TOUCH CONTROLS) */
+        /* ĐIỀU KHIỂN CẢM ỨNG DI ĐỘNG */
         #mobile-controls {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 40; display: none;
@@ -176,10 +171,10 @@
         }
         #btn-mobile-interact:active { transform: scale(0.93); }
 
-        /* Khung hiển thị phóng to 2D (Ảnh, Video, Thư) */
+        /* Khung hiển thị phóng to 2D */
         #media-popup {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 100dvh;
-            background: rgba(5, 5, 8, 0.94); display: flex; justify-content: center;
+            background: rgba(3, 3, 6, 0.95); display: flex; justify-content: center;
             align-items: center; z-index: 90; opacity: 0; pointer-events: none;
             transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1); padding: 20px;
         }
@@ -195,9 +190,7 @@
             display: flex; justify-content: center; align-items: center;
             transition: all 0.25s ease; z-index: 10; backdrop-filter: blur(10px);
         }
-        .popup-close:hover {
-            background: #ff4772; transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 71, 114, 0.6);
-        }
+        .popup-close:hover { background: #ff4772; transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 71, 114, 0.6); }
         .popup-close:active { transform: scale(0.95); }
 
         #popup-img {
@@ -211,11 +204,11 @@
             display: none;
         }
 
-        /* Hộp Thư Tình Cảm Xúc (Phòng Kết) */
+        /* Hộp Thư Tình Cảm Xúc & Phản Hồi */
         #popup-text-box {
             color: #fff; background: linear-gradient(145deg, rgba(32, 16, 28, 0.96), rgba(16, 10, 22, 0.98));
             padding: 40px 36px; border: 1px solid rgba(255, 182, 193, 0.4);
-            border-radius: 24px; max-width: 620px; width: 100%; max-height: 85vh;
+            border-radius: 24px; max-width: 640px; width: 100%; max-height: 85vh;
             overflow-y: auto; line-height: 1.9; font-size: 17px;
             box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 105, 180, 0.25);
             text-align: center; display: none; backdrop-filter: blur(20px);
@@ -233,17 +226,51 @@
         .letter-body {
             font-family: 'Playfair Display', Georgia, serif; font-size: 18px;
             line-height: 2.1; color: #fae8ef; text-align: justify; font-style: italic;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
-        .btn-letter-pledge {
-            display: inline-block; padding: 14px 32px; border-radius: 50px;
+        .btn-letter-action {
+            display: inline-block; padding: 14px 28px; border-radius: 50px;
             background: linear-gradient(135deg, #ff4e78, #ff758c); color: #fff;
             border: none; font-size: 15px; font-weight: 600; letter-spacing: 1px;
             cursor: pointer; box-shadow: 0 8px 25px rgba(255, 78, 120, 0.5);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin: 6px;
         }
-        .btn-letter-pledge:hover { transform: scale(1.04); box-shadow: 0 10px 30px rgba(255, 78, 120, 0.7); }
-        .btn-letter-pledge:active { transform: scale(0.96); }
+        .btn-letter-action:hover { transform: scale(1.04); box-shadow: 0 10px 30px rgba(255, 78, 120, 0.7); }
+        .btn-letter-action:active { transform: scale(0.96); }
+
+        /* Khung Viết Thư Hồi Âm Cho Bạn Gái */
+        #reply-stationery {
+            display: none; margin-top: 20px; text-align: left;
+            animation: fadeInCard 0.6s ease forwards;
+        }
+        .reply-textarea {
+            width: 100%; min-height: 140px; padding: 16px; border-radius: 16px;
+            background: rgba(10, 6, 15, 0.65); border: 1px solid rgba(255, 182, 193, 0.35);
+            color: #fff; font-family: 'Playfair Display', Georgia, serif; font-size: 16px;
+            line-height: 1.8; resize: vertical; outline: none; margin-bottom: 18px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .reply-textarea::placeholder { color: #8f7d98; font-style: italic; }
+        .reply-textarea:focus { border-color: #ff758c; box-shadow: 0 0 15px rgba(255, 117, 140, 0.4); }
+
+        /* Thông điệp chúc mừng pháo hoa cao trào */
+        #grand-finale-hud {
+            position: absolute; top: 22%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; pointer-events: none; z-index: 35;
+            color: #fff; opacity: 0; transition: opacity 2s ease-in-out;
+            width: 90%; max-width: 900px;
+        }
+        .finale-title {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 34px; font-weight: 700;
+            letter-spacing: 3px; margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 20%, #ff9ebb 60%, #ffd700 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 35px rgba(255, 117, 140, 0.8);
+        }
+        .finale-sub {
+            font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-style: italic;
+            color: #ffe4e1; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
 
         @media (max-width: 768px) {
             #crosshair { display: none !important; }
@@ -253,6 +280,8 @@
             #popup-text-box { padding: 28px 20px; font-size: 15px; }
             .letter-body { font-size: 16px; line-height: 1.9; }
             .popup-close { top: -15px; right: -10px; width: 38px; height: 38px; font-size: 20px; }
+            .finale-title { font-size: 24px; }
+            .finale-sub { font-size: 16px; }
         }
     </style>
 </head>
@@ -296,6 +325,12 @@
     <div id="hologram-hud"></div>
     <div id="interaction-prompt">Nhấn SPACE để tương tác</div>
 
+    <!-- Thông điệp Cao trào Pháo hoa -->
+    <div id="grand-finale-hud">
+        <div class="finale-title">CẢM ƠN EM VÌ 19 THÁNG YÊU NHAU TUYỆT VỜI NHẤT!</div>
+        <div class="finale-sub">Hành trình của chúng ta sẽ còn mãi mãi... Yêu em! ❤️</div>
+    </div>
+
     <!-- Cụm điều khiển cảm ứng di động -->
     <div id="mobile-controls">
         <div id="joystick-zone">
@@ -306,13 +341,33 @@
         <button id="btn-mobile-interact">✨ TƯƠNG TÁC</button>
     </div>
 
-    <!-- Khung hiển thị phóng to (Ảnh, Video, Thư tình) -->
+    <!-- Khung hiển thị phóng to (Ảnh, Video, Thư tình & Hồi âm) -->
     <div id="media-popup">
         <div class="popup-content">
             <button class="popup-close" id="btn-close-popup">×</button>
             <img id="popup-img" src="" alt="Kỉ niệm">
             <video id="popup-video" controls src="" playsinline></video>
-            <div id="popup-text-box"></div>
+            
+            <div id="popup-text-box">
+                <div id="letter-read-section">
+                    <div class="letter-badge">✦ BẢO TÀNG TÌNH YÊU ✦</div>
+                    <h2 class="letter-title">KỶ NIỆM 19 THÁNG YÊU NHAU</h2>
+                    <div class="letter-body" id="letter-main-text"></div>
+                    <div>
+                        <button class="btn-letter-action" id="btn-open-reply">✍️ VIẾT LỜI HỒI ÂM CHO ANH</button>
+                        <button class="btn-letter-action" id="btn-letter-pledge" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">❤️ HẸN ƯỚC BÊN NHAU</button>
+                    </div>
+                </div>
+
+                <div id="reply-stationery">
+                    <div class="letter-badge">✦ GỬI LẠI ANH YÊU ✦</div>
+                    <h2 class="letter-title" style="font-size: 22px;">LỜI TÂM SỰ TỪ TRÁI TIM EM</h2>
+                    <textarea class="reply-textarea" id="reply-input" placeholder="Viết cho anh những lời từ sâu thẳm trái tim em nhé..."></textarea>
+                    <div style="text-align: center;">
+                        <button class="btn-letter-action" id="btn-send-reply">💌 GỬI THƯ VÀO NGÂN HÀ CHO ANH</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -330,43 +385,29 @@
         import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-        // Nhận diện thiết bị cảm ứng
         const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia('(pointer: coarse)').matches;
         
-        // Tải ảnh từ thư mục thumbnails (100 bức ảnh đầu tiên từ 1 đến 100)
         const autoImagesArray = [];
         for (let i = 1; i <= 100; i++) {
             autoImagesArray.push(`assets/images/thumbnails/${i}.jpg`);
         }
 
-        // ==========================================
-        // BẢNG ĐIỀU KHIỂN: ĐƯỜNG DẪN - KÍCH THƯỚC - TỌA ĐỘ
-        // ==========================================
         const ASSETS_CONFIG = {
             bgMusic: 'assets/audio/bg_music.mp3',
-            
-            // MÔ HÌNH PHÒNG MỞ ĐẦU (Tấm vé)
-            roomStart: {
-                model: 'assets/models/ve.glb',
-                scale: 1.0, x: 0, y: 0, z: 0
-            },
-
+            roomStart: { model: 'assets/models/ve.glb', scale: 1.0, y: 1.0 },
             room1: [
                 { text: "Chào em, điểm dừng chân đầu tiên... lắng nghe anh nhé.", audioPath: 'assets/audio/voice_p1_1.mp3' },
                 { text: "Khoảng thời gian qua là điều vô giá nhất đối với cuộc đời anh.", audioPath: 'assets/audio/voice_p1_2.mp3' },
                 { text: "Cảm ơn em vì đã luôn kiên nhẫn và yêu thương anh vô điều kiện.", audioPath: 'assets/audio/voice_p1_3.mp3' }
             ],
-            
             room2: autoImagesArray,
-            
-            // MÔ HÌNH PHÒNG 3 (Đã cập nhật đúng file Table.glb)
             room3: [
                 { 
-                    label: 'Máy Photobooth', video: 'assets/videos/video_photobooth.mp4', color: 0xff00ff, 
+                    label: 'Máy Photobooth', video: 'assets/videos/video_photobooth.mp4',
                     models: [ { path: 'assets/models/photobooth.glb', scale: 1.5, x: 0, y: -0.6, z: 0 } ] 
                 },
                 { 
-                    label: 'Quán Cà Phê Kỷ Niệm', video: 'assets/videos/video_caphe.mp4', color: 0x8b5a2b, 
+                    label: 'Quán Cà Phê Kỷ Niệm', video: 'assets/videos/video_caphe.mp4',
                     models: [ 
                         { path: 'assets/models/Table.glb', scale: 1.2, x: 0, y: -0.6, z: 0 },
                         { path: 'assets/models/laptop.glb', scale: 0.8, x: -0.3, y: 0.2, z: 0 },
@@ -374,24 +415,27 @@
                     ] 
                 },
                 { 
-                    label: 'Chiếc Áo Đôi Đầu Tiên', video: 'assets/videos/video_aodoi.mp4', color: 0x00ff00, 
+                    label: 'Chiếc Áo Đôi Đầu Tiên', video: 'assets/videos/video_aodoi.mp4',
                     models: [ { path: 'assets/models/aodoi.glb', scale: 1.5, x: 0, y: -0.6, z: 0 } ] 
                 }
             ],
-            
-            // MÔ HÌNH PHÒNG KẾT (Bức thư)
             roomEnd: {
-                text: "Gửi em, cô gái anh yêu.<br><br>19 tháng không phải là một hành trình quá dài, nhưng nó đủ để anh hiểu rằng em chính là mảnh ghép hoàn hảo nhất mà anh tìm kiếm.<br><br>Cảm ơn em vì đã đến, đã ở lại và cùng anh tô vẽ nên những ký ức tuyệt vời này. Mỗi ngày trôi qua có em bên cạnh đều là một ngày hạnh phúc.<br><br>Yêu em rất nhiều!",
+                text: "Gửi em, cô gái anh yêu.<br><br>19 tháng không phải là một hành trình quá dài, nhưng nó đủ để anh hiểu rằng em chính là mảnh ghép hoàn hảo nhất mà anh tìm kiếm.<br><br>Cảm ơn em vì đã đến, đã ở lại và cùng anh tô vẽ nên những ký ức tuyệt vời này. Mỗi ngày trôi qua có em bên cạnh đều là một ngày hạnh phúc vô bờ bến.<br><br>Yêu em rất nhiều!",
                 audioPath: 'assets/audio/voice_phong_ket.mp3',
                 model: 'assets/models/thu.glb',
-                scale: 0.5, x: 0, y: 0, z: 0
+                scale: 0.5, y: 1.2
             }
         };
 
-        const STATES = { START: 0, HL1: 1, R1: 2, HL2: 3, R2: 4, HL3: 5, R3: 6, HL4: 7, REND: 8, HL0: 9 };
+        // Máy trạng thái bảo tàng
+        const STATES = { START: 0, R1: 1, R2: 2, R3: 3, REND: 4, CLIMAX: 5 };
         let currentState = STATES.START;
 
-        // Trình quản lý tải tài nguyên (LoadingManager)
+        // TÂM KHÔNG GIAN ĐỘNG (Omnidirectional Progression)
+        let currentRoomCenter = new THREE.Vector3(0, 0, 0);
+        let roomReadyForNext = false;
+        let isTransitioning = false;
+
         const loadingManager = new THREE.LoadingManager();
         const gltfLoader = new GLTFLoader(loadingManager);
         const textureLoader = new THREE.TextureLoader(loadingManager);
@@ -400,26 +444,25 @@
         let scene, camera, renderer, controls, clock;
         let audioListener, bgMusic, currentVoice = null;
         let isMuted = false;
+        let targetMusicVolume = 0.4; // Cho Audio Ducking
+
         let raycaster, moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-        
         let activeElements = [];
         let interactableObjects = [];
         let spaceTarget = null;
-        let activeExitTrigger = null;
         
-        let particles = null; 
-        let particleTrails = null;
-        let currentWarpSpeed = 2.0;
-
-        // Hệ thống cánh hoa đào & bụi sao lãng mạn
         let romanticParticles = null;
         const PETAL_COUNT = 100;
         const petalData = [];
-        
-        let isViewingMedia = false; 
-        let roomBoundaryX = 15;
 
-        // Xoay góc nhìn cảm ứng di động
+        // Hệ thống Thư 3D Bay Lên & Pháo Hoa Trái Tim
+        let ascendingLetter = null;
+        let letterSparkles = [];
+        let fireworks = [];
+        let fireworkTimer = 0;
+        let isClimaxActive = false;
+
+        let isViewingMedia = false; 
         let touchLookId = null;
         let lastTouchX = 0, lastTouchY = 0;
         let touchYaw = 0, touchPitch = 0;
@@ -430,6 +473,11 @@
         const pImg = document.getElementById('popup-img');
         const pVid = document.getElementById('popup-video');
         const pTxt = document.getElementById('popup-text-box');
+        const letterMainText = document.getElementById('letter-main-text');
+        const letterReadSection = document.getElementById('letter-read-section');
+        const replyStationery = document.getElementById('reply-stationery');
+        const replyInput = document.getElementById('reply-input');
+        const grandFinaleHud = document.getElementById('grand-finale-hud');
         const mobileControls = document.getElementById('mobile-controls');
         const btnMobileInteract = document.getElementById('btn-mobile-interact');
         const btnStart = document.getElementById('btn-start');
@@ -437,7 +485,6 @@
         const loadingPercent = document.getElementById('loading-percent');
         const loadingStatus = document.getElementById('loading-status');
 
-        // Cập nhật giao diện hướng dẫn cho Mobile nếu dùng điện thoại
         if (isTouchDevice) {
             document.getElementById('controls-hint-text').innerHTML = `
                 <b>CÁCH ĐIỀU KHIỂN TRÊN ĐIỆN THOẠI:</b><br>
@@ -447,7 +494,6 @@
             `;
         }
 
-        // Quản lý tiến trình tải
         loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
             const percent = Math.min(100, Math.round((itemsLoaded / itemsTotal) * 100));
             if (loadingBarFill) loadingBarFill.style.width = percent + '%';
@@ -464,14 +510,8 @@
             }
         }
 
-        loadingManager.onLoad = () => {
-            onAssetsReady();
-        };
-
-        // Đảm bảo nút luôn mở sau tối đa 2.5 giây nếu có asset tải chậm
-        setTimeout(() => {
-            onAssetsReady();
-        }, 2500);
+        loadingManager.onLoad = () => { onAssetsReady(); };
+        setTimeout(() => { onAssetsReady(); }, 2500);
 
         let isInitialized = false;
         btnStart.addEventListener('click', () => {
@@ -479,8 +519,9 @@
                 init3D();
                 initAudio();
                 initRomanticParticles();
-                setupRoomStart();
+                setupRoomStart(new THREE.Vector3(0, 0, 0));
                 setupTouchControls();
+                setupLetterReplyEvents();
                 animate();
                 isInitialized = true;
                 
@@ -493,7 +534,6 @@
             }
 
             document.getElementById('setup-screen').style.display = 'none';
-
             if (isTouchDevice) {
                 mobileControls.style.display = 'block';
             } else {
@@ -501,7 +541,6 @@
             }
         });
 
-        // Bật/Tắt Âm Thanh
         document.getElementById('btn-sound-toggle').addEventListener('click', () => {
             isMuted = !isMuted;
             const soundIcon = document.getElementById('sound-icon');
@@ -514,25 +553,23 @@
         function init3D() {
             clock = new THREE.Clock();
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x050508);
-            scene.fog = new THREE.FogExp2(0x050508, 0.022); 
+            scene.background = new THREE.Color(0x030305);
+            scene.fog = new THREE.FogExp2(0x030305, 0.02); 
 
             renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.1;
+            renderer.toneMappingExposure = 1.15;
             document.body.appendChild(renderer.domElement);
 
-            // Sàn nhà bảo tàng sang trọng với độ nhám và phản xạ nhẹ
             const globalFloor = new THREE.Mesh(
-                new THREE.PlaneGeometry(500, 500),
-                new THREE.MeshStandardMaterial({ color: 0x0c0812, roughness: 0.6, metalness: 0.2 })
+                new THREE.PlaneGeometry(1000, 1000),
+                new THREE.MeshStandardMaterial({ color: 0x07050a, roughness: 0.65, metalness: 0.25 })
             );
             globalFloor.rotation.x = -Math.PI / 2;
             scene.add(globalFloor);
 
-            // Ánh sáng môi trường nhẹ nhàng, ấm cúng
             const ambientLight = new THREE.AmbientLight(0xffe6f0, 0.45);
             scene.add(ambientLight);
 
@@ -541,7 +578,9 @@
             controls = new PointerLockControls(pCamera, document.body);
             scene.add(controls.getObject());
             camera = pCamera;
-            resetPlayerPosition();
+            
+            controls.getObject().position.set(0, 1.6, 6);
+            controls.getObject().rotation.set(0, 0, 0);
 
             raycaster = new THREE.Raycaster();
 
@@ -552,7 +591,6 @@
             document.getElementById('btn-close-popup').addEventListener('click', closePopup);
         }
 
-        // Khởi tạo âm thanh & Cơ chế dự phòng thông minh
         function initAudio() {
             audioListener = new THREE.AudioListener();
             camera.add(audioListener);
@@ -570,28 +608,25 @@
                 },
                 undefined,
                 (error) => {
-                    console.warn("Chưa có file bg_music.mp3 hoặc không tải được. Kích hoạt nhạc nền synthesizer.", error);
+                    console.warn("Kích hoạt nhạc nền synthesizer dự phòng.");
                     startAmbientSynthesizer();
                 }
             );
         }
 
-        // Nhạc nền piano/ambient dự phòng bằng Web Audio API
         let synthInterval = null;
         function startAmbientSynthesizer() {
             if (synthInterval) return;
             try {
                 const ctx = audioListener.context;
                 if (!ctx) return;
-                
                 const chords = [
-                    [261.63, 329.63, 392.00, 523.25], // C Major
-                    [220.00, 261.63, 329.63, 440.00], // A Minor
-                    [174.61, 220.00, 261.63, 349.23], // F Major
-                    [196.00, 246.94, 293.66, 392.00]  // G Major
+                    [261.63, 329.63, 392.00, 523.25],
+                    [220.00, 261.63, 329.63, 440.00],
+                    [174.61, 220.00, 261.63, 349.23],
+                    [196.00, 246.94, 293.66, 392.00]
                 ];
                 let currentChordIndex = 0;
-
                 const playPadChord = () => {
                     if (isMuted || (bgMusic && bgMusic.isPlaying)) return;
                     const chord = chords[currentChordIndex];
@@ -602,32 +637,678 @@
                         const gain = ctx.createGain();
                         osc.type = 'sine';
                         osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
                         gain.gain.setValueAtTime(0.0001, ctx.currentTime);
                         gain.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 1.8);
                         gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 4.8);
-
                         osc.connect(gain);
                         gain.connect(ctx.destination);
-
                         osc.start();
                         osc.stop(ctx.currentTime + 5.0);
                     });
                 };
-
                 playPadChord();
                 synthInterval = setInterval(playPadChord, 5200);
-            } catch (e) {
-                console.log("Web Audio synth fallback error:", e);
+            } catch (e) {}
+        }
+
+        // ==========================================
+        // 1. CƠ CHẾ DI CHUYỂN LIỀN MẠCH 360 ĐỘ (SEAMLESS OMNIDIRECTIONAL PROGRESSION)
+        // ==========================================
+        function checkSeamlessProgression(playerPos) {
+            if (!roomReadyForNext || isTransitioning) return;
+
+            const dist = Math.hypot(playerPos.x - currentRoomCenter.x, playerPos.z - currentRoomCenter.z);
+            
+            // Khi người chơi bước ra ngoài bán kính 13 mét theo BẤT CỨ HƯỚNG NÀO (360 độ)
+            if (dist > 13.0) {
+                isTransitioning = true;
+                
+                // Tính vector hướng thực tế mà cô ấy đang bước đi
+                const dirX = (playerPos.x - currentRoomCenter.x) / dist;
+                const dirZ = (playerPos.z - currentRoomCenter.z) / dist;
+                const walkDir = new THREE.Vector3(dirX, 0, dirZ);
+
+                // Điểm tâm của phòng tiếp theo được sinh ra thẳng ngay trước mắt cô ấy (cách 18m)
+                const nextCenter = new THREE.Vector3().copy(playerPos).addScaledVector(walkDir, 18.0);
+
+                // Dẫn đường đom đóm rực rỡ từ vị trí hiện tại đến phòng mới
+                spawnFairyPath(playerPos, nextCenter, 8);
+
+                // Kích hoạt phòng tiếp theo
+                advanceToNextRoom(nextCenter, walkDir);
             }
         }
 
-        // HỆ THỐNG HẠT CÁNH HOA ĐÀO LÃNG MẠN
+        function spawnFairyPath(fromPos, toPos, count) {
+            for (let i = 1; i <= count; i++) {
+                const fraction = i / (count + 1);
+                const x = fromPos.x + (toPos.x - fromPos.x) * fraction;
+                const z = fromPos.z + (toPos.z - fromPos.z) * fraction;
+
+                const orbGeo = new THREE.SphereGeometry(0.09, 16, 16);
+                const orbMat = new THREE.MeshBasicMaterial({ color: 0xffb6c1 }); 
+                const orb = new THREE.Mesh(orbGeo, orbMat);
+                orb.position.set(x, 1.2, z);
+                orb.userData = { type: 'fairy_light', randomOffset: Math.random() * Math.PI * 2 };
+
+                const glow = new THREE.PointLight(0xff9ebb, 3.5, 4);
+                glow.position.set(0, 0, 0);
+                orb.add(glow);
+
+                scene.add(orb);
+                activeElements.push(orb);
+            }
+        }
+
+        function advanceToNextRoom(nextCenter, walkDir) {
+            if (currentState === STATES.START) {
+                setupRoom1(nextCenter, walkDir);
+            } else if (currentState === STATES.R1) {
+                setupRoom2(nextCenter, walkDir);
+            } else if (currentState === STATES.R2) {
+                setupRoom3(nextCenter, walkDir);
+            } else if (currentState === STATES.R3) {
+                setupRoomEnd(nextCenter, walkDir);
+            } else if (currentState === STATES.REND) {
+                // Vòng lặp vĩnh cửu quay về Start
+                setupRoomStart(nextCenter);
+            }
+        }
+
+        function clearOldRoom() {
+            activeElements.forEach(obj => {
+                if (obj.userData && obj.userData.videoElement) {
+                    obj.userData.videoElement.pause();
+                    obj.userData.videoElement.src = ""; 
+                    obj.userData.videoElement.load();
+                }
+                if (obj.children) {
+                    obj.children.forEach(child => {
+                        if (child.type === 'PositionalAudio') {
+                            if (child.isPlaying) child.stop();
+                            child.disconnect(); 
+                        }
+                    });
+                }
+                scene.remove(obj);
+            });
+            
+            activeElements = [];
+            interactableObjects = [];
+            spaceTarget = null;
+            promptNode.style.display = 'none';
+            btnMobileInteract.style.display = 'none';
+            roomReadyForNext = false;
+            isTransitioning = false;
+        }
+
+        function showHUDText(text, duration = 4000, callback = null) {
+            hud.innerHTML = text;
+            hud.style.opacity = 1;
+            setTimeout(() => {
+                hud.style.opacity = 0;
+                if(callback) setTimeout(callback, 1000);
+            }, duration);
+        }
+
+        // --- PHÒNG 0: MỞ ĐẦU (TẤM VÉ) ---
+        function setupRoomStart(center) {
+            currentState = STATES.START;
+            currentRoomCenter.copy(center);
+            clearOldRoom();
+
+            const hitbox = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshBasicMaterial({ visible: false }));
+            hitbox.position.set(center.x, 1.0, center.z);
+            hitbox.userData = { type: 'ticket' };
+
+            gltfLoader.load(ASSETS_CONFIG.roomStart.model, (gltf) => {
+                const model3D = gltf.scene;
+                model3D.scale.set(1.0, 1.0, 1.0); 
+                hitbox.add(model3D);
+            });
+
+            // 4 Đèn spotlight ấm áp chiếu vào vé
+            const radius = 2.0;
+            const offsets = [ { dx: -radius, dz: -radius }, { dx: radius, dz: -radius }, { dx: -radius, dz: radius }, { dx: radius, dz: radius } ];
+            offsets.forEach(off => {
+                const spot = new THREE.SpotLight(0xfff0f5, 55, 12, Math.PI/5, 0.6, 1);
+                spot.position.set(center.x + off.dx, 4.0, center.z + off.dz);
+                spot.target = hitbox;
+                scene.add(spot);
+                activeElements.push(spot);
+            });
+
+            scene.add(hitbox);
+            activeElements.push(hitbox);
+            interactableObjects.push(hitbox);
+
+            if (isTouchDevice) {
+                btnMobileInteract.innerHTML = `🎫 MỞ VÉ MỜI`;
+                btnMobileInteract.style.display = 'flex';
+            }
+        }
+
+        function triggerTicketInteraction() {
+            interactableObjects = [];
+            btnMobileInteract.style.display = 'none';
+            showHUDText("Chào mừng em đến với bảo tàng tình yêu của chúng ta...", 4000, () => {
+                showHUDText("Em hãy cứ bước tiếp về bất cứ hướng nào trong bóng tối...", 4000, () => {
+                    roomReadyForNext = true; // Sẵn sàng cho bước đi 360 độ
+                });
+            });
+        }
+
+        // --- PHÒNG 1: PODCAST LỜI YÊU ---
+        function setupRoom1(center, walkDir) {
+            currentState = STATES.R1;
+            currentRoomCenter.copy(center);
+            clearOldRoom();
+
+            // Sắp xếp 3 trạm podcast dọc theo hướng người chơi đang đi
+            const perpDir = new THREE.Vector3(-walkDir.z, 0, walkDir.x); // Vuông góc
+            const distances = [-5, 0, 5];
+
+            ASSETS_CONFIG.room1.forEach((data, index) => {
+                const nodePos = new THREE.Vector3().copy(center).addScaledVector(walkDir, distances[index]);
+
+                const pLight = new THREE.PointLight(0xff758c, 10, 5);
+                pLight.position.set(nodePos.x, 2, nodePos.z);
+                scene.add(pLight);
+                activeElements.push(pLight);
+
+                const nodeGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.1, 16);
+                const nodeMat = new THREE.MeshBasicMaterial({ color: 0xff758c, transparent: true, opacity: 0.65 });
+                const node = new THREE.Mesh(nodeGeo, nodeMat);
+                node.position.set(nodePos.x, 0.05, nodePos.z);
+                node.userData = { type: 'podcast_node', text: data.text, audioPath: data.audioPath, triggered: false, index: index };
+                scene.add(node);
+                activeElements.push(node);
+            });
+        }
+
+        function triggerPodcastNode(node) {
+            node.userData.triggered = true;
+            node.material.color.setHex(0xffb6c1); 
+            targetMusicVolume = 0.08;
+
+            showHUDText(node.userData.text, 6000);
+
+            if (currentVoice) currentVoice.stop();
+            currentVoice = new THREE.Audio(audioListener);
+            audioLoader.load(
+                node.userData.audioPath,
+                (buffer) => { 
+                    currentVoice.setBuffer(buffer);
+                    currentVoice.setVolume(1.0);
+                    currentVoice.play();
+                    showHUDText(node.userData.text, buffer.duration * 1000);
+                },
+                undefined,
+                () => { showHUDText(node.userData.text, 6500); }
+            );
+
+            // Khi kích hoạt trạm thứ 3 -> Bật cơ chế 360 độ tự sinh phòng 2
+            if (node.userData.index === ASSETS_CONFIG.room1.length - 1) {
+                setTimeout(() => {
+                    targetMusicVolume = 0.4;
+                    showHUDText("Em hãy cứ bước tiếp về bất cứ hướng nào trong bóng tối...", 4000);
+                    roomReadyForNext = true;
+                }, 7000);
+            }
+        }
+
+        // --- PHÒNG 2: NGÂN HÀ ẢNH KỶ NIỆM (GALAXY OF MEMORIES) ---
+        function setupRoom2(center, walkDir) {
+            currentState = STATES.R2;
+            currentRoomCenter.copy(center);
+            clearOldRoom();
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(256, 256, 0, 256, 256, 256);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); 
+            gradient.addColorStop(0.15, 'rgba(255, 182, 193, 1)'); 
+            gradient.addColorStop(0.45, 'rgba(255, 105, 180, 0.45)'); 
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); 
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 512, 512);
+
+            const sunGlow = new THREE.Mesh(
+                new THREE.PlaneGeometry(8, 8),
+                new THREE.MeshBasicMaterial({ 
+                    map: new THREE.CanvasTexture(canvas), transparent: true, 
+                    blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide 
+                })
+            );
+            sunGlow.rotation.x = -Math.PI/2;
+            sunGlow.position.set(center.x, 0.05, center.z);
+            sunGlow.userData = { type: 'trigger_album', triggered: false };
+            scene.add(sunGlow);
+            activeElements.push(sunGlow);
+        }
+
+        function spawnAlbumImages(center) {
+            ASSETS_CONFIG.room2.forEach((path, index) => {
+                const phi = index * 137.5 * (Math.PI / 180);
+                const radius = 3.2 + (index * 0.1);
+                
+                const x = center.x + Math.cos(phi) * radius;
+                const z = center.z + Math.sin(phi) * radius;
+                const y = 0.5 + Math.random() * 3.5;
+
+                const defaultH = 1.2;
+                const imgGeo = new THREE.PlaneGeometry(1.6, defaultH);
+                const mesh = new THREE.Mesh(imgGeo, new THREE.MeshBasicMaterial({ color: 0x331022, side: THREE.DoubleSide, wireframe: true }));
+                
+                mesh.position.set(x, y, z);
+                mesh.lookAt(center.x, 1.8, center.z);
+                mesh.userData = { type: 'gallery_photo', path: path };
+                
+                scene.add(mesh);
+                activeElements.push(mesh);
+                interactableObjects.push(mesh);
+
+                textureLoader.load(path, (texture) => {
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    const aspect = (texture.image && texture.image.width && texture.image.height) 
+                        ? (texture.image.width / texture.image.height) : 1.33;
+                    mesh.geometry.dispose();
+                    mesh.geometry = new THREE.PlaneGeometry(defaultH * aspect, defaultH);
+                    mesh.material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+                }, undefined, () => {});
+            });
+
+            // Sau khi mở ngân hà ảnh, người chơi khám phá và có thể bước tiếp theo 360 độ
+            setTimeout(() => {
+                roomReadyForNext = true;
+            }, 8000);
+        }
+
+        function openPhotoPopup(thumbnailPath) {
+            isViewingMedia = true;
+            pImg.src = thumbnailPath.replace('thumbnails', 'fullsize');
+            pImg.style.display = 'block';
+            popup.classList.add('active');
+            if (mobileControls) mobileControls.style.display = 'none';
+            if (!isTouchDevice) controls.unlock();
+        }
+
+        // --- PHÒNG 3: HIỆN VẬT 3D & VIDEO (KÈM AUDIO DUCKING) ---
+        function setupRoom3(center, walkDir) {
+            currentState = STATES.R3;
+            currentRoomCenter.copy(center);
+            clearOldRoom();
+
+            const perp = new THREE.Vector3(-walkDir.z, 0, walkDir.x);
+            const positions = [
+                new THREE.Vector3().copy(center).addScaledVector(perp, -3.5),
+                new THREE.Vector3().copy(center).addScaledVector(walkDir, 3.5),
+                new THREE.Vector3().copy(center).addScaledVector(perp, 3.5)
+            ];
+
+            ASSETS_CONFIG.room3.forEach((data, index) => {
+                const pos = positions[index];
+                const hitbox = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 1.5, 8), new THREE.MeshBasicMaterial({ visible: false }));
+                hitbox.position.set(pos.x, 0.6, pos.z);
+                hitbox.userData = { type: 'video_item', label: data.label, videoSrc: data.video, index: index, activeHologram: false };
+
+                data.models.forEach(modelData => {
+                    gltfLoader.load(modelData.path, (gltf) => {
+                        const m = gltf.scene;
+                        m.scale.set(modelData.scale, modelData.scale, modelData.scale); 
+                        m.position.set(modelData.x, modelData.y, modelData.z); 
+                        hitbox.add(m); 
+                    });
+                });
+                
+                const spot = new THREE.SpotLight(0xfff0f5, 50, 10, Math.PI/5, 0.6, 1);
+                spot.position.set(pos.x, 3.5, pos.z);
+                spot.target = hitbox; 
+                scene.add(spot);
+                activeElements.push(spot);
+
+                scene.add(hitbox);
+                activeElements.push(hitbox);
+            });
+        }
+
+        // ==========================================
+        // 2. AUDIO DUCKING KHI PHÁT VIDEO KỶ NIỆM
+        // ==========================================
+        function createVideoHologramMesh(parentMesh, videoSrc) {
+            const video = document.createElement('video');
+            video.src = videoSrc;
+            video.loop = true;
+            video.playsInline = true;
+            video.play().catch(() => {});
+
+            // Audio Ducking: Nhạc nền tự động nhỏ xuống khi video phát
+            targetMusicVolume = 0.06;
+
+            const videoTex = new THREE.VideoTexture(video);
+            videoTex.colorSpace = THREE.SRGBColorSpace;
+
+            const holoMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.0), new THREE.MeshBasicMaterial({ map: videoTex, side: THREE.DoubleSide }));
+            holoMesh.position.set(parentMesh.position.x, 1.8, parentMesh.position.z);
+            holoMesh.lookAt(currentRoomCenter.x, 1.8, currentRoomCenter.z);
+
+            const positionalAudio = new THREE.PositionalAudio(audioListener);
+            positionalAudio.setMediaElementSource(video); 
+            positionalAudio.setDistanceModel('linear'); 
+            positionalAudio.setRefDistance(1.8); 
+            positionalAudio.setMaxDistance(5.0); 
+            holoMesh.add(positionalAudio); 
+            
+            holoMesh.userData = { type: 'floating_hologram_video', videoElement: video, videoSrc: videoSrc };
+
+            scene.add(holoMesh);
+            activeElements.push(holoMesh);
+            interactableObjects.push(holoMesh);
+            
+            parentMesh.userData.activeHologram = true;
+
+            let allOpened = true;
+            activeElements.forEach(el => {
+                if(el.userData.type === 'video_item' && !el.userData.activeHologram) allOpened = false;
+            });
+            if(allOpened) {
+                showHUDText("Em hãy cứ bước tiếp về bất kỳ hướng nào để đến với bức thư anh dành riêng cho em...", 5000);
+                roomReadyForNext = true;
+            }
+        }
+
+        // --- PHÒNG KẾT: BỨC THƯ TÌNH CẢM XÚC ---
+        function setupRoomEnd(center, walkDir) {
+            currentState = STATES.REND;
+            currentRoomCenter.copy(center);
+            clearOldRoom();
+
+            const hitbox = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), new THREE.MeshBasicMaterial({ visible: false }));
+            hitbox.position.set(center.x, 1.2, center.z);
+            hitbox.userData = { type: 'love_letter' };
+
+            gltfLoader.load(ASSETS_CONFIG.roomEnd.model, (gltf) => {
+                const m = gltf.scene;
+                m.scale.set(0.5, 0.5, 0.5); 
+                hitbox.add(m);
+            });
+
+            const spot = new THREE.SpotLight(0xfff5fa, 20, 10, Math.PI/5, 0.6, 1);
+            spot.position.set(center.x, 4.5, center.z);
+            spot.target = hitbox;
+            scene.add(spot);
+            activeElements.push(spot);
+
+            scene.add(hitbox);
+            activeElements.push(hitbox);
+            interactableObjects.push(hitbox);
+
+            if (isTouchDevice) {
+                btnMobileInteract.innerHTML = `💌 ĐỌC THƯ TÌNH`;
+                btnMobileInteract.style.display = 'flex';
+            }
+        }
+
+        function triggerLetterInteraction() {
+            targetMusicVolume = 0.08;
+
+            letterMainText.innerHTML = ASSETS_CONFIG.roomEnd.text;
+            letterReadSection.style.display = 'block';
+            replyStationery.style.display = 'none';
+            pTxt.style.display = 'block';
+            popup.classList.add('active');
+
+            if (mobileControls) mobileControls.style.display = 'none';
+            if (!isTouchDevice) controls.unlock();
+
+            if (currentVoice) currentVoice.stop();
+            currentVoice = new THREE.Audio(audioListener);
+            audioLoader.load(
+                ASSETS_CONFIG.roomEnd.audioPath, 
+                (buffer) => {
+                    currentVoice.setBuffer(buffer);
+                    currentVoice.setVolume(1.0);
+                    currentVoice.play();
+                },
+                undefined,
+                () => {}
+            );
+        }
+
+        // ==========================================
+        // 3. GIAO DIỆN VIẾT THƯ HỒI ÂM & HIỆU ỨNG THƯ 3D BAY
+        // 4. TỰ ĐỘNG GỬI VỀ ĐIỆN THOẠI & TẢI FILE PHANHOIANH.TXT
+        // ==========================================
+        function setupLetterReplyEvents() {
+            document.getElementById('btn-open-reply').addEventListener('click', () => {
+                letterReadSection.style.display = 'none';
+                replyStationery.style.display = 'block';
+                replyInput.focus();
+            });
+
+            document.getElementById('btn-letter-pledge').addEventListener('click', () => {
+                closePopup();
+                startClimaxAndFireworks();
+            });
+
+            document.getElementById('btn-send-reply').addEventListener('click', () => {
+                const replyText = replyInput.value.trim() || "Cảm ơn anh vì 19 tháng tuyệt vời vừa qua... Em yêu anh rất nhiều!";
+                
+                // 1. Lưu vào LocalStorage
+                localStorage.setItem('thu_phan_hoi_19thang', JSON.stringify({
+                    text: replyText,
+                    date: new Date().toLocaleString('vi-VN')
+                }));
+
+                // 2. Tự động tải file kỷ niệm phanhoianh.txt về máy
+                try {
+                    const blob = new Blob([
+                        "💌 BỨC THƯ HỒI ÂM KỶ NIỆM 19 THÁNG YÊU NHAU 💌\n\n" +
+                        "Thời gian: " + new Date().toLocaleString('vi-VN') + "\n" +
+                        "Người gửi: Người Yêu Của Anh ❤️\n\n" +
+                        "----------------------------------------\n" +
+                        replyText + "\n" +
+                        "----------------------------------------\n\n" +
+                        "Mãi bên nhau anh nhé! ❤️"
+                    ], { type: 'text/plain;charset=utf-8' });
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = 'phanhoianh.txt';
+                    downloadLink.click();
+                } catch(e) {}
+
+                // 3. Tự động gửi Email/Webhook báo về điện thoại của bạn trai (wwm100107@gmail.com)
+                try {
+                    fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            access_key: '64e8ec88-1c4b-4b13-8cf4-4903565e317c',
+                            subject: '💌 [Bảo Tàng 19 Tháng] Người yêu vừa gửi thư cho bạn!',
+                            from_name: 'Bảo Tàng 19 Tháng',
+                            to_email: 'wwm100107@gmail.com',
+                            message: replyText
+                        })
+                    }).catch(() => {});
+                } catch(e) {}
+
+                closePopup();
+
+                // 4. Khởi tạo phong thư 3D bay lên trời
+                spawnAscendingLetter();
+            });
+        }
+
+        function spawnAscendingLetter() {
+            const letterGroup = new THREE.Group();
+            
+            // Phong thư 3D phát sáng
+            const envelopeGeo = new THREE.BoxGeometry(0.8, 0.5, 0.05);
+            const envelopeMat = new THREE.MeshStandardMaterial({ 
+                color: 0xffeef5, roughness: 0.3, metalness: 0.1,
+                emissive: 0xff758c, emissiveIntensity: 0.35
+            });
+            const envelope = new THREE.Mesh(envelopeGeo, envelopeMat);
+            letterGroup.add(envelope);
+
+            // Con dấu trái tim đỏ thắm
+            const sealGeo = new THREE.SphereGeometry(0.08, 16, 16);
+            const sealMat = new THREE.MeshBasicMaterial({ color: 0xff2255 });
+            const seal = new THREE.Mesh(sealGeo, sealMat);
+            seal.position.set(0, 0, 0.04);
+            letterGroup.add(seal);
+
+            // Hào quang phát sáng
+            const letterGlow = new THREE.PointLight(0xff9ebb, 3, 5);
+            letterGroup.add(letterGlow);
+
+            // Xuất hiện ngay phía trước mắt người chơi
+            const spawnPos = new THREE.Vector3(0, 0, -2).applyQuaternion(camera.quaternion).add(camera.position);
+            spawnPos.y = 1.4;
+            letterGroup.position.copy(spawnPos);
+            
+            scene.add(letterGroup);
+            ascendingLetter = letterGroup;
+
+            showHUDText("Lá thư của em đang bay nhẹ nhàng theo gió vào dải ngân hà...", 4000);
+        }
+
+        // ==========================================
+        // 5. MÀN PHÁO HOA TRÁI TIM 3D CAO TRÀO (CLIMAX MOMENT)
+        // ==========================================
+        class HeartFirework {
+            constructor(startX, startZ, targetY, colorHex) {
+                this.isExploded = false;
+                this.color = colorHex;
+                this.pos = new THREE.Vector3(startX + (Math.random() - 0.5) * 8, 0, startZ + (Math.random() - 0.5) * 8);
+                this.targetY = targetY;
+                this.velocity = new THREE.Vector3((Math.random() - 0.5) * 0.4, 14 + Math.random() * 4, (Math.random() - 0.5) * 0.4);
+                this.particleData = [];
+                this.life = 1.0;
+                
+                const rGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                const rMat = new THREE.MeshBasicMaterial({ color: colorHex });
+                this.rocketMesh = new THREE.Mesh(rGeo, rMat);
+                this.rocketMesh.position.copy(this.pos);
+                scene.add(this.rocketMesh);
+            }
+
+            explode() {
+                this.isExploded = true;
+                scene.remove(this.rocketMesh);
+                this.rocketMesh.geometry.dispose();
+
+                const count = 180;
+                const geo = new THREE.BufferGeometry();
+                const posArr = new Float32Array(count * 3);
+                const colArr = new Float32Array(count * 3);
+                const baseCol = new THREE.Color(this.color);
+
+                for (let i = 0; i < count; i++) {
+                    posArr[i * 3] = this.pos.x;
+                    posArr[i * 3 + 1] = this.pos.y;
+                    posArr[i * 3 + 2] = this.pos.z;
+
+                    colArr[i * 3] = baseCol.r;
+                    colArr[i * 3 + 1] = baseCol.g;
+                    colArr[i * 3 + 2] = baseCol.b;
+
+                    // Phương trình toán học đường cong Trái Tim 3D
+                    const t = (i / count) * Math.PI * 2;
+                    const hx = 16 * Math.pow(Math.sin(t), 3);
+                    const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+
+                    const speed = 0.22 + Math.random() * 0.08;
+                    this.particleData.push({
+                        vx: hx * speed * 0.075 + (Math.random() - 0.5) * 0.15,
+                        vy: hy * speed * 0.075 + (Math.random() - 0.5) * 0.15,
+                        vz: (Math.random() - 0.5) * 0.5,
+                        drag: 0.965,
+                        gravity: -0.015
+                    });
+                }
+
+                geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+                geo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+
+                const mat = new THREE.PointsMaterial({
+                    size: 0.25, vertexColors: true, transparent: true,
+                    opacity: 1.0, blending: THREE.AdditiveBlending, depthWrite: false
+                });
+
+                this.particles = new THREE.Points(geo, mat);
+                scene.add(this.particles);
+            }
+
+            update(delta) {
+                if (!this.isExploded) {
+                    this.pos.addScaledVector(this.velocity, delta);
+                    this.rocketMesh.position.copy(this.pos);
+                    if (this.pos.y >= this.targetY || this.velocity.y <= 0) {
+                        this.explode();
+                    }
+                } else if (this.particles) {
+                    this.life -= delta * 0.35;
+                    this.particles.material.opacity = Math.max(0, this.life);
+
+                    const posAttr = this.particles.geometry.attributes.position;
+                    const arr = posAttr.array;
+
+                    for (let i = 0; i < this.particleData.length; i++) {
+                        const pd = this.particleData[i];
+                        pd.vx *= pd.drag;
+                        pd.vy = pd.vy * pd.drag + pd.gravity;
+                        pd.vz *= pd.drag;
+
+                        arr[i * 3] += pd.vx;
+                        arr[i * 3 + 1] += pd.vy;
+                        arr[i * 3 + 2] += pd.vz;
+                    }
+                    posAttr.needsUpdate = true;
+
+                    if (this.life <= 0) {
+                        scene.remove(this.particles);
+                        this.particles.geometry.dispose();
+                        this.particles.material.dispose();
+                        this.particles = null;
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        function startClimaxAndFireworks() {
+            isClimaxActive = true;
+            targetMusicVolume = 0.55; // Nhạc nền cao trào
+            grandFinaleHud.style.opacity = 1;
+            roomReadyForNext = true; // Cho phép bước tiếp vào vòng lặp vô tận
+        }
+
+        function updateClimaxFireworks(delta, center) {
+            if (!isClimaxActive) return;
+            fireworkTimer -= delta;
+
+            if (fireworkTimer <= 0) {
+                fireworkTimer = 0.8 + Math.random() * 0.6; // Bắn liên tục
+                const colors = [0xff758c, 0xffd700, 0x00f0ff, 0xff2266, 0xffa07a];
+                const col = colors[Math.floor(Math.random() * colors.length)];
+                const targetY = 12 + Math.random() * 6;
+                fireworks.push(new HeartFirework(center.x, center.z, targetY, col));
+            }
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const alive = fireworks[i].update(delta);
+                if (!alive) fireworks.splice(i, 1);
+            }
+        }
+
+        // CÁNH HOA ĐÀO BAY LÃNG MẠN
         function createPetalTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 64; canvas.height = 64;
             const ctx = canvas.getContext('2d');
-            
             ctx.save();
             ctx.translate(32, 32);
             ctx.beginPath();
@@ -645,20 +1326,14 @@
             ctx.fillStyle = grad;
             ctx.fill();
             ctx.restore();
-            
             return new THREE.CanvasTexture(canvas);
         }
 
         function initRomanticParticles() {
             const petalGeo = new THREE.PlaneGeometry(0.3, 0.3);
-            const petalTex = createPetalTexture();
             const petalMat = new THREE.MeshBasicMaterial({
-                map: petalTex,
-                transparent: true,
-                opacity: 0.85,
-                side: THREE.DoubleSide,
-                depthWrite: false,
-                blending: THREE.NormalBlending
+                map: createPetalTexture(), transparent: true, opacity: 0.85,
+                side: THREE.DoubleSide, depthWrite: false, blending: THREE.NormalBlending
             });
             
             romanticParticles = new THREE.Group();
@@ -666,18 +1341,10 @@
             
             for (let i = 0; i < PETAL_COUNT; i++) {
                 const mesh = new THREE.Mesh(petalGeo, petalMat);
-                const x = (Math.random() - 0.5) * 35;
-                const y = Math.random() * 8 + 0.5;
-                const z = (Math.random() - 0.5) * 35;
-                mesh.position.set(x, y, z);
-                
-                mesh.rotation.x = Math.random() * Math.PI;
-                mesh.rotation.y = Math.random() * Math.PI;
-                mesh.rotation.z = Math.random() * Math.PI;
-                
+                mesh.position.set((Math.random() - 0.5) * 35, Math.random() * 8 + 0.5, (Math.random() - 0.5) * 35);
+                mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
                 const scale = 0.5 + Math.random() * 0.7;
                 mesh.scale.set(scale, scale, scale);
-                
                 romanticParticles.add(mesh);
                 petalData.push({
                     mesh: mesh,
@@ -689,20 +1356,17 @@
                     swayRadius: 0.2 + Math.random() * 0.35
                 });
             }
-            
             scene.add(romanticParticles);
         }
 
         function updateRomanticParticles(delta, playerPos) {
-            if (!romanticParticles || !romanticParticles.visible) return;
+            if (!romanticParticles) return;
             const time = clock.getElapsedTime();
-            
             for (let i = 0; i < petalData.length; i++) {
                 const p = petalData[i];
                 p.mesh.position.y -= p.speedY * delta;
                 p.mesh.position.x += Math.sin(time * 1.3 + p.phase) * delta * p.swayRadius;
                 p.mesh.position.z += Math.cos(time * 1.0 + p.phase) * delta * p.swayRadius;
-                
                 p.mesh.rotation.x += p.speedRotX * delta;
                 p.mesh.rotation.y += p.speedRotY * delta;
                 p.mesh.rotation.z += p.speedRotZ * delta;
@@ -715,7 +1379,7 @@
             }
         }
 
-        // THIẾT LẬP ĐIỀU KHIỂN CẢM ỨNG DI ĐỘNG (JOYSTICK & TOUCH LOOK)
+        // ĐIỀU KHIỂN CẢM ỨNG DI ĐỘNG
         function setupTouchControls() {
             const joystickZone = document.getElementById('joystick-zone');
             const joystickThumb = document.getElementById('joystick-thumb');
@@ -752,27 +1416,22 @@
                 }
             }, { passive: false });
 
-            const resetJoystick = () => {
+            const resetJoy = () => {
                 joystickThumb.style.transform = `translate(0px, 0px)`;
-                moveForward = false;
-                moveBackward = false;
-                moveLeft = false;
-                moveRight = false;
+                moveForward = false; moveBackward = false; moveLeft = false; moveRight = false;
                 joystickTouchId = null;
             };
 
             window.addEventListener('touchend', (e) => {
                 for (let i = 0; i < e.changedTouches.length; i++) {
-                    const touch = e.changedTouches[i];
-                    if (touch.identifier === joystickTouchId) resetJoystick();
-                    if (touch.identifier === touchLookId) touchLookId = null;
+                    if (e.changedTouches[i].identifier === joystickTouchId) resetJoy();
+                    if (e.changedTouches[i].identifier === touchLookId) touchLookId = null;
                 }
             });
             window.addEventListener('touchcancel', (e) => {
                 for (let i = 0; i < e.changedTouches.length; i++) {
-                    const touch = e.changedTouches[i];
-                    if (touch.identifier === joystickTouchId) resetJoystick();
-                    if (touch.identifier === touchLookId) touchLookId = null;
+                    if (e.changedTouches[i].identifier === joystickTouchId) resetJoy();
+                    if (e.changedTouches[i].identifier === touchLookId) touchLookId = null;
                 }
             });
 
@@ -780,42 +1439,36 @@
                 let dx = clientX - joyBaseX;
                 let dy = clientY - joyBaseY;
                 const dist = Math.hypot(dx, dy);
-                const maxRadius = 42;
+                const maxR = 42;
 
-                if (dist > maxRadius) {
-                    dx = (dx / dist) * maxRadius;
-                    dy = (dy / dist) * maxRadius;
+                if (dist > maxR) {
+                    dx = (dx / dist) * maxR;
+                    dy = (dy / dist) * maxR;
                 }
 
                 joystickThumb.style.transform = `translate(${dx}px, ${dy}px)`;
-
-                const inHL = (currentState === STATES.HL1 || currentState === STATES.HL2 || currentState === STATES.HL3 || currentState === STATES.HL4 || currentState === STATES.HL0);
-                const normX = dx / maxRadius;
-                const normY = dy / maxRadius;
+                const normX = dx / maxR;
+                const normY = dy / maxR;
 
                 moveForward = normY < -0.25;
-                moveBackward = !inHL && normY > 0.25;
-                moveLeft = !inHL && normX < -0.25;
-                moveRight = !inHL && normX > 0.25;
+                moveBackward = normY > 0.25;
+                moveLeft = normX < -0.25;
+                moveRight = normX > 0.25;
             }
 
-            // Vuốt ngón tay bên phải để xoay góc nhìn camera
             window.addEventListener('touchstart', (e) => {
                 if (!isTouchDevice || isViewingMedia) return;
-                const targetEl = e.target;
-                if (joystickZone.contains(targetEl) || targetEl === btnMobileInteract || targetEl.closest('#btn-sound-toggle') || popup.classList.contains('active')) return;
+                const tEl = e.target;
+                if (joystickZone.contains(tEl) || tEl === btnMobileInteract || tEl.closest('#btn-sound-toggle') || popup.classList.contains('active')) return;
 
                 const touch = e.changedTouches[0];
                 touchLookId = touch.identifier;
                 lastTouchX = touch.clientX;
                 lastTouchY = touch.clientY;
-
-                // Tự động đồng bộ góc hiện tại của camera
                 touchYaw = camera.rotation.y;
                 touchPitch = camera.rotation.x;
             }, { passive: true });
 
-            // Chạm trực tiếp vào ảnh trong phòng 2 để mở xem phóng to
             window.addEventListener('touchend', (e) => {
                 if (!isTouchDevice || isViewingMedia || currentState !== STATES.R2) return;
                 const touch = e.changedTouches[0];
@@ -827,644 +1480,32 @@
                 );
                 raycaster.setFromCamera(mouseCoords, camera);
                 const intersects = raycaster.intersectObjects(interactableObjects);
-                if (intersects.length > 0) {
-                    const target = intersects[0].object;
-                    if (target.userData.type === 'gallery_photo') {
-                        openPhotoPopup(target.userData.path);
-                    }
+                if (intersects.length > 0 && intersects[0].object.userData.type === 'gallery_photo') {
+                    openPhotoPopup(intersects[0].object.userData.path);
                 }
             });
 
-            // Nút bấm tương tác trên Mobile
             btnMobileInteract.addEventListener('click', () => {
-                triggerActiveMobileInteraction();
-            });
-        }
-
-        function triggerActiveMobileInteraction() {
-            if (currentState === STATES.START) {
-                triggerTicketInteraction();
-            } else if (currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
-                createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
-                promptNode.style.display = 'none';
-                btnMobileInteract.style.display = 'none';
-            } else if (currentState === STATES.REND) {
-                triggerLetterInteraction();
-            }
-        }
-
-        function resetPlayerPosition() {
-            controls.getObject().position.set(0, 1.6, 12);
-            controls.getObject().rotation.set(0, 0, 0);
-            touchYaw = 0;
-            touchPitch = 0;
-        }
-
-        function clearActiveScene() {
-            activeElements.forEach(obj => {
-                if (obj.userData && obj.userData.videoElement) {
-                    obj.userData.videoElement.pause();
-                    obj.userData.videoElement.src = ""; 
-                    obj.userData.videoElement.load();
+                if (currentState === STATES.START) {
+                    triggerTicketInteraction();
+                } else if (currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
+                    createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
+                    promptNode.style.display = 'none';
+                    btnMobileInteract.style.display = 'none';
+                } else if (currentState === STATES.REND) {
+                    triggerLetterInteraction();
                 }
-                if (obj.children) {
-                    obj.children.forEach(child => {
-                        if (child.type === 'PositionalAudio') {
-                            if (child.isPlaying) child.stop();
-                            child.disconnect(); 
-                        }
-                    });
-                }
-                scene.remove(obj);
             });
-            
-            activeElements = [];
-            interactableObjects = [];
-            spaceTarget = null;
-            activeExitTrigger = null;
-            promptNode.style.display = 'none';
-            btnMobileInteract.style.display = 'none';
-
-            if (particles) { 
-                scene.remove(particles); 
-                scene.remove(particleTrails); 
-                particles = null; 
-                particleTrails = null; 
-            }
-            roomBoundaryX = 15;
-        }
-
-        function showHUDText(text, duration = 4000, callback = null) {
-            hud.innerHTML = text;
-            hud.style.opacity = 1;
-            setTimeout(() => {
-                hud.style.opacity = 0;
-                if(callback) setTimeout(callback, 1000);
-            }, duration);
-        }
-
-        function spawnFairyGuides(startX, startZ, endX, endZ, count) {
-            for (let i = 1; i <= count; i++) {
-                const fraction = i / (count + 1);
-                const x = startX + (endX - startX) * fraction;
-                const z = startZ + (endZ - startZ) * fraction;
-
-                const orbGeo = new THREE.SphereGeometry(0.08, 16, 16);
-                const orbMat = new THREE.MeshBasicMaterial({ color: 0xffb6c1 }); 
-                const orb = new THREE.Mesh(orbGeo, orbMat);
-                orb.position.set(x, 1.2, z);
-                orb.userData = { type: 'fairy_light', randomOffset: Math.random() * Math.PI * 2 };
-
-                const glow = new THREE.PointLight(0xff9ebb, 3, 3.5);
-                glow.position.set(0, 0, 0);
-                orb.add(glow);
-
-                scene.add(orb);
-                activeElements.push(orb);
-            }
-        }
-
-        // --- PHÒNG MỞ ĐẦU ---
-        function setupRoomStart() {
-            currentState = STATES.START;
-            clearActiveScene();
-            resetPlayerPosition();
-            unlockMouseLook();
-
-            if (romanticParticles) romanticParticles.visible = true;
-
-            const ticketGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2); 
-            const ticketMat = new THREE.MeshBasicMaterial({ visible: false }); 
-            const hitbox = new THREE.Mesh(ticketGeo, ticketMat);
-            hitbox.position.set(0, 1.0, 0); 
-            hitbox.userData = { type: 'ticket' };
-
-            // TẢI MÔ HÌNH VÉ MỜI THẬT (.GLB)
-            gltfLoader.load(ASSETS_CONFIG.roomStart.model, (gltf) => {
-                const model3D = gltf.scene;
-                const config = ASSETS_CONFIG.roomStart;
-                model3D.scale.set(config.scale, config.scale, config.scale); 
-                model3D.position.set(config.x, config.y, config.z);
-                hitbox.add(model3D);
-            });
-
-            const radius = 2.0; 
-            const height = 4.0; 
-            const lightPositions = [
-                { dx: -radius, dz: -radius }, { dx: radius, dz: -radius },
-                { dx: -radius, dz: radius }, { dx: radius, dz: radius }
-            ];
-
-            lightPositions.forEach(offset => {
-                const spot = new THREE.SpotLight(0xfff0f5, 55, 10, Math.PI/5, 0.6, 1);
-                spot.position.set(offset.dx, height, offset.dz);
-                spot.target = hitbox; 
-                scene.add(spot);
-                activeElements.push(spot);
-            });
-
-            scene.add(hitbox);
-            activeElements.push(hitbox);
-            interactableObjects.push(hitbox); 
-
-            if (isTouchDevice) {
-                btnMobileInteract.innerHTML = `🎫 MỞ VÉ MỜI`;
-                btnMobileInteract.style.display = 'flex';
-            }
-        }
-
-        function triggerTicketInteraction() {
-            interactableObjects = []; 
-            btnMobileInteract.style.display = 'none';
-            showHUDText("Chào mừng em đến với bảo tàng của chúng ta...", 4000, () => {
-                showHUDText("Em hãy bước tiếp vào trong bóng tối để nghe điều sâu thẳm nhất trong tim anh", 4000, () => {
-                    enterHallway(STATES.HL1);
-                });
-            });
-        }
-
-        function enterHallway(hlState) {
-            currentState = hlState;
-            clearActiveScene();
-            resetPlayerPosition();
-            lockMouseLook(); 
-
-            if (romanticParticles) romanticParticles.visible = false;
-            if(hlState === STATES.HL2 && bgMusic) bgMusic.setVolume(0.4);
-            setupSpaceParticles();
-        }
-
-        // --- PHÒNG 1: GIỌNG NÓI PODCAST ---
-        function setupRoom1() {
-            currentState = STATES.R1;
-            clearActiveScene();
-            resetPlayerPosition();
-            unlockMouseLook();
-
-            if (romanticParticles) romanticParticles.visible = true;
-
-            const positionsZ = [6, 0, -6];
-            ASSETS_CONFIG.room1.forEach((data, index) => {
-                const zPos = positionsZ[index];
-                
-                const pLight = new THREE.PointLight(0xff758c, 10, 5);
-                pLight.position.set(0, 2, zPos);
-                scene.add(pLight);
-                activeElements.push(pLight);
-
-                const nodeGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.1, 16);
-                const nodeMat = new THREE.MeshBasicMaterial({ color: 0xff758c, transparent: true, opacity: 0.65 });
-                const node = new THREE.Mesh(nodeGeo, nodeMat);
-                node.position.set(0, 0.05, zPos);
-                node.userData = { type: 'podcast_node', text: data.text, audioPath: data.audioPath, triggered: false, index: index };
-                scene.add(node);
-                activeElements.push(node);
-            });
-        }
-
-        function triggerPodcastNode(node) {
-            node.userData.triggered = true;
-            node.material.color.setHex(0xffb6c1); 
-            if(bgMusic) bgMusic.setVolume(0.08); 
-
-            showHUDText(node.userData.text, 6000);
-
-            if(currentVoice) currentVoice.stop();
-            currentVoice = new THREE.Audio(audioListener);
-            
-            audioLoader.load(node.userData.audioPath,
-                (buffer) => { 
-                    currentVoice.setBuffer(buffer);
-                    currentVoice.setVolume(1.0);
-                    currentVoice.play();
-                    showHUDText(node.userData.text, buffer.duration * 1000);
-                },
-                undefined,
-                (error) => { 
-                    console.warn("Chưa có file Audio, hiển thị văn bản thay thế.");
-                    showHUDText(node.userData.text, 6500);
-                } 
-            );
-
-            if(node.userData.index === ASSETS_CONFIG.room1.length - 1) {
-                spawnRoom1Exit();
-            }
-        }
-
-        function spawnRoom1Exit() {
-            spawnFairyGuides(0, -6, 0, -15, 7);
-            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 4), new THREE.MeshBasicMaterial({ visible: false }));
-            exitTrigger.position.set(0, 1, -15);
-            exitTrigger.userData = { type: 'room1_exit_trigger' };
-            scene.add(exitTrigger);
-            activeElements.push(exitTrigger);
-        }
-
-        // --- PHÒNG 2: ALBUM HÌNH ẢNH (GALAXY OF MEMORIES) ---
-        function setupRoom2() {
-            currentState = STATES.R2;
-            clearActiveScene();
-            resetPlayerPosition();
-            unlockMouseLook();
-
-            if (romanticParticles) romanticParticles.visible = true;
-
-            const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 512;
-            const context = canvas.getContext('2d');
-            const gradient = context.createRadialGradient(256, 256, 0, 256, 256, 256);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); 
-            gradient.addColorStop(0.15, 'rgba(255, 182, 193, 1)'); 
-            gradient.addColorStop(0.45, 'rgba(255, 105, 180, 0.45)'); 
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); 
-            context.fillStyle = gradient;
-            context.fillRect(0, 0, 512, 512);
-
-            const glowTex = new THREE.CanvasTexture(canvas);
-            const glowMat = new THREE.MeshBasicMaterial({ 
-                map: glowTex, 
-                transparent: true, 
-                blending: THREE.AdditiveBlending, 
-                depthWrite: false, 
-                side: THREE.DoubleSide 
-            });
-            const sunGlow = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), glowMat);
-            sunGlow.rotation.x = -Math.PI/2;
-            sunGlow.position.set(0, 0.05, 4);
-            sunGlow.userData = { type: 'trigger_album', triggered: false };
-            
-            scene.add(sunGlow);
-            activeElements.push(sunGlow);
-        }
-
-        function spawnAlbumImages() {
-            const total = ASSETS_CONFIG.room2.length;
-            const centerX = 0;
-            const centerZ = 4;
-
-            ASSETS_CONFIG.room2.forEach((path, index) => {
-                const phi = index * 137.5 * (Math.PI / 180);
-                const radius = 3.5 + (index * 0.1);
-                
-                const x = centerX + Math.cos(phi) * radius;
-                const z = centerZ + Math.sin(phi) * radius;
-                const y = 0.5 + Math.random() * 3.5;
-
-                const defaultH = 1.2;
-                const defaultW = 1.6;
-                const imgGeo = new THREE.PlaneGeometry(defaultW, defaultH);
-                
-                const fallbackMat = new THREE.MeshBasicMaterial({ color: 0x331022, side: THREE.DoubleSide, wireframe: true });
-                const mesh = new THREE.Mesh(imgGeo, fallbackMat);
-                
-                mesh.position.set(x, y, z);
-                mesh.lookAt(centerX, 1.8, centerZ);
-                mesh.userData = { type: 'gallery_photo', path: path };
-                
-                scene.add(mesh);
-                activeElements.push(mesh);
-                interactableObjects.push(mesh);
-
-                textureLoader.load(
-                    path,
-                    (texture) => {
-                        texture.colorSpace = THREE.SRGBColorSpace;
-                        const aspect = (texture.image && texture.image.width && texture.image.height) 
-                            ? (texture.image.width / texture.image.height) : 1.33;
-                        mesh.geometry.dispose();
-                        mesh.geometry = new THREE.PlaneGeometry(defaultH * aspect, defaultH);
-                        mesh.material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-                    },
-                    undefined,
-                    (err) => { /* Bỏ qua ảnh thiếu */ }
-                );
-            });
-
-            const maxRadius = 3.5 + (total * 0.1);
-            const exitZ = centerZ - maxRadius - 2;
-
-            roomBoundaryX = maxRadius + 15;
-
-            spawnFairyGuides(centerX, centerZ - 3, centerX, exitZ, 8);
-                
-            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 4), new THREE.MeshBasicMaterial({ visible: false }));
-            exitTrigger.position.set(centerX, 1, exitZ - 2);
-            exitTrigger.userData = { type: 'room2_exit_trigger' };
-            scene.add(exitTrigger);
-            activeElements.push(exitTrigger);
-        }
-
-        function openPhotoPopup(thumbnailPath) {
-            isViewingMedia = true;
-            // Thay thế thumbnails bằng fullsize để xem ảnh chất lượng cao
-            pImg.src = thumbnailPath.replace('thumbnails', 'fullsize');
-            pImg.style.display = 'block';
-            popup.classList.add('active');
-            if (mobileControls) mobileControls.style.display = 'none';
-            if (!isTouchDevice) controls.unlock();
-        }
-
-        // --- PHÒNG 3: VẬT THỂ VIDEO KỈ NIỆM ---
-        function setupRoom3() {
-            currentState = STATES.R3;
-            clearActiveScene();
-            resetPlayerPosition();
-            unlockMouseLook();
-
-            if (romanticParticles) romanticParticles.visible = true;
-
-            const xPositions = [-2.5, 2.5, -2.5];
-            const zPositions = [6, 1, -4];
-
-            ASSETS_CONFIG.room3.forEach((data, index) => {
-                const geo = new THREE.CylinderGeometry(0.8, 0.8, 1.5, 8);
-                const mat = new THREE.MeshBasicMaterial({ visible: false }); 
-                const hitbox = new THREE.Mesh(geo, mat);
-                hitbox.position.set(xPositions[index], 0.6, zPositions[index]);
-                hitbox.userData = { type: 'video_item', label: data.label, videoSrc: data.video, index: index, activeHologram: false };
-
-                data.models.forEach(modelData => {
-                    gltfLoader.load(modelData.path, (gltf) => {
-                        const model3D = gltf.scene;
-                        model3D.scale.set(modelData.scale, modelData.scale, modelData.scale); 
-                        model3D.position.set(modelData.x, modelData.y, modelData.z); 
-                        hitbox.add(model3D); 
-                    }, undefined, (err) => {
-                        console.warn("Lỗi tải model:", modelData.path, err);
-                    });
-                });
-                
-                const radius = 1.8; 
-                const height = 3.5; 
-                const lightPositions = [
-                    { dx: -radius, dz: -radius }, { dx: radius, dz: -radius },
-                    { dx: -radius, dz: radius }, { dx: radius, dz: radius }
-                ];
-
-                lightPositions.forEach(offset => {
-                    const spot = new THREE.SpotLight(0xfff0f5, 50, 10, Math.PI/5, 0.6, 1);
-                    spot.position.set(xPositions[index] + offset.dx, height, zPositions[index] + offset.dz);
-                    spot.target = hitbox; 
-                    scene.add(spot);
-                    activeElements.push(spot);
-                });
-
-                scene.add(hitbox);
-                activeElements.push(hitbox);
-            });
-        }
-
-        function createVideoHologramMesh(parentMesh, videoSrc) {
-            const video = document.createElement('video');
-            video.src = videoSrc;
-            video.loop = true;
-            video.playsInline = true;
-            video.play().catch(e => console.log("Video auto play prevented", e));
-
-            const videoTex = new THREE.VideoTexture(video);
-            videoTex.colorSpace = THREE.SRGBColorSpace;
-
-            const holoGeo = new THREE.PlaneGeometry(1.6, 1.0);
-            const holoMat = new THREE.MeshBasicMaterial({ map: videoTex, side: THREE.DoubleSide });
-            const holoMesh = new THREE.Mesh(holoGeo, holoMat);
-            
-            holoMesh.position.set(parentMesh.position.x, 1.8, parentMesh.position.z);
-            holoMesh.lookAt(0, 1.8, parentMesh.position.z + 3);
-
-            const positionalAudio = new THREE.PositionalAudio(audioListener);
-            positionalAudio.setMediaElementSource(video); 
-            positionalAudio.setDistanceModel('linear'); 
-            positionalAudio.setRefDistance(1.5); 
-            positionalAudio.setMaxDistance(4.0); 
-            
-            holoMesh.add(positionalAudio); 
-            holoMesh.userData = { type: 'floating_hologram_video', videoElement: video, videoSrc: videoSrc };
-
-            scene.add(holoMesh);
-            activeElements.push(holoMesh);
-            interactableObjects.push(holoMesh);
-            
-            parentMesh.userData.activeHologram = true;
-
-            let allOpened = true;
-            activeElements.forEach(el => {
-                if(el.userData.type === 'video_item' && !el.userData.activeHologram) allOpened = false;
-            });
-            if(allOpened) spawnRoom3Exit();
-        }
-
-        function spawnRoom3Exit() {
-            for(let i = 0; i < 3; i++) {
-                const arrow = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.05, 0.4), new THREE.MeshBasicMaterial({ color: 0xff758c }));
-                arrow.position.set(0, 0.02, -7 - (i * 1.2));
-                scene.add(arrow);
-                activeElements.push(arrow);
-            }
-            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshBasicMaterial({ visible: false }));
-            exitTrigger.position.set(0, 1, -10);
-            exitTrigger.userData = { type: 'room3_exit_trigger' };
-            scene.add(exitTrigger);
-            activeElements.push(exitTrigger);
-        }
-
-        // --- PHÒNG KẾT: BỨC THƯ TÌNH CẢM XÚC ---
-        function setupRoomEnd() {
-            currentState = STATES.REND;
-            clearActiveScene();
-            resetPlayerPosition();
-            unlockMouseLook();
-
-            if (romanticParticles) romanticParticles.visible = true;
-
-            const letterGeo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-            const letterMat = new THREE.MeshBasicMaterial({ visible: false });
-            const hitbox = new THREE.Mesh(letterGeo, letterMat);
-            hitbox.position.set(0, 1.2, 0);
-            hitbox.userData = { type: 'love_letter' };
-
-            gltfLoader.load(ASSETS_CONFIG.roomEnd.model, (gltf) => {
-                const model3D = gltf.scene;
-                const config = ASSETS_CONFIG.roomEnd;
-                model3D.scale.set(config.scale, config.scale, config.scale); 
-                model3D.position.set(config.x, config.y, config.z);
-                hitbox.add(model3D);
-            });
-
-            const radius = 2.5;
-            const height = 4.5;
-            const lightPositions = [
-                { dx: -radius, dz: -radius }, { dx: radius, dz: -radius },
-                { dx: -radius, dz: radius }, { dx: radius, dz: radius }
-            ];
-
-            lightPositions.forEach(offset => {
-                const spot = new THREE.SpotLight(0xfff5fa, 14, 10, Math.PI/5, 0.6, 1);
-                spot.position.set(offset.dx, height, offset.dz);
-                spot.target = hitbox;
-                scene.add(spot);
-                activeElements.push(spot);
-            });
-
-            scene.add(hitbox);
-            activeElements.push(hitbox);
-            interactableObjects.push(hitbox);
-
-            if (isTouchDevice) {
-                btnMobileInteract.innerHTML = `💌 ĐỌC THƯ TÌNH`;
-                btnMobileInteract.style.display = 'flex';
-            }
-        }
-
-        function triggerLetterInteraction() {
-            if(bgMusic) bgMusic.setVolume(0.05);
-
-            pTxt.innerHTML = `
-                <div class="letter-badge">✦ BẢO TÀNG TÌNH YÊU ✦</div>
-                <h2 class="letter-title">KỶ NIỆM 19 THÁNG YÊU NHAU</h2>
-                <div class="letter-body">${ASSETS_CONFIG.roomEnd.text}</div>
-                <button class="btn-letter-pledge" id="btn-letter-pledge">❤️ MÃI YÊU EM - 19 THÁNG VÀ MÃI MÃI</button>
-            `;
-            pTxt.style.display = 'block';
-            popup.classList.add('active');
-            if (mobileControls) mobileControls.style.display = 'none';
-            if (!isTouchDevice) controls.unlock();
-
-            document.getElementById('btn-letter-pledge').addEventListener('click', () => {
-                closePopup();
-            });
-
-            if(currentVoice) currentVoice.stop();
-            currentVoice = new THREE.Audio(audioListener);
-            audioLoader.load(
-                ASSETS_CONFIG.roomEnd.audioPath, 
-                (buffer) => {
-                    currentVoice.setBuffer(buffer);
-                    currentVoice.setVolume(1.0);
-                    currentVoice.play();
-                    setTimeout(() => {
-                        spawnFinalLoopExit();
-                    }, buffer.duration * 1000);
-                },
-                undefined,
-                (err) => {
-                    console.warn("Chưa có file voice thư tình, hẹn giờ xuất hiện lối ra.");
-                    setTimeout(() => {
-                        spawnFinalLoopExit();
-                    }, 5000);
-                }
-            );
-        }
-
-        function spawnFinalLoopExit() {
-            for(let i = 0; i < 3; i++) {
-                const arrow = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.05, 0.4), new THREE.MeshBasicMaterial({ color: 0xff4e78 }));
-                arrow.position.set(0, 0.02, -3 - (i * 1.2));
-                scene.add(arrow);
-                activeElements.push(arrow);
-            }
-            const exitTrigger = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.MeshBasicMaterial({ visible: false }));
-            exitTrigger.position.set(0, 1, -6);
-            exitTrigger.userData = { type: 'phong_ket_exit_trigger' };
-            scene.add(exitTrigger);
-            activeElements.push(exitTrigger);
-        }
-
-        // --- HÀNH LANG 0: LẶP LẠI VÔ TẬN & BƯỚC NHẢY KHÔNG GIAN ---
-        function setupSpaceParticles() {
-            const particleCount = 400;
-            
-            const geoPoints = new THREE.BufferGeometry();
-            const posPoints = new Float32Array(particleCount * 3);
-            
-            const geoTrails = new THREE.BufferGeometry();
-            const posTrails = new Float32Array(particleCount * 6);
-
-            for(let i = 0; i < particleCount; i++) {
-                const x = (Math.random() - 0.5) * 8;
-                const y = (Math.random() - 0.5) * 6 + 1;
-                const z = Math.random() * -30;
-
-                posPoints[i*3] = x; posPoints[i*3+1] = y; posPoints[i*3+2] = z;
-
-                posTrails[i*6] = x; posTrails[i*6+1] = y; posTrails[i*6+2] = z;
-                posTrails[i*6+3] = x; posTrails[i*6+4] = y; posTrails[i*6+5] = z;
-            }
-
-            geoPoints.setAttribute('position', new THREE.BufferAttribute(posPoints, 3));
-            geoTrails.setAttribute('position', new THREE.BufferAttribute(posTrails, 3));
-
-            const matPoints = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.9 });
-            particles = new THREE.Points(geoPoints, matPoints);
-            
-            const matTrails = new THREE.LineBasicMaterial({ color: 0xffb6c1, transparent: true, opacity: 0.4 });
-            particleTrails = new THREE.LineSegments(geoTrails, matTrails);
-
-            scene.add(particles);
-            scene.add(particleTrails);
-        }
-
-        function updateSpaceParticles(delta) {
-            if(!particles || !particleTrails) return;
-            
-            const minSpeed = 2.0;
-            const maxSpeed = 70.0;
-            const accel = 40.0;
-            
-            if (moveForward) {
-                currentWarpSpeed += accel * delta;
-                if(currentWarpSpeed > maxSpeed) currentWarpSpeed = maxSpeed;
-            } else {
-                currentWarpSpeed -= accel * 1.5 * delta; 
-                if(currentWarpSpeed < minSpeed) currentWarpSpeed = minSpeed;
-            }
-
-            const trailLength = (currentWarpSpeed - minSpeed) * 0.12; 
-
-            const pPos = particles.geometry.attributes.position.array;
-            const tPos = particleTrails.geometry.attributes.position.array;
-
-            for(let i = 0; i < pPos.length / 3; i++) {
-                pPos[i*3 + 2] += currentWarpSpeed * delta;
-                
-                if(pPos[i*3 + 2] > 10) {
-                    pPos[i*3 + 2] = -30;
-                }
-
-                tPos[i*6] = pPos[i*3];
-                tPos[i*6+1] = pPos[i*3+1];
-                tPos[i*6+2] = pPos[i*3+2];
-                
-                tPos[i*6+3] = pPos[i*3];
-                tPos[i*6+4] = pPos[i*3+1];
-                tPos[i*6+5] = pPos[i*3+2] - trailLength; 
-            }
-
-            particles.geometry.attributes.position.needsUpdate = true;
-            particleTrails.geometry.attributes.position.needsUpdate = true;
-        }
-
-        function lockMouseLook() {
-            controls.getObject().rotation.set(0, 0, 0);
-            controls.minPolarAngle = Math.PI/2;
-            controls.maxPolarAngle = Math.PI/2;
-            touchYaw = 0;
-            touchPitch = 0;
-        }
-
-        function unlockMouseLook() {
-            controls.minPolarAngle = 0;
-            controls.maxPolarAngle = Math.PI;
         }
 
         function onKeyDown(event) {
-            const inHL = (currentState === STATES.HL1 || currentState === STATES.HL2 || currentState === STATES.HL3 || currentState === STATES.HL4 || currentState === STATES.HL0);
             switch (event.code) {
                 case 'KeyW': moveForward = true; break;
-                case 'KeyS': if(!inHL) moveBackward = true; break; 
-                case 'KeyA': if(!inHL) moveLeft = true; break;     
-                case 'KeyD': if(!inHL) moveRight = true; break;
+                case 'KeyS': moveBackward = true; break; 
+                case 'KeyA': moveLeft = true; break;     
+                case 'KeyD': moveRight = true; break;
                 case 'Space':
-                    if(currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
+                    if (currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
                         createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
                         promptNode.style.display = 'none';
                         if (btnMobileInteract) btnMobileInteract.style.display = 'none';
@@ -1490,14 +1531,11 @@
 
             if (intersects.length > 0) {
                 const target = intersects[0].object;
-                
                 if(target.userData.type === 'ticket') {
                     triggerTicketInteraction();
-                }
-                else if(target.userData.type === 'gallery_photo') {
+                } else if(target.userData.type === 'gallery_photo') {
                     openPhotoPopup(target.userData.path);
-                }
-                else if(target.userData.type === 'floating_hologram_video') {
+                } else if(target.userData.type === 'floating_hologram_video') {
                     isViewingMedia = true; 
                     target.userData.videoElement.muted = true;
                     pVid.src = target.userData.videoSrc;
@@ -1506,8 +1544,7 @@
                     pVid.play();
                     if (mobileControls) mobileControls.style.display = 'none';
                     if (!isTouchDevice) controls.unlock();
-                }
-                else if(target.userData.type === 'love_letter') {
+                } else if(target.userData.type === 'love_letter') {
                     triggerLetterInteraction();
                 }
             }
@@ -1520,6 +1557,9 @@
             pVid.pause();
             pTxt.style.display = 'none';
             
+            // Khôi phục âm lượng nhạc nền sau khi xem video
+            targetMusicVolume = 0.4;
+
             activeElements.forEach(el => {
                 if(el.userData.type === 'floating_hologram_video') {
                     el.userData.videoElement.muted = false;
@@ -1528,8 +1568,6 @@
             
             if(currentState === STATES.REND) {
                 if(currentVoice) currentVoice.stop();
-                if(bgMusic) bgMusic.setVolume(0.4);
-                spawnFinalLoopExit();
             }
 
             isViewingMedia = false;
@@ -1547,17 +1585,19 @@
 
             camera = player;
 
+            // Audio Ducking Lerp mềm mại
+            if (bgMusic && bgMusic.isPlaying && !isMuted) {
+                const currentV = bgMusic.getVolume();
+                if (Math.abs(currentV - targetMusicVolume) > 0.01) {
+                    const step = (targetMusicVolume - currentV) * Math.min(1.0, delta * 3.5);
+                    bgMusic.setVolume(currentV + step);
+                }
+            }
+
             const isDriving = controls.isLocked || isTouchDevice;
 
             if (isDriving && !isViewingMedia) {
-                const speed = 4.0;
-                
-                const inHL = (currentState === STATES.HL1 || currentState === STATES.HL2 || currentState === STATES.HL3 || currentState === STATES.HL4 || currentState === STATES.HL0);
-                if(inHL) {
-                    player.rotation.y = 0;
-                    updateSpaceParticles(delta); 
-                }
-
+                const speed = 4.2;
                 if (moveForward) controls.moveForward(speed * delta);
                 if (moveBackward) controls.moveForward(-speed * delta);
                 if (moveLeft) controls.moveRight(-speed * delta);
@@ -1565,64 +1605,32 @@
 
                 const pos = player.position;
 
-                if (!inHL) {
-                    if (pos.x > roomBoundaryX) pos.x = roomBoundaryX;
-                    if (pos.x < -roomBoundaryX) pos.x = -roomBoundaryX;
-                    if (pos.z > 15) pos.z = 15;
-                }
+                // KIỂM TRA CHUYỂN PHÒNG LIỀN MẠCH 360 ĐỘ
+                checkSeamlessProgression(pos);
 
-                if(currentState === STATES.HL1 && pos.z < -2) setupRoom1();
-                if(currentState === STATES.HL2 && pos.z < -2) setupRoom2();
-                if(currentState === STATES.HL3 && pos.z < -2) setupRoom3();
-                if(currentState === STATES.HL4 && pos.z < -2) setupRoomEnd();
-
-                if(currentState === STATES.HL0) {
-                    updateSpaceParticles(delta);
-                    if(pos.z < -4) {
-                        setupRoomStart();
-                    }
-                }
-
-                if(currentState === STATES.R1) {
+                // Kiểm tra tương tác cự ly từng phòng
+                if (currentState === STATES.R1) {
                     activeElements.forEach(el => {
                         if(el.userData.type === 'podcast_node' && !el.userData.triggered) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
                             if(dist < 1.5) triggerPodcastNode(el);
                         }
-                        if(el.userData.type === 'room1_exit_trigger') {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 2.5) {
-                                el.userData.type = 'done'; 
-                                showHUDText("Em hãy bước tiếp vào trong bóng tối để nhìn thấy khoảnh khắc chúng ta", 4000, () => {
-                                    enterHallway(STATES.HL2);
-                                });
-                            }
-                        }
                     });
                 }
 
-                if(currentState === STATES.R2) {
+                if (currentState === STATES.R2) {
                     activeElements.forEach(el => {
                         if(el.userData.type === 'trigger_album' && !el.userData.triggered) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 1.5) {
+                            if(dist < 2.0) {
                                 el.userData.triggered = true;
-                                spawnAlbumImages();
-                            }
-                        }
-                        if(el.userData.type === 'room2_exit_trigger') {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 2.5) {
-                                el.userData.type = 'done'; 
-                                showHUDText("Em hãy bước tiếp vào trong bóng tối để tìm những kỉ niệm", 4000, () => {
-                                    enterHallway(STATES.HL3);
-                                });
+                                spawnAlbumImages(currentRoomCenter);
                             }
                         }
                     });
                 }
 
-                if(currentState === STATES.R3) {
+                if (currentState === STATES.R3) {
                     let nearAnyItem = false;
                     activeElements.forEach(el => {
                         if(el.userData.type === 'video_item' && !el.userData.activeHologram) {
@@ -1639,15 +1647,6 @@
                                 }
                             }
                         }
-                        if(el.userData.type === 'room3_exit_trigger') {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 2.5) {
-                                el.userData.type = 'done'; 
-                                showHUDText("Em hãy bước tiếp đi nhé...", 4000, () => {
-                                    enterHallway(STATES.HL4);
-                                });
-                            }
-                        }
                     });
                     if(!nearAnyItem) { 
                         spaceTarget = null; 
@@ -1655,21 +1654,28 @@
                         if (isTouchDevice) btnMobileInteract.style.display = 'none';
                     }
                 }
+            }
 
-                if(currentState === STATES.REND) {
-                    activeElements.forEach(el => {
-                        if(el.userData.type === 'phong_ket_exit_trigger') {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 2.5) {
-                                el.userData.type = 'done'; 
-                                showHUDText("Những kỉ niệm này sẽ còn mãi trong anh và em...", 4000, () => {
-                                    enterHallway(STATES.HL0);
-                                });
-                            }
-                        }
-                    });
+            // Cập nhật phong thư 3D bay lên vũ trụ
+            if (ascendingLetter) {
+                const time = clock.getElapsedTime();
+                ascendingLetter.position.y += delta * 2.2;
+                ascendingLetter.position.x += Math.sin(time * 2.0) * delta * 0.4;
+                ascendingLetter.position.z += Math.cos(time * 1.5) * delta * 0.4;
+                ascendingLetter.rotation.y += delta * 0.8;
+                ascendingLetter.rotation.z = Math.sin(time * 2.5) * 0.15;
+                ascendingLetter.scale.multiplyScalar(0.995);
+
+                // Khi thư bay lên cao độ 16m -> Biến mất và nổ pháo hoa trái tim
+                if (ascendingLetter.position.y > 16.0) {
+                    scene.remove(ascendingLetter);
+                    ascendingLetter = null;
+                    startClimaxAndFireworks();
                 }
             }
+
+            // Cập nhật Pháo hoa Trái Tim
+            updateClimaxFireworks(delta, currentRoomCenter);
 
             const elapsedTime = clock.getElapsedTime();
             activeElements.forEach(el => {
@@ -1685,9 +1691,7 @@
                 }
             });
 
-            // Cập nhật hệ thống hạt hoa đào lơ lửng
             updateRomanticParticles(delta, player.position);
-
             renderer.render(scene, camera);
         }
 
