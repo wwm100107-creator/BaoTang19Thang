@@ -183,7 +183,7 @@
         #media-popup {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 100dvh;
             background: rgba(3, 3, 6, 0.95); display: flex; justify-content: center;
-            align-items: center; z-index: 90; opacity: 0; pointer-events: none;
+            align-items: center; z-index: 120; opacity: 0; pointer-events: none;
             transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1); padding: 20px;
         }
         #media-popup.active { opacity: 1; pointer-events: auto; }
@@ -532,7 +532,7 @@
                 isInitialized = true;
                 
                 controls.addEventListener('unlock', () => {
-                    if (!isViewingMedia && !isTouchDevice) {
+                    if (!isViewingMedia && !isTouchDevice && !popup.classList.contains('active')) {
                         document.getElementById('setup-screen').style.display = 'flex';
                         btnStart.innerText = "TIẾP TỤC TRẢI NGHIỆM";
                     }
@@ -1408,6 +1408,7 @@
         }
 
         function triggerLetterInteraction() {
+            isViewingMedia = true;
             targetMusicVolume = 0.08;
 
             letterMainText.innerHTML = ASSETS_CONFIG.roomEnd.text;
@@ -1415,9 +1416,11 @@
             replyStationery.style.display = 'none';
             pTxt.style.display = 'block';
             popup.classList.add('active');
+            promptNode.style.display = 'none';
+            if (btnMobileInteract) btnMobileInteract.style.display = 'none';
 
             if (mobileControls) mobileControls.style.display = 'none';
-            if (!isTouchDevice) controls.unlock();
+            if (!isTouchDevice && controls.isLocked) controls.unlock();
 
             if (currentVoice) currentVoice.stop();
             currentVoice = new THREE.Audio(audioListener);
@@ -1866,6 +1869,8 @@
                         createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
                         promptNode.style.display = 'none';
                         if (btnMobileInteract) btnMobileInteract.style.display = 'none';
+                    } else if (currentState === STATES.REND && !popup.classList.contains('active')) {
+                        triggerLetterInteraction();
                     }
                     break;
             }
@@ -2008,6 +2013,30 @@
                     if(!nearAnyItem) { 
                         spaceTarget = null; 
                         promptNode.style.display = 'none'; 
+                        if (isTouchDevice) btnMobileInteract.style.display = 'none';
+                    }
+                }
+
+                // Cự ly tương tác phòng Kết (Bức thư tình)
+                if (currentState === STATES.REND && !popup.classList.contains('active')) {
+                    let nearLetter = false;
+                    activeElements.forEach(el => {
+                        if (el.userData && el.userData.type === 'love_letter') {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if (dist < 3.2) {
+                                nearLetter = true;
+                                promptNode.innerHTML = `Nhấp Chuột hoặc nhấn SPACE để đọc Thư Tình 💌`;
+                                promptNode.style.display = 'block';
+
+                                if (isTouchDevice) {
+                                    btnMobileInteract.innerHTML = `💌 ĐỌC THƯ TÌNH`;
+                                    btnMobileInteract.style.display = 'flex';
+                                }
+                            }
+                        }
+                    });
+                    if (!nearLetter) {
+                        promptNode.style.display = 'none';
                         if (isTouchDevice) btnMobileInteract.style.display = 'none';
                     }
                 }
