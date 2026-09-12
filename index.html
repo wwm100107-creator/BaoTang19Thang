@@ -868,6 +868,9 @@
                 });
                 fireworks = [];
             }
+            if (scene && scene.fog) {
+                scene.fog.density = 0.02;
+            }
             activeElements = [];
             interactableObjects = [];
             spaceTarget = null;
@@ -1701,9 +1704,12 @@
                     transparent: true,
                     opacity: 0.92,
                     blending: THREE.AdditiveBlending,
-                    depthWrite: false
+                    depthWrite: false,
+                    fog: false
                 });
                 this.rocketLine = new THREE.Line(lineGeo, lineMat);
+                this.rocketLine.frustumCulled = false;
+                this.rocketLine.renderOrder = 9999;
                 scene.add(this.rocketLine);
 
                 // Đầu tên lửa phát sáng rực rỡ (Points với quầng sáng lớn)
@@ -1715,9 +1721,12 @@
                     color: 0xffffff,
                     transparent: true,
                     blending: THREE.AdditiveBlending,
-                    depthWrite: false
+                    depthWrite: false,
+                    fog: false
                 });
                 this.rocketSpark = new THREE.Points(sparkGeo, sparkMat);
+                this.rocketSpark.frustumCulled = false;
+                this.rocketSpark.renderOrder = 9999;
                 scene.add(this.rocketSpark);
 
                 // Ánh hào quang rực rỡ rọi sáng bầu trời khi bay lên
@@ -1938,6 +1947,22 @@
                 }
 
                 // 3. Khởi tạo cấu trúc Three.js: LineSegments cho vệt sáng + Points cho đầu hạt hào quang
+                // ĐIỀN TOẠ ĐỘ BAN ĐẦU NGAY LẬP TỨC (Loại bỏ triệt để lỗi BufferGeometry khởi tạo (0,0,0) gây Frustum Culling)
+                for (let i = 0; i < count; i++) {
+                    const idx6 = i * 6;
+                    linePositions[idx6] = basePos.x;
+                    linePositions[idx6 + 1] = basePos.y;
+                    linePositions[idx6 + 2] = basePos.z;
+                    linePositions[idx6 + 3] = basePos.x;
+                    linePositions[idx6 + 4] = basePos.y;
+                    linePositions[idx6 + 5] = basePos.z;
+
+                    const idx3 = i * 3;
+                    pointPositions[idx3] = basePos.x;
+                    pointPositions[idx3 + 1] = basePos.y;
+                    pointPositions[idx3 + 2] = basePos.z;
+                }
+
                 const lineGeo = new THREE.BufferGeometry();
                 lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
                 lineGeo.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
@@ -1945,24 +1970,30 @@
                     vertexColors: true,
                     transparent: true,
                     blending: THREE.AdditiveBlending,
-                    depthWrite: false
+                    depthWrite: false,
+                    fog: false // Không bị sương mù đen che khuất
                 });
                 this.explosionLines = new THREE.LineSegments(lineGeo, lineMat);
+                this.explosionLines.frustumCulled = false; // Luôn luôn render, không bị Three.js tự động cắt tỉa
+                this.explosionLines.renderOrder = 9999;
                 scene.add(this.explosionLines);
 
                 const pointGeo = new THREE.BufferGeometry();
                 pointGeo.setAttribute('position', new THREE.BufferAttribute(pointPositions, 3));
                 pointGeo.setAttribute('color', new THREE.BufferAttribute(pointColors, 3));
                 const pointMat = new THREE.PointsMaterial({
-                    size: 4.2, // Hạt phát sáng to gấp đôi, quầng sáng rực rỡ
+                    size: 4.5, // Hạt phát sáng to gấp đôi, quầng sáng rực rỡ
                     map: getFireworkSparkTexture(),
                     vertexColors: true,
                     transparent: true,
                     blending: THREE.AdditiveBlending,
                     depthWrite: false,
-                    opacity: 1.0
+                    opacity: 1.0,
+                    fog: false // Không bị sương mù che khuất
                 });
                 this.explosionPoints = new THREE.Points(pointGeo, pointMat);
+                this.explosionPoints.frustumCulled = false; // Luôn luôn render
+                this.explosionPoints.renderOrder = 9999;
                 scene.add(this.explosionPoints);
             }
 
@@ -2127,6 +2158,9 @@
             targetMusicVolume = 0.55;
             grandFinaleHud.style.opacity = 1;
             roomReadyForNext = true;
+            if (scene && scene.fog) {
+                scene.fog.density = 0.002; // Bầu trời đêm mở toang không giới hạn, không còn lớp sương tối cản tầm nhìn
+            }
         }
 
         function launchInteractiveFirework(customTarget = null) {
