@@ -1258,13 +1258,23 @@
                     const targetRadius = 4.2 + Math.pow(norm, 0.82) * 20.8;
                     const targetX = center.x + Math.cos(phi) * targetRadius;
                     const targetZ = center.z + Math.sin(phi) * targetRadius;
-                    const targetY = 1.0 + Math.sin(index * 0.42) * 1.5 + norm * 2.2;
+
+                    const defaultH = 1.25;
+                    const halfH = defaultH / 2;
+
+                    // Độ cao lơ lửng tuyệt đẹp vừa vặn tầm mắt (1.45m - 2.85m), tạo thành dải sóng ngân hà nhấp nhô mềm mại
+                    let targetY = 1.55 + Math.sin(index * 0.38) * 0.45 + norm * 1.15;
+                    // CHỐT CHẶN AN TOÀN TUYỆT ĐỐI: Mép dưới bức ảnh luôn cách sàn tối thiểu 40cm, không bao giờ bị chìm dưới sàn!
+                    const minSafeCenterY = halfH + 0.40;
+                    if (targetY < minSafeCenterY) {
+                        targetY = minSafeCenterY;
+                    }
 
                     // Vị trí xuất phát từ gần tâm ngân hà
                     const startRadius = 2.0 + norm * 3.5;
                     const startX = center.x + Math.cos(phi) * startRadius;
                     const startZ = center.z + Math.sin(phi) * startRadius;
-                    const startY = 1.2 + norm * 0.8;
+                    const startY = Math.max(minSafeCenterY, 1.4 + norm * 0.6);
 
                     textureLoader.load(path, (texture) => {
                         if (currentState !== STATES.R2) return;
