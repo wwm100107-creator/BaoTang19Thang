@@ -964,7 +964,7 @@
 
             if (isTouchDevice) {
                 btnMobileInteract.innerHTML = `💌 MỞ HỘP KỶ NIỆM`;
-                btnMobileInteract.style.display = 'flex';
+                btnMobileInteract.style.display = 'none';
             }
         }
 
@@ -1644,7 +1644,7 @@
 
             if (isTouchDevice) {
                 btnMobileInteract.innerHTML = `💌 ĐỌC THƯ TÌNH`;
-                btnMobileInteract.style.display = 'flex';
+                btnMobileInteract.style.display = 'none';
             }
         }
 
@@ -2551,9 +2551,17 @@
                 raycaster.setFromCamera(mouseCoords, camera);
                 const intersects = raycaster.intersectObjects(interactableObjects, true);
                 if (intersects.length > 0) {
-                    const target = findInteractableTarget(intersects[0].object);
-                    if (target && handleInteractableTarget(target)) {
-                        return;
+                    const hit = intersects[0];
+                    const target = findInteractableTarget(hit.object);
+                    if (target) {
+                        // CHỐT CHẶN CỰ LY: Phải cách đồ vật < 1m mới có hiệu lực tương tác
+                        if (!isTargetWithinInteractRange(hit)) {
+                            showHUDText("Hãy tiến lại gần hơn (< 1m) để tương tác nhé ✨", 2500);
+                            return;
+                        }
+                        if (handleInteractableTarget(target)) {
+                            return;
+                        }
                     }
                 } else if (currentState === STATES.REND && isClimaxActive) {
                     const touchDir = raycaster.ray.direction.clone();
@@ -2576,6 +2584,18 @@
             });
         }
 
+        // KIỂM TRA CỰ LY TƯƠNG TÁC CHÍNH XÁC (< 1.05m tính từ người chơi tới bề mặt đồ vật)
+        function isTargetWithinInteractRange(hit) {
+            if (!hit) return false;
+            const playerPos = camera.position;
+            const hitPoint = hit.point;
+            // Khoảng cách mặt phẳng ngang (X-Z) giữa người chơi và bề mặt vật thể
+            const hDist = Math.hypot(playerPos.x - hitPoint.x, playerPos.z - hitPoint.z);
+            // Khoảng cách 3D trực tiếp từ mắt tới điểm chạm
+            const rayDist = hit.distance;
+            return (hDist <= 1.05 || rayDist <= 1.05);
+        }
+
         function onKeyDown(event) {
             if (event.key === 'Escape' && popup.classList.contains('active')) {
                 closePopup();
@@ -2592,7 +2612,17 @@
                         promptNode.style.display = 'none';
                         if (btnMobileInteract) btnMobileInteract.style.display = 'none';
                     } else if (currentState === STATES.REND && !popup.classList.contains('active')) {
-                        triggerLetterInteraction();
+                        // Kiểm tra khoảng cách tới bức thư tình trước khi mở bằng SPACE
+                        let nearLetter = false;
+                        activeElements.forEach(el => {
+                            if (el.userData && el.userData.type === 'love_letter') {
+                                const dist = Math.hypot(camera.position.x - el.position.x, camera.position.z - el.position.z);
+                                if (dist < 1.6) nearLetter = true;
+                            }
+                        });
+                        if (nearLetter) {
+                            triggerLetterInteraction();
+                        }
                     }
                     break;
             }
@@ -2659,11 +2689,16 @@
             );
             raycaster.setFromCamera(mouseCoords, camera);
             const intersects = raycaster.intersectObjects(interactableObjects, true);
-            if (intersects.length > 0 && findInteractableTarget(intersects[0].object)) {
-                document.body.style.cursor = 'pointer';
-            } else {
-                document.body.style.cursor = 'default';
+            if (intersects.length > 0) {
+                const hit = intersects[0];
+                const target = findInteractableTarget(hit.object);
+                // Con trỏ bàn tay CHỈ HIỆN khi đang đứng cách đồ vật < 1m
+                if (target && isTargetWithinInteractRange(hit)) {
+                    document.body.style.cursor = 'pointer';
+                    return;
+                }
             }
+            document.body.style.cursor = 'default';
         }
 
         function onMouseClick(event) {
@@ -2696,9 +2731,18 @@
             const intersects = raycaster.intersectObjects(interactableObjects, true);
 
             if (intersects.length > 0) {
-                const target = findInteractableTarget(intersects[0].object);
-                if (target && handleInteractableTarget(target)) {
-                    return;
+                const hit = intersects[0];
+                const target = findInteractableTarget(hit.object);
+                if (target) {
+                    // CHỐT CHẶN CỰ LY: Phải cách đồ vật < 1m mới có hiệu lực click
+                    if (!isTargetWithinInteractRange(hit)) {
+                        showHUDText("Hãy tiến lại gần hơn (< 1m) để tương tác nhé ✨", 2500);
+                        return;
+                    }
+
+                    if (handleInteractableTarget(target)) {
+                        return;
+                    }
                 }
             }
 
@@ -2748,8 +2792,8 @@
                 const intersects = raycaster.intersectObjects(interactableObjects, true);
                 const crosshairEl = document.getElementById('crosshair');
                 if (crosshairEl) {
-                    const target = (intersects.length > 0) ? findInteractableTarget(intersects[0].object) : null;
-                    if (target) {
+                    // Tâm ngắm CHỈ PHÁT SÁNG NỞ TO khi lia trúng đồ vật VÀ cách đồ vật < 1m
+                    if (intersects.length > 0 && findInteractableTarget(intersects[0].object) && isTargetWithinInteractRange(intersects[0])) {
                         crosshairEl.classList.add('hovering');
                     } else {
                         crosshairEl.classList.remove('hovering');
@@ -2779,6 +2823,30 @@
                 // KIỂM TRA CHUYỂN PHÒNG LIỀN MẠCH 360 ĐỘ
                 checkSeamlessProgression(pos);
 
+                // Cự ly tương tác phòng 0 (Hộp quà kỷ niệm - yêu cầu tiến sát < 1m)
+                if (currentState === STATES.START) {
+                    let nearTicket = false;
+                    activeElements.forEach(el => {
+                        if (el.userData && el.userData.type === 'ticket') {
+                            const dist = Math.hypot(pos.x - el.position.x, pos.z - el.position.z);
+                            // Bệ bán kính 0.75m -> khoảng cách từ mép bệ < 1.0m (tổng khoảng cách tới tâm < 1.6m)
+                            if (dist < 1.6) {
+                                nearTicket = true;
+                                promptNode.innerHTML = `Nhấp Chuột hoặc chạm để Mở Hộp Kỷ Niệm 💌`;
+                                promptNode.style.display = 'block';
+                                if (isTouchDevice) {
+                                    btnMobileInteract.innerHTML = `💌 MỞ HỘP KỶ NIỆM`;
+                                    btnMobileInteract.style.display = 'flex';
+                                }
+                            }
+                        }
+                    });
+                    if (!nearTicket) {
+                        promptNode.style.display = 'none';
+                        if (isTouchDevice) btnMobileInteract.style.display = 'none';
+                    }
+                }
+
                 // Cự ly tương tác phòng 1 (nhận diện khi đi qua mốc < 2.5m)
                 if (currentState === STATES.R1) {
                     activeElements.forEach(el => {
@@ -2794,7 +2862,7 @@
                     activeElements.forEach(el => {
                         if(el.userData.type === 'trigger_album' && !el.userData.triggered) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 4.5) {
+                            if(dist < 18.0) {
                                 el.userData.triggered = true;
                                 spawnAlbumImages(currentRoomCenter);
                             }
@@ -2802,16 +2870,17 @@
                     });
                 }
 
-                // Cự ly tương tác phòng 3 (Tăng cự ly lên 3.2m để tương tác tự nhiên, không bị va đập)
+                // Cự ly tương tác phòng 3 (Hiện vật 3D - yêu cầu tiến sát < 1m)
                 if (currentState === STATES.R3) {
                     let nearAnyItem = false;
                     activeElements.forEach(el => {
                         if(el.userData.type === 'video_item' && !el.userData.activeHologram) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 3.2) {
+                            // Bán kính hiện vật ~0.9m -> khoảng cách tới bề mặt < 1.0m (khoảng cách tới tâm < 1.9m)
+                            if(dist < 1.9) {
                                 nearAnyItem = true;
                                 spaceTarget = el;
-                                promptNode.innerHTML = `Nhấn SPACE để xem kỉ niệm [ ${el.userData.label} ]`;
+                                promptNode.innerHTML = `Nhấn SPACE hoặc nhấp chuột để xem [ ${el.userData.label} ]`;
                                 promptNode.style.display = 'block';
 
                                 if (isTouchDevice) {
@@ -2828,13 +2897,14 @@
                     }
                 }
 
-                // Cự ly tương tác phòng Kết (Bức thư tình)
+                // Cự ly tương tác phòng Kết (Bức thư tình - yêu cầu tiến sát < 1m)
                 if (currentState === STATES.REND && !popup.classList.contains('active')) {
                     let nearLetter = false;
                     activeElements.forEach(el => {
                         if (el.userData && el.userData.type === 'love_letter') {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if (dist < 3.2) {
+                            // Bệ bán kính 0.75m -> khoảng cách từ mép bệ < 1.0m (khoảng cách tới tâm < 1.6m)
+                            if (dist < 1.6) {
                                 nearLetter = true;
                                 promptNode.innerHTML = `Nhấp Chuột hoặc nhấn SPACE để đọc Thư Tình 💌`;
                                 promptNode.style.display = 'block';
