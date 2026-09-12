@@ -783,6 +783,18 @@
             return group;
         }
 
+        function getRoom2MaxPhotoRadius() {
+            const total = ASSETS_CONFIG.room2.length;
+            if (total <= 1) return 25.0;
+            const norm = 1.0;
+            return 4.2 + Math.pow(norm, 0.82) * 20.8;
+        }
+
+        function getRoom2BoundaryRadius() {
+            // Biên giới của phòng 2 luôn cách tấm hình ngoài cùng gần biên nhất đúng 2 mét (25m + 2m = 27m)
+            return getRoom2MaxPhotoRadius() + 2.0;
+        }
+
         // ==========================================
         // 1. CƠ CHẾ DI CHUYỂN LIỀN MẠCH 360 ĐỘ (SEAMLESS OMNIDIRECTIONAL PROGRESSION)
         // ==========================================
@@ -791,8 +803,15 @@
 
             const dist = Math.hypot(playerPos.x - currentRoomCenter.x, playerPos.z - currentRoomCenter.z);
             
-            // Khi người chơi bước ra ngoài bán kính 13 mét theo BẤT CỨ HƯỚNG NÀO (360 độ)
-            if (dist > 13.0) {
+            // Ngưỡng bước qua biên giới từng phòng:
+            // Phòng 2: Biên giới luôn cách tấm hình gần biên nhất đúng 2 mét (27.0m)
+            let exitThreshold = 13.0;
+            if (currentState === STATES.R2) {
+                exitThreshold = getRoom2BoundaryRadius();
+            }
+
+            // Khi người chơi bước ra ngoài biên giới theo BẤT CỨ HƯỚNG NÀO (360 độ)
+            if (dist > exitThreshold) {
                 isTransitioning = true;
                 
                 const dirX = (playerPos.x - currentRoomCenter.x) / dist;
@@ -1130,30 +1149,96 @@
             currentRoomCenter.copy(center);
             clearOldRoom();
 
-            const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 512;
-            const context = canvas.getContext('2d');
-            const gradient = context.createRadialGradient(256, 256, 0, 256, 256, 256);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); 
-            gradient.addColorStop(0.15, 'rgba(255, 182, 193, 1)'); 
-            gradient.addColorStop(0.45, 'rgba(255, 105, 180, 0.45)'); 
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); 
-            context.fillStyle = gradient;
-            context.fillRect(0, 0, 512, 512);
+            const boundaryRadius = getRoom2BoundaryRadius(); // 27.0m (luôn cách tấm hình gần biên nhất đúng 2m)
 
-            // Đĩa sáng ngân hà lớn hơn (14m x 14m)
-            const sunGlow = new THREE.Mesh(
-                new THREE.PlaneGeometry(14, 14),
+            // 1. SÀN NGÂN HÀ BAO QUÁT TOÀN DIỆN (Đường kính 56m, ôm trọn toàn bộ ảnh và biên giới)
+            const floorCanvas = document.createElement('canvas');
+            floorCanvas.width = 1024; floorCanvas.height = 1024;
+            const fCtx = floorCanvas.getContext('2d');
+            const fGrad = fCtx.createRadialGradient(512, 512, 0, 512, 512, 512);
+            fGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');       // Lõi ngân hà rực sáng
+            fGrad.addColorStop(0.10, 'rgba(255, 182, 193, 0.85)');    // Phấn hồng dịu
+            fGrad.addColorStop(0.32, 'rgba(255, 105, 180, 0.35)');    // Bụi sao tinh vân
+            fGrad.addColorStop(0.65, 'rgba(168, 85, 247, 0.20)');     // Sắc tím ngân hà huyền ảo
+            fGrad.addColorStop(0.88, 'rgba(255, 117, 140, 0.12)');    // Viền nhẹ tới sát biên
+            fGrad.addColorStop(1.0, 'rgba(0, 0, 0, 0)');              // Hòa quyện êm ái vào màn đêm
+            fCtx.fillStyle = fGrad;
+            fCtx.fillRect(0, 0, 1024, 1024);
+
+            const floorSize = boundaryRadius * 2.08; // ~56m
+            const galaxyFloor = new THREE.Mesh(
+                new THREE.PlaneGeometry(floorSize, floorSize),
                 new THREE.MeshBasicMaterial({ 
-                    map: new THREE.CanvasTexture(canvas), transparent: true, 
-                    blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide 
+                    map: new THREE.CanvasTexture(floorCanvas), 
+                    transparent: true, 
+                    blending: THREE.AdditiveBlending, 
+                    depthWrite: false, 
+                    side: THREE.DoubleSide 
                 })
             );
-            sunGlow.rotation.x = -Math.PI/2;
-            sunGlow.position.set(center.x, 0.05, center.z);
-            sunGlow.userData = { type: 'trigger_album', triggered: false };
-            scene.add(sunGlow);
-            activeElements.push(sunGlow);
+            galaxyFloor.rotation.x = -Math.PI / 2;
+            galaxyFloor.position.set(center.x, 0.03, center.z);
+            scene.add(galaxyFloor);
+            activeElements.push(galaxyFloor);
+
+            // 2. VÙNG LÕI NGÂN HÀ KÍCH HOẠT ALBUM (Đĩa sáng trung tâm 12m)
+            const coreGlow = new THREE.Mesh(
+                new THREE.PlaneGeometry(12, 12),
+                new THREE.MeshBasicMaterial({ 
+                    map: new THREE.CanvasTexture(floorCanvas), 
+                    transparent: true, 
+                    blending: THREE.AdditiveBlending, 
+                    depthWrite: false, 
+                    side: THREE.DoubleSide 
+                })
+            );
+            coreGlow.rotation.x = -Math.PI / 2;
+            coreGlow.position.set(center.x, 0.04, center.z);
+            coreGlow.userData = { type: 'trigger_album', triggered: false };
+            scene.add(coreGlow);
+            activeElements.push(coreGlow);
+
+            // 3. VÀNH ĐAI BIÊN GIỚI NGHỆ THUẬT (CÁCH TẤM HÌNH GẦN BIÊN NHẤT ĐÚNG 2M = 27.0M)
+            const ringGeo = new THREE.RingGeometry(boundaryRadius - 0.2, boundaryRadius + 0.2, 128);
+            const ringMat = new THREE.MeshBasicMaterial({ 
+                color: 0xff9ebb, 
+                side: THREE.DoubleSide, 
+                transparent: true, 
+                opacity: 0.55, 
+                blending: THREE.AdditiveBlending, 
+                depthWrite: false 
+            });
+            const boundaryRing = new THREE.Mesh(ringGeo, ringMat);
+            boundaryRing.rotation.x = -Math.PI / 2;
+            boundaryRing.position.set(center.x, 0.05, center.z);
+            boundaryRing.userData = { type: 'room2_boundary_ring' };
+            scene.add(boundaryRing);
+            activeElements.push(boundaryRing);
+
+            // 4. CHÙM BỤI SAO TINH TÚ ĐÁNH DẤU ĐƯỜNG BIÊN GIỚI (64 điểm phát sáng lơ lửng)
+            const starCount = 64;
+            const starGeo = new THREE.BufferGeometry();
+            const starPos = new Float32Array(starCount * 3);
+            for (let i = 0; i < starCount; i++) {
+                const angle = (i / starCount) * Math.PI * 2;
+                starPos[i * 3] = center.x + Math.cos(angle) * boundaryRadius;
+                starPos[i * 3 + 1] = 0.28 + Math.sin(i * 1.5) * 0.18;
+                starPos[i * 3 + 2] = center.z + Math.sin(angle) * boundaryRadius;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({
+                size: 0.55,
+                map: getFireworkSparkTexture(),
+                color: 0xffb6c1,
+                transparent: true,
+                opacity: 0.85,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const boundaryStars = new THREE.Points(starGeo, starMat);
+            boundaryStars.userData = { type: 'room2_boundary_stars' };
+            scene.add(boundaryStars);
+            activeElements.push(boundaryStars);
         }
 
         // ==========================================
@@ -1241,6 +1326,7 @@
 
             setTimeout(() => {
                 roomReadyForNext = true;
+                showHUDText("Dải ngân hà kỷ niệm của chúng ta... Em có thể tự do ngắm nhìn hoặc bước qua biên giới để tiếp tục ✨", 5000);
             }, 6500);
         }
 
@@ -2582,12 +2668,12 @@
                     });
                 }
 
-                // Cự ly tương tác phòng 2
+                // Cự ly tương tác phòng 2 (Kích hoạt khi bước vào vùng lõi ngân hà)
                 if (currentState === STATES.R2) {
                     activeElements.forEach(el => {
                         if(el.userData.type === 'trigger_album' && !el.userData.triggered) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 2.0) {
+                            if(dist < 4.5) {
                                 el.userData.triggered = true;
                                 spawnAlbumImages(currentRoomCenter);
                             }
@@ -2727,6 +2813,12 @@
                         const baseOp = u.triggered ? 0.6 : 0.28;
                         u.halo.material.opacity = baseOp + Math.sin(elapsedTime * 3.0 + u.index) * 0.12;
                     }
+                }
+                if (el.userData && el.userData.type === 'room2_boundary_ring') {
+                    el.material.opacity = 0.42 + Math.sin(elapsedTime * 2.2) * 0.15;
+                }
+                if (el.userData && el.userData.type === 'room2_boundary_stars') {
+                    el.rotation.y += delta * 0.04;
                 }
             });
 
