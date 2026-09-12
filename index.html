@@ -119,7 +119,7 @@
 
         /* Chữ Hologram 3D lơ lửng trên HUD */
         #hologram-hud {
-            position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);
+            position: absolute; top: 28%; left: 50%; transform: translate(-50%, -50%);
             text-align: center; pointer-events: none; z-index: 20;
             color: #ffb6c1; text-shadow: 0 0 25px rgba(255, 117, 140, 0.95), 0 0 50px rgba(0, 210, 255, 0.6);
             font-size: 24px; font-weight: 400; opacity: 0;
@@ -131,10 +131,10 @@
         /* Gợi ý tương tác bấm nút */
         #interaction-prompt {
             position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%);
-            color: #fff; background: rgba(18, 12, 26, 0.82); padding: 12px 26px;
+            color: #fff; background: rgba(18, 12, 26, 0.85); padding: 12px 26px;
             border-radius: 30px; border: 1px solid rgba(255, 182, 193, 0.4); font-size: 14px;
             letter-spacing: 1px; display: none; z-index: 30; pointer-events: none;
-            box-shadow: 0 4px 25px rgba(255, 105, 180, 0.3); backdrop-filter: blur(10px);
+            box-shadow: 0 4px 25px rgba(255, 105, 180, 0.35); backdrop-filter: blur(10px);
             font-weight: 500;
         }
 
@@ -394,7 +394,7 @@
 
         const ASSETS_CONFIG = {
             bgMusic: 'assets/audio/bg_music.mp3',
-            roomStart: { model: 'assets/models/ve.glb', scale: 1.0, y: 1.0 },
+            roomStart: { model: 'assets/models/ve.glb' },
             room1: [
                 { text: "Chào em, điểm dừng chân đầu tiên... lắng nghe anh nhé.", audioPath: 'assets/audio/voice_p1_1.mp3' },
                 { text: "Khoảng thời gian qua là điều vô giá nhất đối với cuộc đời anh.", audioPath: 'assets/audio/voice_p1_2.mp3' },
@@ -404,30 +404,26 @@
             room3: [
                 { 
                     label: 'Máy Photobooth', video: 'assets/videos/video_photobooth.mp4',
-                    models: [ { path: 'assets/models/photobooth.glb', scale: 1.5, x: 0, y: -0.6, z: 0 } ] 
+                    model: 'assets/models/photobooth.glb'
                 },
                 { 
                     label: 'Quán Cà Phê Kỷ Niệm', video: 'assets/videos/video_caphe.mp4',
-                    models: [ 
-                        { path: 'assets/models/Table.glb', scale: 1.2, x: 0, y: -0.6, z: 0 },
-                        { path: 'assets/models/laptop.glb', scale: 0.8, x: -0.3, y: 0.2, z: 0 },
-                        { path: 'assets/models/caphe.glb', scale: 0.4, x: 0.4, y: 0.2, z: 0.2 }
-                    ] 
+                    tableModel: 'assets/models/Table.glb',
+                    laptopModel: 'assets/models/laptop.glb',
+                    coffeeModel: 'assets/models/caphe.glb'
                 },
                 { 
                     label: 'Chiếc Áo Đôi Đầu Tiên', video: 'assets/videos/video_aodoi.mp4',
-                    models: [ { path: 'assets/models/aodoi.glb', scale: 1.5, x: 0, y: -0.6, z: 0 } ] 
+                    model: 'assets/models/aodoi.glb'
                 }
             ],
             roomEnd: {
                 text: "Gửi em, cô gái anh yêu.<br><br>19 tháng không phải là một hành trình quá dài, nhưng nó đủ để anh hiểu rằng em chính là mảnh ghép hoàn hảo nhất mà anh tìm kiếm.<br><br>Cảm ơn em vì đã đến, đã ở lại và cùng anh tô vẽ nên những ký ức tuyệt vời này. Mỗi ngày trôi qua có em bên cạnh đều là một ngày hạnh phúc vô bờ bến.<br><br>Yêu em rất nhiều!",
                 audioPath: 'assets/audio/voice_phong_ket.mp3',
-                model: 'assets/models/thu.glb',
-                scale: 0.5, y: 1.2
+                model: 'assets/models/thu.glb'
             }
         };
 
-        // Máy trạng thái bảo tàng
         const STATES = { START: 0, R1: 1, R2: 2, R3: 3, REND: 4, CLIMAX: 5 };
         let currentState = STATES.START;
 
@@ -444,7 +440,7 @@
         let scene, camera, renderer, controls, clock;
         let audioListener, bgMusic, currentVoice = null;
         let isMuted = false;
-        let targetMusicVolume = 0.4; // Cho Audio Ducking
+        let targetMusicVolume = 0.4;
 
         let raycaster, moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
         let activeElements = [];
@@ -455,9 +451,7 @@
         const PETAL_COUNT = 100;
         const petalData = [];
 
-        // Hệ thống Thư 3D Bay Lên & Pháo Hoa Trái Tim
         let ascendingLetter = null;
-        let letterSparkles = [];
         let fireworks = [];
         let fireworkTimer = 0;
         let isClimaxActive = false;
@@ -490,7 +484,7 @@
                 <b>CÁCH ĐIỀU KHIỂN TRÊN ĐIỆN THOẠI:</b><br>
                 Di chuyển: <b>Cần gạt Joystick (góc trái)</b><br>
                 Ngắm nhìn: <b>Vuốt ngón tay trên màn hình</b><br>
-                Tương tác: <b>Chạm nút "TƯƠNG TÁC" hoặc Chạm trực tiếp vào ảnh</b>
+                Tương tác: <b>Chạm nút "TƯƠNG TÁC" hoặc Chạm trực tiếp vào ảnh/vật thể</b>
             `;
         }
 
@@ -570,7 +564,7 @@
             globalFloor.rotation.x = -Math.PI / 2;
             scene.add(globalFloor);
 
-            const ambientLight = new THREE.AmbientLight(0xffe6f0, 0.45);
+            const ambientLight = new THREE.AmbientLight(0xffe6f0, 0.5);
             scene.add(ambientLight);
 
             const pCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -579,7 +573,8 @@
             scene.add(controls.getObject());
             camera = pCamera;
             
-            controls.getObject().position.set(0, 1.6, 6);
+            // Vị trí người chơi sinh ra cách bục trái tim 2.8m (gần gũi, thoải mái tương tác)
+            controls.getObject().position.set(0, 1.6, 2.8);
             controls.getObject().rotation.set(0, 0, 0);
 
             raycaster = new THREE.Raycaster();
@@ -607,10 +602,7 @@
                     bgMusic.play();
                 },
                 undefined,
-                (error) => {
-                    console.warn("Kích hoạt nhạc nền synthesizer dự phòng.");
-                    startAmbientSynthesizer();
-                }
+                () => { startAmbientSynthesizer(); }
             );
         }
 
@@ -652,6 +644,57 @@
         }
 
         // ==========================================
+        // CÔNG CỤ CHUẨN HÓA & CĂN CHỈNH KÍCH THƯỚC MODEL 3D
+        // ==========================================
+        function normalizeAndPositionModel(model3D, targetHeight, targetWidth, targetYOffset = 0, offsetX = 0, offsetZ = 0) {
+            model3D.position.set(0, 0, 0);
+            model3D.rotation.set(0, 0, 0);
+            model3D.scale.set(1, 1, 1);
+            model3D.updateMatrixWorld(true);
+
+            const bbox = new THREE.Box3().setFromObject(model3D);
+            const size = new THREE.Vector3();
+            bbox.getSize(size);
+            const center = new THREE.Vector3();
+            bbox.getCenter(center);
+
+            let s = 1.0;
+            if (targetHeight) {
+                s = targetHeight / (size.y || 1);
+            } else if (targetWidth) {
+                s = targetWidth / (size.x || 1);
+            }
+            model3D.scale.set(s, s, s);
+
+            model3D.position.x = -center.x * s + offsetX;
+            model3D.position.z = -center.z * s + offsetZ;
+            model3D.position.y = -bbox.min.y * s + targetYOffset;
+
+            return model3D;
+        }
+
+        // Tạo Bục trưng bày pha lê nghệ thuật có viền LED phát sáng
+        function createExhibitionPedestal(radius = 0.9, height = 0.5, rimColor = 0xff758c) {
+            const group = new THREE.Group();
+            const baseGeo = new THREE.CylinderGeometry(radius, radius * 1.08, height, 32);
+            const baseMat = new THREE.MeshStandardMaterial({
+                color: 0x140d1c, roughness: 0.35, metalness: 0.7
+            });
+            const base = new THREE.Mesh(baseGeo, baseMat);
+            base.position.y = height / 2;
+            group.add(base);
+
+            const rimGeo = new THREE.TorusGeometry(radius, 0.02, 16, 32);
+            const rimMat = new THREE.MeshBasicMaterial({ color: rimColor });
+            const rim = new THREE.Mesh(rimGeo, rimMat);
+            rim.rotation.x = Math.PI / 2;
+            rim.position.y = height;
+            group.add(rim);
+
+            return group;
+        }
+
+        // ==========================================
         // 1. CƠ CHẾ DI CHUYỂN LIỀN MẠCH 360 ĐỘ (SEAMLESS OMNIDIRECTIONAL PROGRESSION)
         // ==========================================
         function checkSeamlessProgression(playerPos) {
@@ -663,18 +706,14 @@
             if (dist > 13.0) {
                 isTransitioning = true;
                 
-                // Tính vector hướng thực tế mà cô ấy đang bước đi
                 const dirX = (playerPos.x - currentRoomCenter.x) / dist;
                 const dirZ = (playerPos.z - currentRoomCenter.z) / dist;
                 const walkDir = new THREE.Vector3(dirX, 0, dirZ);
 
-                // Điểm tâm của phòng tiếp theo được sinh ra thẳng ngay trước mắt cô ấy (cách 18m)
+                // Tâm phòng tiếp theo sinh ra phía trước mặt cô ấy (cách 18m)
                 const nextCenter = new THREE.Vector3().copy(playerPos).addScaledVector(walkDir, 18.0);
 
-                // Dẫn đường đom đóm rực rỡ từ vị trí hiện tại đến phòng mới
                 spawnFairyPath(playerPos, nextCenter, 8);
-
-                // Kích hoạt phòng tiếp theo
                 advanceToNextRoom(nextCenter, walkDir);
             }
         }
@@ -710,7 +749,6 @@
             } else if (currentState === STATES.R3) {
                 setupRoomEnd(nextCenter, walkDir);
             } else if (currentState === STATES.REND) {
-                // Vòng lặp vĩnh cửu quay về Start
                 setupRoomStart(nextCenter);
             }
         }
@@ -751,28 +789,36 @@
             }, duration);
         }
 
-        // --- PHÒNG 0: MỞ ĐẦU (TẤM VÉ) ---
+        // --- PHÒNG 0: MỞ ĐẦU (HỘP SOCOLA TRÁI TIM / VÉ MỜI) ---
         function setupRoomStart(center) {
             currentState = STATES.START;
             currentRoomCenter.copy(center);
             clearOldRoom();
 
+            // 1. Bục trưng bày pha lê đặt tại tâm
+            const pedestal = createExhibitionPedestal(0.75, 0.55);
+            pedestal.position.set(center.x, 0, center.z);
+            scene.add(pedestal);
+            activeElements.push(pedestal);
+
+            // 2. Hitbox tương tác bao quanh hộp trái tim
             const hitbox = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshBasicMaterial({ visible: false }));
-            hitbox.position.set(center.x, 1.0, center.z);
+            hitbox.position.set(center.x, 0.95, center.z);
             hitbox.userData = { type: 'ticket' };
 
+            // 3. Tải và chuẩn hóa kích thước Hộp Trái Tim (Rộng chuẩn 38cm)
             gltfLoader.load(ASSETS_CONFIG.roomStart.model, (gltf) => {
                 const model3D = gltf.scene;
-                model3D.scale.set(1.0, 1.0, 1.0); 
+                normalizeAndPositionModel(model3D, null, 0.38, 0.58);
                 hitbox.add(model3D);
             });
 
-            // 4 Đèn spotlight ấm áp chiếu vào vé
-            const radius = 2.0;
+            // 4. 4 Đèn spotlight ấm áp chiếu hội tụ trực tiếp vào hộp trái tim
+            const radius = 2.2;
             const offsets = [ { dx: -radius, dz: -radius }, { dx: radius, dz: -radius }, { dx: -radius, dz: radius }, { dx: radius, dz: radius } ];
             offsets.forEach(off => {
-                const spot = new THREE.SpotLight(0xfff0f5, 55, 12, Math.PI/5, 0.6, 1);
-                spot.position.set(center.x + off.dx, 4.0, center.z + off.dz);
+                const spot = new THREE.SpotLight(0xfff5fa, 60, 12, Math.PI/5, 0.6, 1);
+                spot.position.set(center.x + off.dx, 3.8, center.z + off.dz);
                 spot.target = hitbox;
                 scene.add(spot);
                 activeElements.push(spot);
@@ -783,7 +829,7 @@
             interactableObjects.push(hitbox);
 
             if (isTouchDevice) {
-                btnMobileInteract.innerHTML = `🎫 MỞ VÉ MỜI`;
+                btnMobileInteract.innerHTML = `💌 MỞ HỘP KỶ NIỆM`;
                 btnMobileInteract.style.display = 'flex';
             }
         }
@@ -793,7 +839,7 @@
             btnMobileInteract.style.display = 'none';
             showHUDText("Chào mừng em đến với bảo tàng tình yêu của chúng ta...", 4000, () => {
                 showHUDText("Em hãy cứ bước tiếp về bất cứ hướng nào trong bóng tối...", 4000, () => {
-                    roomReadyForNext = true; // Sẵn sàng cho bước đi 360 độ
+                    roomReadyForNext = true;
                 });
             });
         }
@@ -804,10 +850,7 @@
             currentRoomCenter.copy(center);
             clearOldRoom();
 
-            // Sắp xếp 3 trạm podcast dọc theo hướng người chơi đang đi
-            const perpDir = new THREE.Vector3(-walkDir.z, 0, walkDir.x); // Vuông góc
             const distances = [-5, 0, 5];
-
             ASSETS_CONFIG.room1.forEach((data, index) => {
                 const nodePos = new THREE.Vector3().copy(center).addScaledVector(walkDir, distances[index]);
 
@@ -847,7 +890,6 @@
                 () => { showHUDText(node.userData.text, 6500); }
             );
 
-            // Khi kích hoạt trạm thứ 3 -> Bật cơ chế 360 độ tự sinh phòng 2
             if (node.userData.index === ASSETS_CONFIG.room1.length - 1) {
                 setTimeout(() => {
                     targetMusicVolume = 0.4;
@@ -919,7 +961,6 @@
                 }, undefined, () => {});
             });
 
-            // Sau khi mở ngân hà ảnh, người chơi khám phá và có thể bước tiếp theo 360 độ
             setTimeout(() => {
                 roomReadyForNext = true;
             }, 8000);
@@ -934,43 +975,102 @@
             if (!isTouchDevice) controls.unlock();
         }
 
-        // --- PHÒNG 3: HIỆN VẬT 3D & VIDEO (KÈM AUDIO DUCKING) ---
+        // ==========================================
+        // PHÒNG 3: HIỆN VẬT 3D CHUẨN KÍCH THƯỚC THỰC TẾ
+        // ==========================================
         function setupRoom3(center, walkDir) {
             currentState = STATES.R3;
             currentRoomCenter.copy(center);
             clearOldRoom();
 
             const perp = new THREE.Vector3(-walkDir.z, 0, walkDir.x);
-            const positions = [
-                new THREE.Vector3().copy(center).addScaledVector(perp, -3.5),
-                new THREE.Vector3().copy(center).addScaledVector(walkDir, 3.5),
-                new THREE.Vector3().copy(center).addScaledVector(perp, 3.5)
-            ];
+            
+            // Bố trí 3 hiện vật thành hình cánh cung phía trước mặt người chơi (bán kính 4.2m)
+            const posPhotobooth = new THREE.Vector3().copy(center).addScaledVector(perp, -3.2).addScaledVector(walkDir, 2.0);
+            const posCafe = new THREE.Vector3().copy(center).addScaledVector(walkDir, 4.2);
+            const posAodoi = new THREE.Vector3().copy(center).addScaledVector(perp, 3.2).addScaledVector(walkDir, 2.0);
 
-            ASSETS_CONFIG.room3.forEach((data, index) => {
-                const pos = positions[index];
-                const hitbox = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 1.5, 8), new THREE.MeshBasicMaterial({ visible: false }));
-                hitbox.position.set(pos.x, 0.6, pos.z);
-                hitbox.userData = { type: 'video_item', label: data.label, videoSrc: data.video, index: index, activeHologram: false };
+            // 1. MÁY PHOTOBOOTH (Chuẩn chiều cao người thật: 2.1m)
+            const hbPhoto = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 2.3, 16), new THREE.MeshBasicMaterial({ visible: false }));
+            hbPhoto.position.set(posPhotobooth.x, 1.15, posPhotobooth.z);
+            hbPhoto.userData = { type: 'video_item', label: ASSETS_CONFIG.room3[0].label, videoSrc: ASSETS_CONFIG.room3[0].video, activeHologram: false };
 
-                data.models.forEach(modelData => {
-                    gltfLoader.load(modelData.path, (gltf) => {
-                        const m = gltf.scene;
-                        m.scale.set(modelData.scale, modelData.scale, modelData.scale); 
-                        m.position.set(modelData.x, modelData.y, modelData.z); 
-                        hitbox.add(m); 
-                    });
-                });
-                
-                const spot = new THREE.SpotLight(0xfff0f5, 50, 10, Math.PI/5, 0.6, 1);
-                spot.position.set(pos.x, 3.5, pos.z);
-                spot.target = hitbox; 
-                scene.add(spot);
-                activeElements.push(spot);
-
-                scene.add(hitbox);
-                activeElements.push(hitbox);
+            gltfLoader.load(ASSETS_CONFIG.room3[0].model, (gltf) => {
+                const m = gltf.scene;
+                normalizeAndPositionModel(m, 2.1, null, 0); // Cao đúng 2.1m
+                hbPhoto.add(m);
             });
+
+            const spotPhoto = new THREE.SpotLight(0xfff0f5, 50, 10, Math.PI/5, 0.6, 1);
+            spotPhoto.position.set(posPhotobooth.x, 3.8, posPhotobooth.z);
+            spotPhoto.target = hbPhoto;
+            scene.add(spotPhoto);
+            activeElements.push(spotPhoto);
+            scene.add(hbPhoto);
+            activeElements.push(hbPhoto);
+
+            // 2. QUÁN CÀ PHÊ KỶ NIỆM (Bàn cao 0.75m + Laptop + Cốc cà phê)
+            const pedestalCafe = createExhibitionPedestal(1.25, 0.08, 0x8b5a2b);
+            pedestalCafe.position.set(posCafe.x, 0, posCafe.z);
+            scene.add(pedestalCafe);
+            activeElements.push(pedestalCafe);
+
+            const hbCafe = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.8, 16), new THREE.MeshBasicMaterial({ visible: false }));
+            hbCafe.position.set(posCafe.x, 0.9, posCafe.z);
+            hbCafe.userData = { type: 'video_item', label: ASSETS_CONFIG.room3[1].label, videoSrc: ASSETS_CONFIG.room3[1].video, activeHologram: false };
+
+            // Tải bàn tròn (Bàn được căn tâm chuẩn, cao 0.75m)
+            gltfLoader.load(ASSETS_CONFIG.room3[1].tableModel, (gltf) => {
+                const table = gltf.scene;
+                normalizeAndPositionModel(table, 0.75, null, 0.08);
+                hbCafe.add(table);
+            });
+
+            // Tải laptop (Rộng 32cm, đặt trên mặt bàn)
+            gltfLoader.load(ASSETS_CONFIG.room3[1].laptopModel, (gltf) => {
+                const laptop = gltf.scene;
+                normalizeAndPositionModel(laptop, null, 0.32, 0.83, -0.16, 0.0);
+                hbCafe.add(laptop);
+            });
+
+            // Tải ly cà phê (Cao 13cm, đặt cạnh laptop trên bàn)
+            gltfLoader.load(ASSETS_CONFIG.room3[1].coffeeModel, (gltf) => {
+                const coffee = gltf.scene;
+                normalizeAndPositionModel(coffee, 0.13, null, 0.83, 0.18, 0.08);
+                hbCafe.add(coffee);
+            });
+
+            const spotCafe = new THREE.SpotLight(0xfff0f5, 50, 10, Math.PI/5, 0.6, 1);
+            spotCafe.position.set(posCafe.x, 3.6, posCafe.z);
+            spotCafe.target = hbCafe;
+            scene.add(spotCafe);
+            activeElements.push(spotCafe);
+            scene.add(hbCafe);
+            activeElements.push(hbCafe);
+
+            // 3. CHIẾC ÁO ĐÔI ĐẦU TIÊN (Rộng 1.05m trên bục trưng bày)
+            const pedestalAodoi = createExhibitionPedestal(0.85, 0.5, 0x00ff88);
+            pedestalAodoi.position.set(posAodoi.x, 0, posAodoi.z);
+            scene.add(pedestalAodoi);
+            activeElements.push(pedestalAodoi);
+
+            const hbAodoi = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.3, 0.8), new THREE.MeshBasicMaterial({ visible: false }));
+            hbAodoi.position.set(posAodoi.x, 1.15, posAodoi.z);
+            hbAodoi.userData = { type: 'video_item', label: ASSETS_CONFIG.room3[2].label, videoSrc: ASSETS_CONFIG.room3[2].video, activeHologram: false };
+
+            gltfLoader.load(ASSETS_CONFIG.room3[2].model, (gltf) => {
+                const aodoi = gltf.scene;
+                normalizeAndPositionModel(aodoi, null, 1.05, 0.75);
+                hbAodoi.add(aodoi);
+            });
+
+            const spotAodoi = new THREE.SpotLight(0xfff0f5, 50, 10, Math.PI/5, 0.6, 1);
+            spotAodoi.position.set(posAodoi.x, 3.8, posAodoi.z);
+            spotAodoi.target = hbAodoi;
+            scene.add(spotAodoi);
+            activeElements.push(spotAodoi);
+            scene.add(hbAodoi);
+            activeElements.push(hbAodoi);
         }
 
         // ==========================================
@@ -990,14 +1090,14 @@
             videoTex.colorSpace = THREE.SRGBColorSpace;
 
             const holoMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.0), new THREE.MeshBasicMaterial({ map: videoTex, side: THREE.DoubleSide }));
-            holoMesh.position.set(parentMesh.position.x, 1.8, parentMesh.position.z);
-            holoMesh.lookAt(currentRoomCenter.x, 1.8, currentRoomCenter.z);
+            holoMesh.position.set(parentMesh.position.x, 1.85, parentMesh.position.z);
+            holoMesh.lookAt(currentRoomCenter.x, 1.85, currentRoomCenter.z);
 
             const positionalAudio = new THREE.PositionalAudio(audioListener);
             positionalAudio.setMediaElementSource(video); 
             positionalAudio.setDistanceModel('linear'); 
-            positionalAudio.setRefDistance(1.8); 
-            positionalAudio.setMaxDistance(5.0); 
+            positionalAudio.setRefDistance(2.0); 
+            positionalAudio.setMaxDistance(5.5); 
             holoMesh.add(positionalAudio); 
             
             holoMesh.userData = { type: 'floating_hologram_video', videoElement: video, videoSrc: videoSrc };
@@ -1024,18 +1124,24 @@
             currentRoomCenter.copy(center);
             clearOldRoom();
 
-            const hitbox = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), new THREE.MeshBasicMaterial({ visible: false }));
-            hitbox.position.set(center.x, 1.2, center.z);
+            const pedestal = createExhibitionPedestal(0.75, 0.7, 0xffd700);
+            pedestal.position.set(center.x, 0, center.z);
+            scene.add(pedestal);
+            activeElements.push(pedestal);
+
+            const hitbox = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshBasicMaterial({ visible: false }));
+            hitbox.position.set(center.x, 1.1, center.z);
             hitbox.userData = { type: 'love_letter' };
 
+            // Chuẩn hóa thư tình (Rộng 50cm, lơ lửng ngay trên bục)
             gltfLoader.load(ASSETS_CONFIG.roomEnd.model, (gltf) => {
                 const m = gltf.scene;
-                m.scale.set(0.5, 0.5, 0.5); 
+                normalizeAndPositionModel(m, null, 0.5, 0.85);
                 hitbox.add(m);
             });
 
-            const spot = new THREE.SpotLight(0xfff5fa, 20, 10, Math.PI/5, 0.6, 1);
-            spot.position.set(center.x, 4.5, center.z);
+            const spot = new THREE.SpotLight(0xfff5fa, 45, 10, Math.PI/5, 0.6, 1);
+            spot.position.set(center.x, 4.2, center.z);
             spot.target = hitbox;
             scene.add(spot);
             activeElements.push(spot);
@@ -1134,8 +1240,6 @@
                 } catch(e) {}
 
                 closePopup();
-
-                // 4. Khởi tạo phong thư 3D bay lên trời
                 spawnAscendingLetter();
             });
         }
@@ -1143,7 +1247,6 @@
         function spawnAscendingLetter() {
             const letterGroup = new THREE.Group();
             
-            // Phong thư 3D phát sáng
             const envelopeGeo = new THREE.BoxGeometry(0.8, 0.5, 0.05);
             const envelopeMat = new THREE.MeshStandardMaterial({ 
                 color: 0xffeef5, roughness: 0.3, metalness: 0.1,
@@ -1152,18 +1255,15 @@
             const envelope = new THREE.Mesh(envelopeGeo, envelopeMat);
             letterGroup.add(envelope);
 
-            // Con dấu trái tim đỏ thắm
             const sealGeo = new THREE.SphereGeometry(0.08, 16, 16);
             const sealMat = new THREE.MeshBasicMaterial({ color: 0xff2255 });
             const seal = new THREE.Mesh(sealGeo, sealMat);
             seal.position.set(0, 0, 0.04);
             letterGroup.add(seal);
 
-            // Hào quang phát sáng
             const letterGlow = new THREE.PointLight(0xff9ebb, 3, 5);
             letterGroup.add(letterGlow);
 
-            // Xuất hiện ngay phía trước mắt người chơi
             const spawnPos = new THREE.Vector3(0, 0, -2).applyQuaternion(camera.quaternion).add(camera.position);
             spawnPos.y = 1.4;
             letterGroup.position.copy(spawnPos);
@@ -1214,7 +1314,6 @@
                     colArr[i * 3 + 1] = baseCol.g;
                     colArr[i * 3 + 2] = baseCol.b;
 
-                    // Phương trình toán học đường cong Trái Tim 3D
                     const t = (i / count) * Math.PI * 2;
                     const hx = 16 * Math.pow(Math.sin(t), 3);
                     const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
@@ -1281,9 +1380,9 @@
 
         function startClimaxAndFireworks() {
             isClimaxActive = true;
-            targetMusicVolume = 0.55; // Nhạc nền cao trào
+            targetMusicVolume = 0.55;
             grandFinaleHud.style.opacity = 1;
-            roomReadyForNext = true; // Cho phép bước tiếp vào vòng lặp vô tận
+            roomReadyForNext = true;
         }
 
         function updateClimaxFireworks(delta, center) {
@@ -1291,7 +1390,7 @@
             fireworkTimer -= delta;
 
             if (fireworkTimer <= 0) {
-                fireworkTimer = 0.8 + Math.random() * 0.6; // Bắn liên tục
+                fireworkTimer = 0.8 + Math.random() * 0.6;
                 const colors = [0xff758c, 0xffd700, 0x00f0ff, 0xff2266, 0xffa07a];
                 const col = colors[Math.floor(Math.random() * colors.length)];
                 const targetY = 12 + Math.random() * 6;
@@ -1470,7 +1569,7 @@
             }, { passive: true });
 
             window.addEventListener('touchend', (e) => {
-                if (!isTouchDevice || isViewingMedia || currentState !== STATES.R2) return;
+                if (!isTouchDevice || isViewingMedia) return;
                 const touch = e.changedTouches[0];
                 if (joystickZone.contains(e.target) || e.target === btnMobileInteract) return;
 
@@ -1480,8 +1579,15 @@
                 );
                 raycaster.setFromCamera(mouseCoords, camera);
                 const intersects = raycaster.intersectObjects(interactableObjects);
-                if (intersects.length > 0 && intersects[0].object.userData.type === 'gallery_photo') {
-                    openPhotoPopup(intersects[0].object.userData.path);
+                if (intersects.length > 0) {
+                    const target = intersects[0].object;
+                    if (target.userData.type === 'gallery_photo') {
+                        openPhotoPopup(target.userData.path);
+                    } else if (target.userData.type === 'ticket') {
+                        triggerTicketInteraction();
+                    } else if (target.userData.type === 'love_letter') {
+                        triggerLetterInteraction();
+                    }
                 }
             });
 
@@ -1557,7 +1663,6 @@
             pVid.pause();
             pTxt.style.display = 'none';
             
-            // Khôi phục âm lượng nhạc nền sau khi xem video
             targetMusicVolume = 0.4;
 
             activeElements.forEach(el => {
@@ -1585,7 +1690,6 @@
 
             camera = player;
 
-            // Audio Ducking Lerp mềm mại
             if (bgMusic && bgMusic.isPlaying && !isMuted) {
                 const currentV = bgMusic.getVolume();
                 if (Math.abs(currentV - targetMusicVolume) > 0.01) {
@@ -1608,16 +1712,17 @@
                 // KIỂM TRA CHUYỂN PHÒNG LIỀN MẠCH 360 ĐỘ
                 checkSeamlessProgression(pos);
 
-                // Kiểm tra tương tác cự ly từng phòng
+                // Cự ly tương tác phòng 1
                 if (currentState === STATES.R1) {
                     activeElements.forEach(el => {
                         if(el.userData.type === 'podcast_node' && !el.userData.triggered) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 1.5) triggerPodcastNode(el);
+                            if(dist < 1.6) triggerPodcastNode(el);
                         }
                     });
                 }
 
+                // Cự ly tương tác phòng 2
                 if (currentState === STATES.R2) {
                     activeElements.forEach(el => {
                         if(el.userData.type === 'trigger_album' && !el.userData.triggered) {
@@ -1630,12 +1735,13 @@
                     });
                 }
 
+                // Cự ly tương tác phòng 3 (Tăng cự ly lên 3.2m để tương tác tự nhiên, không bị va đập)
                 if (currentState === STATES.R3) {
                     let nearAnyItem = false;
                     activeElements.forEach(el => {
                         if(el.userData.type === 'video_item' && !el.userData.activeHologram) {
                             const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 2.2) {
+                            if(dist < 3.2) {
                                 nearAnyItem = true;
                                 spaceTarget = el;
                                 promptNode.innerHTML = `Nhấn SPACE để xem kỉ niệm [ ${el.userData.label} ]`;
@@ -1666,7 +1772,6 @@
                 ascendingLetter.rotation.z = Math.sin(time * 2.5) * 0.15;
                 ascendingLetter.scale.multiplyScalar(0.995);
 
-                // Khi thư bay lên cao độ 16m -> Biến mất và nổ pháo hoa trái tim
                 if (ascendingLetter.position.y > 16.0) {
                     scene.remove(ascendingLetter);
                     ascendingLetter = null;
@@ -1674,17 +1779,16 @@
                 }
             }
 
-            // Cập nhật Pháo hoa Trái Tim
             updateClimaxFireworks(delta, currentRoomCenter);
 
             const elapsedTime = clock.getElapsedTime();
             activeElements.forEach(el => {
                 if (el.userData.type === 'ticket' || el.userData.type === 'love_letter') {
-                    el.position.y = 1.0 + Math.sin(elapsedTime * 2) * 0.05;
+                    // Xoay nhẹ nhàng êm ái
                     el.rotation.y += 0.012;
                 }
                 if (el.userData.type === 'gallery_photo' || el.userData.type === 'floating_hologram_video') {
-                    el.position.y = 1.8 + Math.sin(elapsedTime * 1.5 + el.position.x) * 0.05;
+                    el.position.y = 1.85 + Math.sin(elapsedTime * 1.5 + el.position.x) * 0.05;
                 }
                 if (el.userData.type === 'fairy_light') {
                     el.position.y = 1.2 + Math.sin(elapsedTime * 3 + el.userData.randomOffset) * 0.15;
