@@ -1653,16 +1653,17 @@
         function getFireworkSparkTexture() {
             if (fireworkSparkTexture) return fireworkSparkTexture;
             const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 64;
+            canvas.width = 128; canvas.height = 128;
             const ctx = canvas.getContext('2d');
-            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
             grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-            grad.addColorStop(0.25, 'rgba(255, 245, 210, 0.95)');
-            grad.addColorStop(0.55, 'rgba(255, 170, 70, 0.45)');
-            grad.addColorStop(0.8, 'rgba(255, 80, 20, 0.12)');
+            grad.addColorStop(0.18, 'rgba(255, 255, 255, 1.0)'); // Tâm siêu sáng trắng nóng (White-hot core)
+            grad.addColorStop(0.38, 'rgba(255, 245, 200, 0.95)'); // Quầng vàng ấm
+            grad.addColorStop(0.65, 'rgba(255, 180, 80, 0.55)');  // Vòng hào quang phát sáng rực rỡ
+            grad.addColorStop(0.85, 'rgba(255, 90, 20, 0.18)');   // Hào quang lan tỏa
             grad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
             ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 64, 64);
+            ctx.fillRect(0, 0, 128, 128);
             fireworkSparkTexture = new THREE.CanvasTexture(canvas);
             return fireworkSparkTexture;
         }
@@ -1675,7 +1676,7 @@
                 this.color = new THREE.Color(colorHex);
                 this.patternType = patternType; // 'dual_heart' | 'golden_willow' | 'peony' | 'saturn_ring'
 
-                // Vị trí xuất phát ở chân trời xa (y = 0) và vị trí đích nổ trên không trung
+                // Vị trí xuất phát ở chân trời xa (y = 0) và vị trí đích nổ vừa tầm mắt trên không trung
                 this.pos = new THREE.Vector3(startX, 0, startZ);
                 this.target = new THREE.Vector3(targetX, targetY, targetZ);
                 this.startPos = this.pos.clone();
@@ -1683,11 +1684,11 @@
                 this.distanceTraveled = 0;
 
                 // Tốc độ ban đầu & gia tốc tăng dần khi vút lên (chuẩn thuật toán Jack Rugile: speed *= acceleration)
-                this.speed = 18.0;
-                this.acceleration = 1.042;
+                this.speed = 16.0;
+                this.acceleration = 1.038;
 
                 // Lịch sử toạ độ vệt sáng (Coordinates Trail) của quả pháo khi bay
-                this.coordinateCount = 4;
+                this.coordinateCount = 6;
                 this.coordinates = [];
                 for (let i = 0; i < this.coordinateCount; i++) {
                     this.coordinates.push(this.pos.clone());
@@ -1698,18 +1699,18 @@
                 const lineMat = new THREE.LineBasicMaterial({
                     color: this.colorHex,
                     transparent: true,
-                    opacity: 0.85,
+                    opacity: 0.92,
                     blending: THREE.AdditiveBlending,
                     depthWrite: false
                 });
                 this.rocketLine = new THREE.Line(lineGeo, lineMat);
                 scene.add(this.rocketLine);
 
-                // Đầu tên lửa phát sáng rực rỡ (Points với quầng sáng)
+                // Đầu tên lửa phát sáng rực rỡ (Points với quầng sáng lớn)
                 const sparkGeo = new THREE.BufferGeometry();
                 sparkGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([this.pos.x, this.pos.y, this.pos.z]), 3));
                 const sparkMat = new THREE.PointsMaterial({
-                    size: 3.2,
+                    size: 5.5,
                     map: getFireworkSparkTexture(),
                     color: 0xffffff,
                     transparent: true,
@@ -1720,7 +1721,7 @@
                 scene.add(this.rocketSpark);
 
                 // Ánh hào quang rực rỡ rọi sáng bầu trời khi bay lên
-                this.rocketLight = new THREE.PointLight(this.colorHex, 8.0, 30.0);
+                this.rocketLight = new THREE.PointLight(this.colorHex, 16.0, 45.0);
                 this.rocketLight.position.copy(this.pos);
                 scene.add(this.rocketLight);
 
@@ -1753,8 +1754,8 @@
                     this.rocketLight = null;
                 }
 
-                // 1. Chớp sáng cực đại (Flash) chiếu sáng toàn bộ không gian trong 100ms
-                this.flashLight = new THREE.PointLight(this.colorHex, 32.0, 75.0);
+                // 1. Chớp sáng cực đại (Flash) chiếu sáng toàn bộ không gian trong 120ms
+                this.flashLight = new THREE.PointLight(this.colorHex, 60.0, 110.0);
                 this.flashLight.position.copy(this.pos);
                 scene.add(this.flashLight);
                 setTimeout(() => {
@@ -1763,12 +1764,12 @@
                         this.flashLight.dispose();
                         this.flashLight = null;
                     }
-                }, 100);
+                }, 120);
 
-                // 2. Khởi tạo các hạt pháo hoa nghệ thuật với vệt đuôi coordinates
-                let count = 190;
-                if (this.patternType === 'golden_willow') count = 230;
-                else if (this.patternType === 'dual_heart') count = 200;
+                // 2. Khởi tạo các hạt pháo hoa nghệ thuật với số lượng hạt lớn (320 - 380 hạt) để nổ to và dày đặc
+                let count = 320;
+                if (this.patternType === 'golden_willow') count = 380;
+                else if (this.patternType === 'peony') count = 340;
 
                 this.particles = [];
                 const linePositions = new Float32Array(count * 2 * 3); // 2 đỉnh mỗi hạt (tail & head)
@@ -1779,58 +1780,25 @@
                 const basePos = this.pos.clone();
 
                 if (this.patternType === 'dual_heart') {
-                    // TẠO HÌNH 1: TRÁI TIM ĐÔI VẠN HOA (Dual Blooming Heart)
+                    // TẠO HÌNH 1: TRÁI TIM ĐÔI VẠN HOA KHỔNG LỒ (Giant Dual Blooming Heart)
                     const half = Math.floor(count / 2);
-                    const colInner = new THREE.Color(0xff185a); // Hồng ngọc
-                    const colOuter = new THREE.Color(0xffd700); // Hoàng kim
+                    const colInner = new THREE.Color(0xff2a75); // Neon hồng ngọc siêu sáng
+                    const colOuter = new THREE.Color(0xffea00); // Vàng kim rực rỡ
 
                     for (let i = 0; i < count; i++) {
                         const isInner = i < half;
                         const t = ((i % half) / half) * Math.PI * 2;
                         const hx = 16 * Math.pow(Math.sin(t), 3);
                         const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-                        const scale = isInner ? 0.055 : 0.088;
-                        const spd = 0.46 + Math.random() * 0.08;
+                        // Scale và tốc độ bung rộng gấp đôi để trái tim chiếm trọn tầm mắt
+                        const scale = isInner ? 0.095 : 0.165;
+                        const spd = 0.85 + Math.random() * 0.15;
                         const color = isInner ? colInner : colOuter;
 
                         const vel = new THREE.Vector3(
-                            hx * scale * spd + (Math.random() - 0.5) * 0.15,
-                            hy * scale * spd + (Math.random() - 0.5) * 0.15,
-                            (Math.random() - 0.5) * 0.35
-                        );
-
-                        const coordHistory = [];
-                        const trailLen = 5;
-                        for (let k = 0; k < trailLen; k++) coordHistory.push(basePos.clone());
-
-                        this.particles.push({
-                            pos: basePos.clone(),
-                            vel: vel,
-                            coordinates: coordHistory,
-                            color: color.clone(),
-                            friction: 0.958,
-                            gravity: -0.16,
-                            decay: 0.011 + Math.random() * 0.005,
-                            alpha: 1.0
-                        });
-                    }
-                } else if (this.patternType === 'golden_willow') {
-                    // TẠO HÌNH 2: LIỄU VÀNG HOÀNG KIM (Golden Kamuro Willow - Rơi chậm, vệt đuôi dài miên man)
-                    const goldCol = new THREE.Color(0xffd700);
-                    const champCol = new THREE.Color(0xfffae0);
-
-                    for (let i = 0; i < count; i++) {
-                        const u = Math.random();
-                        const v = Math.random();
-                        const theta = u * 2.0 * Math.PI;
-                        const phi = Math.acos(2.0 * v - 1.0);
-                        const r = Math.cbrt(Math.random()) * 0.65;
-                        const color = Math.random() > 0.35 ? goldCol : champCol;
-
-                        const vel = new THREE.Vector3(
-                            r * Math.sin(phi) * Math.cos(theta) * 0.72,
-                            (r * Math.cos(phi) + 0.38) * 0.85,
-                            r * Math.sin(phi) * Math.sin(theta) * 0.72
+                            hx * scale * spd + (Math.random() - 0.5) * 0.2,
+                            hy * scale * spd + (Math.random() - 0.5) * 0.2,
+                            (Math.random() - 0.5) * 0.45
                         );
 
                         const coordHistory = [];
@@ -1842,25 +1810,59 @@
                             vel: vel,
                             coordinates: coordHistory,
                             color: color.clone(),
-                            friction: 0.968,
-                            gravity: -0.09,
-                            decay: 0.0075 + Math.random() * 0.0035,
+                            friction: 0.965,
+                            gravity: -0.12,
+                            decay: 0.007 + Math.random() * 0.003, // Cháy lâu hơn
+                            alpha: 1.0
+                        });
+                    }
+                } else if (this.patternType === 'golden_willow') {
+                    // TẠO HÌNH 2: ĐẠI LIỄU VÀNG HOÀNG KIM (Giant Weeping Kamuro Willow - Bung rộng khổng lồ, rơi chậm)
+                    const goldCol = new THREE.Color(0xffd700);
+                    const champCol = new THREE.Color(0xffffff); // Pha thêm ánh trắng kim cương rực rỡ
+
+                    for (let i = 0; i < count; i++) {
+                        const u = Math.random();
+                        const v = Math.random();
+                        const theta = u * 2.0 * Math.PI;
+                        const phi = Math.acos(2.0 * v - 1.0);
+                        const r = Math.cbrt(Math.random()) * 1.35; // Bán kính nổ bung rộng gấp đôi
+                        const color = Math.random() > 0.35 ? goldCol : champCol;
+
+                        const vel = new THREE.Vector3(
+                            r * Math.sin(phi) * Math.cos(theta) * 1.25,
+                            (r * Math.cos(phi) + 0.45) * 1.35,
+                            r * Math.sin(phi) * Math.sin(theta) * 1.25
+                        );
+
+                        const coordHistory = [];
+                        const trailLen = 9; // Vệt đuôi dài miên man
+                        for (let k = 0; k < trailLen; k++) coordHistory.push(basePos.clone());
+
+                        this.particles.push({
+                            pos: basePos.clone(),
+                            vel: vel,
+                            coordinates: coordHistory,
+                            color: color.clone(),
+                            friction: 0.972,
+                            gravity: -0.075, // Rơi êm ái bồng bềnh
+                            decay: 0.0055 + Math.random() * 0.0025, // Tồn tại rất lâu
                             alpha: 1.0
                         });
                     }
                 } else if (this.patternType === 'saturn_ring') {
-                    // TẠO HÌNH 3: VÀNH ĐAI THỔ TINH (Saturn Celestial Ring)
-                    const ringCount = Math.floor(count * 0.55);
+                    // TẠO HÌNH 3: ĐẠI VÀNH ĐAI THỔ TINH (Giant Saturn Celestial Ring)
+                    const ringCount = Math.floor(count * 0.58);
                     const coreCount = count - ringCount;
-                    const coreCol = new THREE.Color(0x00f5ff);
-                    const ringCol = new THREE.Color(0xff007f);
+                    const coreCol = new THREE.Color(0x00f5ff); // Cyan rực rỡ
+                    const ringCol = new THREE.Color(0xff007f); // Neon hồng tím
 
                     for (let i = 0; i < count; i++) {
                         let vel, color;
                         if (i < coreCount) {
                             const u = Math.random(), v = Math.random();
                             const theta = u * 2 * Math.PI, phi = Math.acos(2 * v - 1);
-                            const spd = 0.32 + Math.random() * 0.08;
+                            const spd = 0.65 + Math.random() * 0.15;
                             vel = new THREE.Vector3(
                                 Math.sin(phi) * Math.cos(theta) * spd,
                                 Math.cos(phi) * spd,
@@ -1869,7 +1871,7 @@
                             color = coreCol;
                         } else {
                             const angle = ((i - coreCount) / ringCount) * Math.PI * 2;
-                            const spd = 0.62 + (Math.random() - 0.5) * 0.05;
+                            const spd = 1.25 + (Math.random() - 0.5) * 0.12; // Vành đai nở bung cực rộng (> 25m)
                             const tilt = 0.55;
                             vel = new THREE.Vector3(
                                 Math.cos(angle) * spd,
@@ -1880,7 +1882,7 @@
                         }
 
                         const coordHistory = [];
-                        const trailLen = 5;
+                        const trailLen = 7;
                         for (let k = 0; k < trailLen; k++) coordHistory.push(basePos.clone());
 
                         this.particles.push({
@@ -1888,27 +1890,28 @@
                             vel: vel,
                             coordinates: coordHistory,
                             color: color.clone(),
-                            friction: 0.958,
-                            gravity: -0.15,
-                            decay: 0.012 + Math.random() * 0.005,
+                            friction: 0.965,
+                            gravity: -0.11,
+                            decay: 0.007 + Math.random() * 0.003,
                             alpha: 1.0
                         });
                     }
                 } else {
-                    // TẠO HÌNH 4: ĐẠI MẪU ĐƠN NGŨ SẮC (Multicolor Imperial Peony)
+                    // TẠO HÌNH 4: ĐẠI MẪU ĐƠN NGŨ SẮC KHỔNG LỒ (Giant Multicolor Peony - Cầu tỏa 360 độ siêu rộng)
                     const palette = [
-                        new THREE.Color(0xff0055),
+                        new THREE.Color(0xff1744),
                         new THREE.Color(0x00e5ff),
-                        new THREE.Color(0xffd700),
+                        new THREE.Color(0xffea00),
                         new THREE.Color(0x76ff03),
-                        new THREE.Color(0xd500f9)
+                        new THREE.Color(0xd500f9),
+                        new THREE.Color(0xff6d00)
                     ];
 
                     for (let i = 0; i < count; i++) {
                         const u = (i + 0.5) / count;
                         const phi = Math.acos(1 - 2 * u);
                         const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-                        const spd = 0.55 + (Math.random() - 0.5) * 0.08;
+                        const spd = 1.1 + (Math.random() - 0.5) * 0.2; // Tốc độ nổ bung mạnh gấp đôi
                         const color = palette[i % palette.length];
 
                         const vel = new THREE.Vector3(
@@ -1918,7 +1921,7 @@
                         );
 
                         const coordHistory = [];
-                        const trailLen = 5;
+                        const trailLen = 7;
                         for (let k = 0; k < trailLen; k++) coordHistory.push(basePos.clone());
 
                         this.particles.push({
@@ -1926,9 +1929,9 @@
                             vel: vel,
                             coordinates: coordHistory,
                             color: color.clone(),
-                            friction: 0.956,
-                            gravity: -0.16,
-                            decay: 0.012 + Math.random() * 0.005,
+                            friction: 0.964,
+                            gravity: -0.12,
+                            decay: 0.007 + Math.random() * 0.003,
                             alpha: 1.0
                         });
                     }
@@ -1951,7 +1954,7 @@
                 pointGeo.setAttribute('position', new THREE.BufferAttribute(pointPositions, 3));
                 pointGeo.setAttribute('color', new THREE.BufferAttribute(pointColors, 3));
                 const pointMat = new THREE.PointsMaterial({
-                    size: 1.85,
+                    size: 4.2, // Hạt phát sáng to gấp đôi, quầng sáng rực rỡ
                     map: getFireworkSparkTexture(),
                     vertexColors: true,
                     transparent: true,
@@ -2045,10 +2048,10 @@
                     linePosArr[idx6 + 4] = headPos.y;
                     linePosArr[idx6 + 5] = headPos.z;
 
-                    // Độ sáng hào quang tắt dần mềm mại
-                    const aGlow = Math.pow(p.alpha, 1.15);
-                    const tailAlpha = aGlow * 0.18;
-                    const headAlpha = aGlow * 1.0;
+                    // Độ sáng hào quang tắt dần mềm mại, khuếch đại ánh sáng đỉnh đầu (HDR additive glow)
+                    const aGlow = Math.pow(p.alpha, 1.1);
+                    const tailAlpha = aGlow * 0.22;
+                    const headAlpha = aGlow * 1.8; // Siêu sáng
 
                     lineColArr[idx6] = p.color.r * tailAlpha;
                     lineColArr[idx6 + 1] = p.color.g * tailAlpha;
@@ -2057,15 +2060,15 @@
                     lineColArr[idx6 + 4] = p.color.g * headAlpha;
                     lineColArr[idx6 + 5] = p.color.b * headAlpha;
 
-                    // Điểm đầu hào quang (Points)
+                    // Điểm đầu hào quang (Points) - có tâm hạt trắng sáng như tia lửa thật
                     const idx3 = i * 3;
                     ptPosArr[idx3] = headPos.x;
                     ptPosArr[idx3 + 1] = headPos.y;
                     ptPosArr[idx3 + 2] = headPos.z;
 
-                    ptColArr[idx3] = p.color.r * headAlpha;
-                    ptColArr[idx3 + 1] = p.color.g * headAlpha;
-                    ptColArr[idx3 + 2] = p.color.b * headAlpha;
+                    ptColArr[idx3] = Math.min(1.0, p.color.r * aGlow * 1.35 + 0.35 * aGlow);
+                    ptColArr[idx3 + 1] = Math.min(1.0, p.color.g * aGlow * 1.35 + 0.35 * aGlow);
+                    ptColArr[idx3 + 2] = Math.min(1.0, p.color.b * aGlow * 1.35 + 0.35 * aGlow);
                 }
 
                 this.explosionLines.geometry.attributes.position.needsUpdate = true;
@@ -2131,16 +2134,18 @@
             let targetPos;
             if (customTarget) {
                 targetPos = customTarget;
+                targetPos.y = Math.max(9, Math.min(20, targetPos.y));
             } else {
                 const dir = new THREE.Vector3();
                 camera.getWorldDirection(dir);
-                targetPos = camera.position.clone().add(dir.multiplyScalar(40 + Math.random() * 15));
-                targetPos.y = Math.max(26, Math.min(52, targetPos.y + 12 + Math.random() * 8));
+                // Bắn về hướng nhìn của người xem ở khoảng cách 20m - 32m, độ cao vừa tầm mắt 11m - 18m
+                targetPos = camera.position.clone().add(dir.multiplyScalar(22 + Math.random() * 10));
+                targetPos.y = Math.max(10, Math.min(20, targetPos.y + 5 + Math.random() * 4));
             }
 
-            // Bắn từ mặt đất ở chân trời xa
+            // Bắn từ mặt đất
             const angle = Math.random() * Math.PI * 2;
-            const dist = 18 + Math.random() * 20;
+            const dist = 10 + Math.random() * 12;
             const startX = targetPos.x + Math.cos(angle) * dist;
             const startZ = targetPos.z + Math.sin(angle) * dist;
 
@@ -2160,22 +2165,22 @@
             fireworkTimer -= delta;
             if (fireworkTimer <= 0) {
                 // Nhịp bắn đan xen 1 - 2 quả một đợt
-                fireworkTimer = 0.6 + Math.random() * 0.6;
+                fireworkTimer = 0.55 + Math.random() * 0.55;
 
                 const patterns = ['dual_heart', 'golden_willow', 'peony', 'saturn_ring'];
                 const colors = [0xff185a, 0xff758c, 0xffd700, 0x00f0ff, 0xa855f7, 0xff6b6b];
 
-                // Bắn từ chân trời xa 35m đến 65m
-                const burstCount = Math.random() > 0.45 ? 2 : 1;
+                // Bắn ở khoảng cách 18m đến 36m quanh phòng, độ cao nổ 11m đến 20m ngay trước tầm mắt người xem
+                const burstCount = Math.random() > 0.4 ? 2 : 1;
                 for (let b = 0; b < burstCount; b++) {
                     const angle = Math.random() * Math.PI * 2;
-                    const dist = 35 + Math.random() * 30;
+                    const dist = 18 + Math.random() * 18;
                     const startX = center.x + Math.cos(angle) * dist;
                     const startZ = center.z + Math.sin(angle) * dist;
 
-                    const targetX = startX + (Math.random() - 0.5) * 12;
-                    const targetZ = startZ + (Math.random() - 0.5) * 12;
-                    const targetY = 32 + Math.random() * 22;
+                    const targetX = startX + (Math.random() - 0.5) * 8;
+                    const targetZ = startZ + (Math.random() - 0.5) * 8;
+                    const targetY = 11 + Math.random() * 9; // 11m - 20m: Nổ vừa tầm mắt, bao quát trọn vẹn màn hình!
 
                     const col = colors[Math.floor(Math.random() * colors.length)];
                     const pat = patterns[Math.floor(Math.random() * patterns.length)];
@@ -2391,8 +2396,8 @@
                     }
                 } else if (currentState === STATES.REND && isClimaxActive) {
                     const touchDir = raycaster.ray.direction.clone();
-                    const targetPos = camera.position.clone().add(touchDir.multiplyScalar(42));
-                    targetPos.y = Math.max(26, Math.min(52, targetPos.y + 12));
+                    const targetPos = camera.position.clone().add(touchDir.multiplyScalar(24));
+                    targetPos.y = Math.max(10, Math.min(20, targetPos.y + 5));
                     launchInteractiveFirework(targetPos);
                 }
             });
