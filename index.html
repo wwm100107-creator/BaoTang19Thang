@@ -215,7 +215,7 @@
         #popup-video {
             max-width: 100%; max-height: 82vh; border: 2px solid rgba(255, 182, 193, 0.5);
             border-radius: 12px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 105, 180, 0.2);
-            display: none;
+            display: none; object-fit: contain;
         }
 
         /* Hộp Thư Tình Cảm Xúc & Phản Hồi */
@@ -1788,8 +1788,31 @@
             holoPos.y = targetBaseY;
             holoGroup.position.copy(holoPos);
 
-            // Màn hình hologram tỷ lệ 16:9 chuẩn (rộng 1.7m, cao 0.96m)
-            const planeGeo = new THREE.PlaneGeometry(1.7, 0.96);
+            // TÍNH TOÁN KÍCH THƯỚC HÌNH HỌC TƯƠNG THÍCH CHUẨN XÁC VỚI TỶ LỆ VIDEO GỐC
+            function calcHoloSize(aspect) {
+                if (aspect < 0.85) {
+                    // Video dọc (Portrait - ví dụ 9:16 Study Date ở coffee)
+                    const h = 1.6;
+                    const w = h * aspect;
+                    return { w, h };
+                } else {
+                    // Video ngang / vuông (Landscape - ví dụ 16:9 Áo đôi, 4:3 Photobooth)
+                    const w = 1.7;
+                    const h = w / aspect;
+                    return { w, h };
+                }
+            }
+
+            // Tỷ lệ khởi tạo ước tính chuẩn theo hiện vật nếu video chưa kịp nạp metadata
+            let initialAspect = 16 / 9;
+            if (playlist || (videoSrc && videoSrc.includes('cf'))) {
+                initialAspect = 9 / 16; // 0.5625 cho Study Date ở coffee (cf.mp4 và cf1.mp4)
+            } else if (videoSrc && videoSrc.includes('ptb')) {
+                initialAspect = 4 / 3;  // 1.333 cho Máy Photobooth
+            }
+
+            const initialDim = calcHoloSize(initialAspect);
+            const planeGeo = new THREE.PlaneGeometry(initialDim.w, initialDim.h);
             // Dùng THREE.FrontSide kết hợp Billboard để hình ảnh và chữ LUÔN đúng chiều, không bị lật ngược từ sau
             const planeMat = new THREE.MeshBasicMaterial({ 
                 map: videoTex, 
@@ -1805,6 +1828,24 @@
             const borderMat = new THREE.LineBasicMaterial({ color: 0xffa0bc, linewidth: 2 });
             const borderLine = new THREE.LineSegments(borderGeo, borderMat);
             holoGroup.add(borderLine);
+
+            // Hàm tự động cập nhật lại kích thước khung hình ngay khi đọc được metadata video thực tế
+            function updateHoloToRealVideoSize() {
+                if (video.videoWidth && video.videoHeight) {
+                    const realAspect = video.videoWidth / video.videoHeight;
+                    const dim = calcHoloSize(realAspect);
+                    holoMesh.geometry.dispose();
+                    holoMesh.geometry = new THREE.PlaneGeometry(dim.w, dim.h);
+                    borderLine.geometry.dispose();
+                    borderLine.geometry = new THREE.EdgesGeometry(holoMesh.geometry);
+                }
+            }
+
+            video.addEventListener('loadedmetadata', updateHoloToRealVideoSize);
+            video.addEventListener('loadeddata', updateHoloToRealVideoSize);
+            if (video.readyState >= 1) {
+                updateHoloToRealVideoSize();
+            }
 
             // Đèn hào quang nhẹ tỏa từ màn hình
             const holoLight = new THREE.PointLight(0xffb6c1, 2.0, 4.0);
