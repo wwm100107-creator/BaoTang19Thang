@@ -408,34 +408,214 @@
         const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.matchMedia('(pointer: coarse)').matches;
         
         const autoImagesArray = [];
-        for (let i = 1; i <= 149; i++) {
+        for (let i = 1; i <= 162; i++) {
             autoImagesArray.push(`assets/images/thumbnails/${i}.jpg`);
         }
 
         const ASSETS_CONFIG = {
-            bgMusic: 'assets/audio/bg_music.mp3',
+            bgMusic: 'assets/audio/full.mp3',
             roomStart: { model: 'assets/models/ve.glb' },
             room1: [
-                { text: "Chào em .... em hãy lắng nghe anh nói một chút nha. Anh biết là mình cũng không giỏi ăn nói, cũng không giỏi dỗ em. Nhưng mà những gì anh muốn nói tới đây đều là những cảm xúc thật của anh.", audioPath: 'assets/audio/voice_p1_1.mp3' },
-                { text: "Anh biết mình đã có những lúc sai, lúc làm em tổn thương... nhưng anh thật sự rất là yêu em và chưa bao giờ muốn đánh mất em.", audioPath: 'assets/audio/voice_p1_2.mp3' },
-                { text: "Cảm ơn em vì đã luôn kiên nhận và yêu thương anh. Dù anh còn rất nhiều thiếu xót. Anh biết là mình đã khiến em mệt mỏi và thất vọng ... anh không hứa là mình sẽ hoàn hảo, anh chỉ hứa là mình sẽ học cách yêu em tốt hơn. Anh muốn được trưởng thành cùng em và anh muốn trân trọng em hơn vào mỗi ngày.", audioPath: 'assets/audio/voice_p1_3.mp3' }
+                { text: "Chào em .... em hãy lắng nghe anh nói một chút nha. Anh biết là mình cũng không giỏi ăn nói, cũng không giỏi dỗ em. Nhưng mà những gì anh muốn nói tới đây đều là những cảm xúc thật của anh.", audioPath: 'assets/audio/moc_1.mp3' },
+                { text: "Anh biết mình đã có những lúc sai, lúc làm em tổn thương... nhưng anh thật sự rất là yêu em và chưa bao giờ muốn đánh mất em.", audioPath: 'assets/audio/moc_2.mp3' },
+                { text: "Cảm ơn em vì đã luôn kiên nhận và yêu thương anh. Dù anh còn rất nhiều thiếu xót. Anh biết là mình đã khiến em mệt mỏi và thất vọng ... anh không hứa là mình sẽ hoàn hảo, anh chỉ hứa là mình sẽ học cách yêu em tốt hơn. Anh muốn được trưởng thành cùng em và anh muốn trân trọng em hơn vào mỗi ngày.", audioPath: 'assets/audio/moc_3.mp3' }
             ],
             room2: autoImagesArray,
             room3: [
                 { 
-                    label: 'Máy Photobooth', video: 'assets/videos/video_photobooth.mp4',
+                    label: 'Máy Photobooth', 
+                    video: 'assets/videos/ptb.mp4',
                     model: 'assets/models/photobooth.glb'
                 },
                 { 
-                    label: 'Study Date ở coffee', video: 'assets/videos/video_caphe.mp4',
+                    label: 'Study Date ở coffee', 
+                    video: 'assets/videos/cf.mp4',
+                    playlist: ['assets/videos/cf.mp4', 'assets/videos/cf1.mp4'],
                     tableModel: 'assets/models/Table.glb',
                     laptopModel: 'assets/models/laptop.glb',
                     coffeeModel: 'assets/models/caphe.glb'
                 },
                 { 
-                    label: 'Chiếc Áo Đôi Đầu Tiên', video: 'assets/videos/video_aodoi.mp4',
+                    label: 'Chiếc Áo Đôi Đầu Tiên', 
+                    video: 'assets/videos/video_aodoi.mp4',
                     model: 'assets/models/aodoi.glb'
                 }
+            ],
+            room3GalleryVideos: [
+          {
+                    "id": 1,
+                    "filename": "13081_26061915270633_all.mp4",
+                    "videoSrc": "assets/videos/video/13081_26061915270633_all.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_1.jpg"
+          },
+          {
+                    "id": 2,
+                    "filename": "2025-12-24-221445-1897309928_vhIS7mex_28a66ceee9df7f66b51d30cf1e09a86d623380bd.mp4",
+                    "videoSrc": "assets/videos/video/2025-12-24-221445-1897309928_vhIS7mex_28a66ceee9df7f66b51d30cf1e09a86d623380bd.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_2.jpg"
+          },
+          {
+                    "id": 3,
+                    "filename": "IMG_1127.MP4",
+                    "videoSrc": "assets/videos/video/IMG_1127.MP4",
+                    "posterSrc": "assets/videos/video_posters/poster_3.jpg"
+          },
+          {
+                    "id": 4,
+                    "filename": "Locket_1783285458109_62.mp4",
+                    "videoSrc": "assets/videos/video/Locket_1783285458109_62.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_4.jpg"
+          },
+          {
+                    "id": 5,
+                    "filename": "Locket_1783285802944_40.mp4",
+                    "videoSrc": "assets/videos/video/Locket_1783285802944_40.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_5.jpg"
+          },
+          {
+                    "id": 6,
+                    "filename": "Locket_1783285807799_59.mp4",
+                    "videoSrc": "assets/videos/video/Locket_1783285807799_59.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_6.jpg"
+          },
+          {
+                    "id": 7,
+                    "filename": "Messenger_creation_0844480C-FA2C-45E6-82A3-4C877357F1A2.mp4",
+                    "videoSrc": "assets/videos/video/Messenger_creation_0844480C-FA2C-45E6-82A3-4C877357F1A2.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_7.jpg"
+          },
+          {
+                    "id": 8,
+                    "filename": "Messenger_creation_161DDAB3-8856-49C1-A5A4-7EF790DD0A01.mp4",
+                    "videoSrc": "assets/videos/video/Messenger_creation_161DDAB3-8856-49C1-A5A4-7EF790DD0A01.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_8.jpg"
+          },
+          {
+                    "id": 9,
+                    "filename": "Messenger_creation_466C277B-C8B9-4720-BFB1-B5CD6E3A5622.mp4",
+                    "videoSrc": "assets/videos/video/Messenger_creation_466C277B-C8B9-4720-BFB1-B5CD6E3A5622.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_9.jpg"
+          },
+          {
+                    "id": 10,
+                    "filename": "Messenger_creation_6DCEB2AA-CDFA-488E-B7EE-B42E2AF152AF.mp4",
+                    "videoSrc": "assets/videos/video/Messenger_creation_6DCEB2AA-CDFA-488E-B7EE-B42E2AF152AF.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_10.jpg"
+          },
+          {
+                    "id": 11,
+                    "filename": "Messenger_creation_7EC0986E-FAF2-4242-B26B-0B7787A19467.mp4",
+                    "videoSrc": "assets/videos/video/Messenger_creation_7EC0986E-FAF2-4242-B26B-0B7787A19467.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_11.jpg"
+          },
+          {
+                    "id": 12,
+                    "filename": "VIDEO_DOWNLOAD_1761390568197_1761392394547.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1761390568197_1761392394547.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_12.jpg"
+          },
+          {
+                    "id": 13,
+                    "filename": "VIDEO_DOWNLOAD_1761409035498_1761416252505.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1761409035498_1761416252505.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_13.jpg"
+          },
+          {
+                    "id": 14,
+                    "filename": "VIDEO_DOWNLOAD_1761409035508_1761416252616.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1761409035508_1761416252616.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_14.jpg"
+          },
+          {
+                    "id": 15,
+                    "filename": "VIDEO_DOWNLOAD_1763298346616_1763304773536.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1763298346616_1763304773536.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_15.jpg"
+          },
+          {
+                    "id": 16,
+                    "filename": "VIDEO_DOWNLOAD_1763298346625_1763304775305.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1763298346625_1763304775305.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_16.jpg"
+          },
+          {
+                    "id": 17,
+                    "filename": "VIDEO_DOWNLOAD_1763298346631_1763304776860.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1763298346631_1763304776860.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_17.jpg"
+          },
+          {
+                    "id": 18,
+                    "filename": "VIDEO_DOWNLOAD_1763298346638_1763304778470.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1763298346638_1763304778470.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_18.jpg"
+          },
+          {
+                    "id": 19,
+                    "filename": "VIDEO_DOWNLOAD_1763298346643_1763304780073.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1763298346643_1763304780073.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_19.jpg"
+          },
+          {
+                    "id": 20,
+                    "filename": "VIDEO_DOWNLOAD_1765107778426_1765987051750.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1765107778426_1765987051750.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_20.jpg"
+          },
+          {
+                    "id": 21,
+                    "filename": "VIDEO_DOWNLOAD_1765107778429_1765987064449.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1765107778429_1765987064449.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_21.jpg"
+          },
+          {
+                    "id": 22,
+                    "filename": "VIDEO_DOWNLOAD_1781895048660_1782070552257.mp4",
+                    "videoSrc": "assets/videos/video/VIDEO_DOWNLOAD_1781895048660_1782070552257.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_22.jpg"
+          },
+          {
+                    "id": 23,
+                    "filename": "ptb1.mp4",
+                    "videoSrc": "assets/videos/video/ptb1.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_23.jpg"
+          },
+          {
+                    "id": 24,
+                    "filename": "ptb2.mp4",
+                    "videoSrc": "assets/videos/video/ptb2.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_24.jpg"
+          },
+          {
+                    "id": 25,
+                    "filename": "ptb3.mp4",
+                    "videoSrc": "assets/videos/video/ptb3.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_25.jpg"
+          },
+          {
+                    "id": 26,
+                    "filename": "ptb4.mp4",
+                    "videoSrc": "assets/videos/video/ptb4.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_26.jpg"
+          },
+          {
+                    "id": 27,
+                    "filename": "ptb5.mp4",
+                    "videoSrc": "assets/videos/video/ptb5.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_27.jpg"
+          },
+          {
+                    "id": 28,
+                    "filename": "ptb6.mp4",
+                    "videoSrc": "assets/videos/video/ptb6.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_28.jpg"
+          },
+          {
+                    "id": 29,
+                    "filename": "video.mp4",
+                    "videoSrc": "assets/videos/video/video.mp4",
+                    "posterSrc": "assets/videos/video_posters/poster_29.jpg"
+          }
             ],
             roomEnd: {
                 text: "Kim Ngân ơi, vợ ơi, bé ơi, iu ơi...<br><br>Có lẽ anh không phải là người giỏi nói những lời thật hay, nhưng có một điều anh chưa bao giờ muốn giấu em, đó là anh thật sự yêu em.<br><br>Anh đã nghĩ rất nhiều về tình cảm của mình dành cho em. Và anh nhận ra rằng, sau tất cả những vui buồn, những lần giận nhau, những lúc tưởng như không thể tiếp tục, người anh vẫn muốn quay về vẫn là em. Có lẽ bởi vì em đã trở thành một phần rất quan trọng trong cuộc sống của anh từ lúc nào mà chính anh cũng không nhận ra.<br><br>Anh biết anh đã từng làm em buồn, từng khiến em thất vọng, thậm chí có những lúc khiến em phải tự hỏi liệu anh có thật sự trân trọng em hay không. Nghĩ về những điều đó, anh thấy thương em và cũng trách bản thân mình rất nhiều.<br><br>Nhưng anh không muốn tình yêu của chúng ta chỉ dừng lại ở những lời xin lỗi.<br><br>Anh muốn được ở bên em và học cách yêu em tốt hơn mỗi ngày. Muốn khi em mệt, anh là người em có thể tìm đến. Khi em buồn, anh có thể ôm em và nói rằng “Không sao, có anh ở đây.” Và khi hai đứa gặp khó khăn, anh muốn là người cùng em ngồi xuống giải quyết, chứ không phải người đầu tiên nghĩ đến chuyện buông tay.<br><br>Anh không hứa mình sẽ hoàn hảo, nhưng anh hứa sẽ nghiêm túc với tình yêu này.<br><br>Nếu em hỏi anh điều anh mong muốn nhất lúc này là gì, thì câu trả lời rất đơn giản thôi...<br><br>Anh muốn được tiếp tục yêu em, được cùng em trưởng thành, cùng nhau sửa những điều chưa tốt, và cùng nhau đi thật lâu.<br><br>Anh yêu em. Không phải vì anh cần một người bên cạnh, mà vì sau tất cả, anh vẫn muốn người bên cạnh mình là em.",
@@ -461,6 +641,7 @@
         let audioListener, bgMusic, currentVoice = null;
         let isMuted = false;
         let targetMusicVolume = 0.4;
+        let currentPlayingGalleryCard = null;
 
         let raycaster, moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
         let activeElements = [];
@@ -877,6 +1058,10 @@
             if (currentPhotoSpotlight) {
                 scene.remove(currentPhotoSpotlight.group);
                 currentPhotoSpotlight = null;
+            }
+            if (currentPlayingGalleryCard) {
+                stopGalleryVideoCard(currentPlayingGalleryCard);
+                currentPlayingGalleryCard = null;
             }
             activeElements.forEach(obj => {
                 if (obj.userData && obj.userData.videoElement) {
@@ -1484,6 +1669,7 @@
                 type: 'video_item', 
                 label: ASSETS_CONFIG.room3[1].label, 
                 videoSrc: ASSETS_CONFIG.room3[1].video, 
+                videoPlaylist: ASSETS_CONFIG.room3[1].playlist,
                 activeHologram: false,
                 hologramY: 2.15,
                 hologramForwardOffset: 0.15
@@ -1535,6 +1721,10 @@
             spotAodoi.target = hbAodoi;
             scene.add(spotAodoi);
             activeElements.push(spotAodoi);
+
+            // 4. HỘP QUÀ LĂNG TRỤ KỶ NIỆM (Liên kết 29 thước phim tình yêu)
+            const posGiftBox = new THREE.Vector3().copy(center).addScaledVector(walkDir, 3.2);
+            createPrismGiftBox(posGiftBox, center, walkDir);
         }
 
         // ==========================================
@@ -1542,8 +1732,22 @@
         // ==========================================
         function createVideoHologramMesh(parentMesh, videoSrc) {
             const video = document.createElement('video');
-            video.src = videoSrc;
-            video.loop = true;
+            const playlist = parentMesh.userData.videoPlaylist;
+            let playlistIdx = 0;
+            if (playlist && playlist.length > 1) {
+                video.src = playlist[0];
+                video.loop = false;
+                video.onended = () => {
+                    playlistIdx = (playlistIdx + 1) % playlist.length;
+                    video.src = playlist[playlistIdx];
+                    video.play().catch(() => {});
+                    if (holoGroup.userData) holoGroup.userData.videoSrc = playlist[playlistIdx];
+                    if (holoMesh.userData) holoMesh.userData.videoSrc = playlist[playlistIdx];
+                };
+            } else {
+                video.src = videoSrc;
+                video.loop = true;
+            }
             video.playsInline = true;
             video.crossOrigin = 'anonymous';
             video.play().catch(() => {});
@@ -1618,14 +1822,349 @@
             
             parentMesh.userData.activeHologram = true;
 
+            checkRoom3Completion();
+        }
+
+
+        function checkRoom3Completion() {
             let allOpened = true;
             activeElements.forEach(el => {
                 if(el.userData.type === 'video_item' && !el.userData.activeHologram) allOpened = false;
+                if(el.userData.type === 'gift_box_prism' && !el.userData.opened) allOpened = false;
             });
-            if(allOpened) {
+            if(allOpened && !roomReadyForNext) {
                 showHUDText("Em hãy cứ bước tiếp về bất kỳ hướng nào để đến với bức thư anh dành riêng cho em...", 5000);
                 roomReadyForNext = true;
             }
+        }
+
+        // ==========================================
+        // 3. HỘP QUÀ LĂNG TRỤ VÀ 29 THƯỚC PHIM KỶ NIỆM
+        // ==========================================
+        function createPrismGiftBox(pos, center, walkDir) {
+            const group = new THREE.Group();
+            group.position.set(pos.x, 0, pos.z);
+
+            // Bục trưng bày pha lê ngọc bích
+            const pedestal = createExhibitionPedestal(0.88, 0.05, 0xff758c);
+            group.add(pedestal);
+
+            const boxGroup = new THREE.Group();
+            boxGroup.position.y = 0.05;
+
+            // Thân lăng trụ lục giác (Hexagonal Prism)
+            const bodyGeo = new THREE.CylinderGeometry(0.46, 0.46, 0.65, 6);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: 0xff3b6f,
+                roughness: 0.28,
+                metalness: 0.35,
+                emissive: 0x220011
+            });
+            const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+            bodyMesh.position.y = 0.325;
+            boxGroup.add(bodyMesh);
+
+            // Dây ruy băng vàng kim quấn quanh các mặt lăng trụ
+            const ribbonMat = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                metalness: 0.85,
+                roughness: 0.18,
+                emissive: 0x332600
+            });
+            for (let r = 0; r < 3; r++) {
+                const ribbonGeo = new THREE.BoxGeometry(0.08, 0.66, 0.94);
+                const ribbonMesh = new THREE.Mesh(ribbonGeo, ribbonMat);
+                ribbonMesh.position.y = 0.325;
+                ribbonMesh.rotation.y = (r * Math.PI) / 3;
+                boxGroup.add(ribbonMesh);
+            }
+
+            // Nắp hộp lăng trụ lục giác
+            const lidGroup = new THREE.Group();
+            lidGroup.position.y = 0.65;
+
+            const lidGeo = new THREE.CylinderGeometry(0.49, 0.49, 0.16, 6);
+            const lidMat = new THREE.MeshStandardMaterial({
+                color: 0xff668c,
+                roughness: 0.25,
+                metalness: 0.3,
+                emissive: 0x220011
+            });
+            const lidMesh = new THREE.Mesh(lidGeo, lidMat);
+            lidMesh.position.y = 0.08;
+            lidGroup.add(lidMesh);
+
+            // Viền vàng quanh nắp
+            const lidBandGeo = new THREE.CylinderGeometry(0.495, 0.495, 0.04, 6);
+            const lidBand = new THREE.Mesh(lidBandGeo, ribbonMat);
+            lidBand.position.y = 0.03;
+            lidGroup.add(lidBand);
+
+            // Ruy băng chéo trên nắp
+            for (let r = 0; r < 3; r++) {
+                const lidRibbonGeo = new THREE.BoxGeometry(0.08, 0.02, 1.0);
+                const lidRibbon = new THREE.Mesh(lidRibbonGeo, ribbonMat);
+                lidRibbon.position.y = 0.165;
+                lidRibbon.rotation.y = (r * Math.PI) / 3;
+                lidGroup.add(lidRibbon);
+            }
+
+            // Nơ ruy băng 3D tinh xảo trên đỉnh nắp
+            const bowGroup = new THREE.Group();
+            bowGroup.position.y = 0.17;
+            for (let i = 0; i < 4; i++) {
+                const loopGeo = new THREE.TorusGeometry(0.1, 0.028, 12, 24, Math.PI * 1.5);
+                const loopMesh = new THREE.Mesh(loopGeo, ribbonMat);
+                loopMesh.rotation.z = Math.PI / 2;
+                loopMesh.rotation.y = (i * Math.PI) / 2 + Math.PI / 4;
+                loopMesh.position.y = 0.07;
+                bowGroup.add(loopMesh);
+            }
+            const knotGeo = new THREE.SphereGeometry(0.045, 16, 16);
+            const knotMesh = new THREE.Mesh(knotGeo, ribbonMat);
+            knotMesh.position.y = 0.08;
+            bowGroup.add(knotMesh);
+            lidGroup.add(bowGroup);
+
+            boxGroup.add(lidGroup);
+            group.add(boxGroup);
+
+            // Hào quang lung linh quanh hộp quà
+            const boxLight = new THREE.PointLight(0xffb6c1, 1.8, 4.5);
+            boxLight.position.set(0, 0.8, 0);
+            group.add(boxLight);
+
+            // Đèn spotlight chiếu rọi từ trên cao
+            const spotGift = new THREE.SpotLight(0xfff0f5, 45, 10, Math.PI / 5, 0.6, 1);
+            spotGift.position.set(pos.x, 3.8, pos.z);
+            spotGift.target = group;
+            scene.add(spotGift);
+            activeElements.push(spotGift);
+
+            scene.add(group);
+            activeElements.push(group);
+
+            // Hitbox tương tác cho Hộp Quà (< 1m)
+            const hbGift = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.85, 0.85, 1.4, 16),
+                new THREE.MeshBasicMaterial({ visible: false })
+            );
+            hbGift.position.set(pos.x, 0.7, pos.z);
+            hbGift.userData = {
+                type: 'gift_box_prism',
+                label: 'Hộp Quà Kỷ Niệm',
+                opened: false,
+                lidGroup: lidGroup,
+                boxLight: boxLight,
+                boxPosition: pos.clone(),
+                walkDir: walkDir.clone(),
+                center: center.clone()
+            };
+            scene.add(hbGift);
+            activeElements.push(hbGift);
+            interactableObjects.push(hbGift);
+        }
+
+        function openPrismGiftBox(hitbox) {
+            if (!hitbox || hitbox.userData.opened) return;
+            hitbox.userData.opened = true;
+
+            const lid = hitbox.userData.lidGroup;
+            if (lid) {
+                lid.userData.isOpening = true;
+            }
+            if (hitbox.userData.boxLight) {
+                hitbox.userData.boxLight.intensity = 5.0;
+                hitbox.userData.boxLight.color.setHex(0xffe680);
+            }
+
+            showHUDText("Hộp quà mở ra những thước phim kỷ niệm của đôi mình... ✨", 4500);
+
+            // Gọi các video xuất hiện lơ lửng quanh hộp quà (ở trạng thái chờ)
+            spawnGiftBoxVideoCards(hitbox.userData.boxPosition, hitbox.userData.walkDir);
+            checkRoom3Completion();
+        }
+
+        function spawnGiftBoxVideoCards(boxPos, walkDir) {
+            const videos = ASSETS_CONFIG.room3GalleryVideos || [];
+            if (!videos.length) return;
+
+            const total = videos.length;
+            videos.forEach((item, index) => {
+                const timerId = setTimeout(() => {
+                    if (currentState !== STATES.R3) return;
+
+                    // Phân bổ 29 video thành hình xoắn ốc cung tròn mềm mại quanh khu vực hộp quà
+                    const phi = (index / total) * Math.PI * 2.3 + 0.4;
+                    const radius = 2.8 + (index / total) * 3.4;
+                    const targetX = boxPos.x + Math.cos(phi) * radius;
+                    const targetZ = boxPos.z + Math.sin(phi) * radius;
+
+                    // Độ cao lơ lửng vừa vặn tầm mắt (1.35m - 2.1m)
+                    const targetY = 1.45 + Math.sin(index * 0.5) * 0.35 + (index / total) * 0.3;
+
+                    const startX = boxPos.x;
+                    const startY = 0.8;
+                    const startZ = boxPos.z;
+
+                    textureLoader.load(item.posterSrc, (posterTex) => {
+                        if (currentState !== STATES.R3) return;
+                        posterTex.colorSpace = THREE.SRGBColorSpace;
+                        posterTex.minFilter = THREE.LinearFilter;
+                        posterTex.magFilter = THREE.LinearFilter;
+
+                        const aspect = (posterTex.image && posterTex.image.width && posterTex.image.height)
+                            ? (posterTex.image.width / posterTex.image.height) : 1.33;
+
+                        const cardHeight = 0.92;
+                        const cardWidth = Math.min(1.4, Math.max(0.65, cardHeight * aspect));
+
+                        const cardGeo = new THREE.PlaneGeometry(cardWidth, cardHeight);
+                        const cardMat = new THREE.MeshBasicMaterial({
+                            map: posterTex,
+                            side: THREE.FrontSide,
+                            transparent: true,
+                            opacity: 0.0
+                        });
+                        const cardMesh = new THREE.Mesh(cardGeo, cardMat);
+                        cardMesh.position.set(startX, startY, startZ);
+                        cardMesh.lookAt(boxPos.x, startY, boxPos.z);
+                        cardMesh.rotateY(Math.PI); // Quay mặt trước ra phía người xem
+
+                        // Viền neon hologram tinh tế
+                        const borderGeo = new THREE.EdgesGeometry(cardGeo);
+                        const borderMat = new THREE.LineBasicMaterial({
+                            color: 0xffa0bc,
+                            transparent: true,
+                            opacity: 0.0
+                        });
+                        const borderLine = new THREE.LineSegments(borderGeo, borderMat);
+                        cardMesh.add(borderLine);
+
+                        // Huy hiệu nút Play biểu tượng ▶ ở giữa
+                        const badgeCanvas = document.createElement('canvas');
+                        badgeCanvas.width = 128;
+                        badgeCanvas.height = 128;
+                        const bCtx = badgeCanvas.getContext('2d');
+                        bCtx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                        bCtx.beginPath();
+                        bCtx.arc(64, 64, 48, 0, Math.PI * 2);
+                        bCtx.fill();
+                        bCtx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                        bCtx.lineWidth = 4;
+                        bCtx.stroke();
+                        bCtx.fillStyle = '#ffffff';
+                        bCtx.beginPath();
+                        bCtx.moveTo(52, 42);
+                        bCtx.lineTo(84, 64);
+                        bCtx.lineTo(52, 86);
+                        bCtx.closePath();
+                        bCtx.fill();
+
+                        const badgeTex = new THREE.CanvasTexture(badgeCanvas);
+                        const badgeMesh = new THREE.Mesh(
+                            new THREE.PlaneGeometry(0.24, 0.24),
+                            new THREE.MeshBasicMaterial({ map: badgeTex, transparent: true, opacity: 0.9 })
+                        );
+                        badgeMesh.position.set(0, 0, 0.02);
+                        cardMesh.add(badgeMesh);
+
+                        cardMesh.userData = {
+                            type: 'gallery_video_card',
+                            id: item.id,
+                            videoSrc: item.videoSrc,
+                            posterSrc: item.posterSrc,
+                            posterTex: posterTex,
+                            videoElement: null,
+                            videoTex: null,
+                            playBadge: badgeMesh,
+                            borderLine: borderLine,
+                            isPlaying: false,
+                            startPos: new THREE.Vector3(startX, startY, startZ),
+                            targetPos: new THREE.Vector3(targetX, targetY, targetZ),
+                            animProgress: 0.0
+                        };
+
+                        scene.add(cardMesh);
+                        activeElements.push(cardMesh);
+                        interactableObjects.push(cardMesh);
+                    });
+                }, index * 90);
+                albumLoadingTimers.push(timerId);
+            });
+        }
+
+        function stopGalleryVideoCard(card) {
+            if (!card || !card.userData) return;
+            if (card.userData.videoElement) {
+                card.userData.videoElement.pause();
+                card.userData.videoElement.currentTime = 0;
+            }
+            if (card.userData.posterTex) {
+                card.material.map = card.userData.posterTex;
+                card.material.needsUpdate = true;
+            }
+            if (card.userData.playBadge) {
+                card.userData.playBadge.visible = true;
+            }
+            card.userData.isPlaying = false;
+        }
+
+        function playGalleryVideoCard(card) {
+            if (!card || !card.userData) return;
+
+            // Dừng video gallery khác nếu đang phát
+            if (currentPlayingGalleryCard && currentPlayingGalleryCard !== card) {
+                stopGalleryVideoCard(currentPlayingGalleryCard);
+            }
+            currentPlayingGalleryCard = card;
+
+            let video = card.userData.videoElement;
+            if (!video) {
+                video = document.createElement('video');
+                video.src = card.userData.videoSrc;
+                video.playsInline = true;
+                video.crossOrigin = 'anonymous';
+                video.loop = false; // CHỈ PHÁT ĐÚNG 1 LẦN!
+
+                const videoTex = new THREE.VideoTexture(video);
+                videoTex.colorSpace = THREE.SRGBColorSpace;
+                videoTex.minFilter = THREE.LinearFilter;
+                videoTex.magFilter = THREE.LinearFilter;
+
+                card.userData.videoElement = video;
+                card.userData.videoTex = videoTex;
+
+                // Âm thanh vòm 3D phát ra từ chính màn hình
+                const posAudio = new THREE.PositionalAudio(audioListener);
+                posAudio.setMediaElementSource(video);
+                posAudio.setDistanceModel('linear');
+                posAudio.setRefDistance(1.8);
+                posAudio.setMaxDistance(5.5);
+                card.add(posAudio);
+
+                video.onended = () => {
+                    targetMusicVolume = 0.4;
+                    card.userData.isPlaying = false;
+                    if (card.userData.playBadge) {
+                        card.userData.playBadge.visible = true;
+                    }
+                    showHUDText("Video đã phát xong. Em có thể xem tiếp những video khác... ✨", 3500);
+                };
+            }
+
+            // Bắt đầu phát video
+            card.material.map = card.userData.videoTex;
+            card.material.needsUpdate = true;
+            if (card.userData.playBadge) {
+                card.userData.playBadge.visible = false;
+            }
+
+            targetMusicVolume = 0.06;
+            video.currentTime = 0;
+            video.play().catch(e => console.log('Video play error:', e));
+            card.userData.isPlaying = true;
+            showHUDText("Đang phát thước phim kỷ niệm... ✨", 3000);
         }
 
         // --- PHÒNG KẾT: BỨC THƯ TÌNH CẢM XÚC ---
@@ -2596,8 +3135,14 @@
             btnMobileInteract.addEventListener('click', () => {
                 if (currentState === STATES.START) {
                     triggerTicketInteraction();
-                } else if (currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
-                    createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
+                } else if (currentState === STATES.R3 && spaceTarget) {
+                    if (spaceTarget.userData.type === 'video_item' && !spaceTarget.userData.activeHologram) {
+                        createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
+                    } else if (spaceTarget.userData.type === 'gift_box_prism' && !spaceTarget.userData.opened) {
+                        openPrismGiftBox(spaceTarget);
+                    } else if (spaceTarget.userData.type === 'gallery_video_card') {
+                        playGalleryVideoCard(spaceTarget);
+                    }
                     promptNode.style.display = 'none';
                     btnMobileInteract.style.display = 'none';
                 } else if (currentState === STATES.REND) {
@@ -2629,8 +3174,14 @@
                 case 'KeyA': moveLeft = true; break;     
                 case 'KeyD': moveRight = true; break;
                 case 'Space':
-                    if (currentState === STATES.R3 && spaceTarget && !spaceTarget.userData.activeHologram) {
-                        createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
+                    if (currentState === STATES.R3 && spaceTarget) {
+                        if (spaceTarget.userData.type === 'video_item' && !spaceTarget.userData.activeHologram) {
+                            createVideoHologramMesh(spaceTarget, spaceTarget.userData.videoSrc);
+                        } else if (spaceTarget.userData.type === 'gift_box_prism' && !spaceTarget.userData.opened) {
+                            openPrismGiftBox(spaceTarget);
+                        } else if (spaceTarget.userData.type === 'gallery_video_card') {
+                            playGalleryVideoCard(spaceTarget);
+                        }
                         promptNode.style.display = 'none';
                         if (btnMobileInteract) btnMobileInteract.style.display = 'none';
                     } else if (currentState === STATES.REND && !popup.classList.contains('active')) {
@@ -2683,6 +3234,27 @@
                 createVideoHologramMesh(target, target.userData.videoSrc);
                 promptNode.style.display = 'none';
                 if (btnMobileInteract) btnMobileInteract.style.display = 'none';
+                return true;
+            } else if (target.userData.type === 'gift_box_prism' && !target.userData.opened) {
+                openPrismGiftBox(target);
+                promptNode.style.display = 'none';
+                if (btnMobileInteract) btnMobileInteract.style.display = 'none';
+                return true;
+            } else if (target.userData.type === 'gallery_video_card') {
+                if (target.userData.isPlaying) {
+                    isViewingMedia = true;
+                    if (target.userData.videoElement) target.userData.videoElement.pause();
+                    pVid.src = target.userData.videoSrc;
+                    pVid.loop = false;
+                    pVid.style.display = 'block';
+                    popup.classList.add('active');
+                    pVid.play();
+                    pVid.onended = () => { targetMusicVolume = 0.4; };
+                    if (mobileControls) mobileControls.style.display = 'none';
+                    if (!isTouchDevice && controls.isLocked) controls.unlock();
+                } else {
+                    playGalleryVideoCard(target);
+                }
                 return true;
             } else if (target.userData.type === 'floating_hologram_video') {
                 isViewingMedia = true; 
@@ -2894,7 +3466,7 @@
                     });
                 }
 
-                // Cự ly tương tác phòng 3 (Hiện vật 3D - yêu cầu tiến sát < 1m)
+                // Cự ly tương tác phòng 3 (Hiện vật 3D, Hộp Quà và Video Gallery - yêu cầu tiến sát < 1m)
                 if (currentState === STATES.R3) {
                     let nearAnyItem = false;
                     activeElements.forEach(el => {
@@ -2912,6 +3484,33 @@
                                     btnMobileInteract.style.display = 'flex';
                                 }
                             }
+                        } else if(el.userData.type === 'gift_box_prism' && !el.userData.opened) {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 1.8) {
+                                nearAnyItem = true;
+                                spaceTarget = el;
+                                promptNode.innerHTML = `Nhấn SPACE hoặc nhấp chuột để mở [ Hộp Quà Kỷ Niệm 🎁 ]`;
+                                promptNode.style.display = 'block';
+
+                                if (isTouchDevice) {
+                                    btnMobileInteract.innerHTML = `🎁 MỞ HỘP QUÀ KỶ NIỆM`;
+                                    btnMobileInteract.style.display = 'flex';
+                                }
+                            }
+                        } else if(el.userData.type === 'gallery_video_card') {
+                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
+                            if(dist < 1.6) {
+                                nearAnyItem = true;
+                                spaceTarget = el;
+                                const promptTxt = el.userData.isPlaying ? "Nhấp chuột để phóng to video 🔍" : "Nhấn SPACE hoặc nhấp chuột để phát video này ▶";
+                                promptNode.innerHTML = promptTxt;
+                                promptNode.style.display = 'block';
+
+                                if (isTouchDevice) {
+                                    btnMobileInteract.innerHTML = el.userData.isPlaying ? `🔍 PHÓNG TO VIDEO` : `▶ PHÁT VIDEO NÀY`;
+                                    btnMobileInteract.style.display = 'flex';
+                                }
+                            }
                         }
                     });
                     if(!nearAnyItem) { 
@@ -2919,6 +3518,25 @@
                         promptNode.style.display = 'none'; 
                         if (isTouchDevice) btnMobileInteract.style.display = 'none';
                     }
+
+                    // Hiệu ứng mở nắp hộp quà và lướt các thẻ video trong không gian
+                    activeElements.forEach(el => {
+                        if (el.userData && el.userData.type === 'gift_box_prism' && el.userData.opened && el.userData.lidGroup) {
+                            const lid = el.userData.lidGroup;
+                            lid.position.y = THREE.MathUtils.lerp(lid.position.y, 1.35, 0.05);
+                            lid.rotation.x = THREE.MathUtils.lerp(lid.rotation.x, -0.38, 0.05);
+                            lid.rotation.z = THREE.MathUtils.lerp(lid.rotation.z, 0.22, 0.05);
+                        } else if (el.userData && el.userData.type === 'gallery_video_card' && el.userData.animProgress < 1.0) {
+                            el.userData.animProgress += 0.025;
+                            const p = Math.min(1.0, el.userData.animProgress);
+                            const ease = 1 - Math.pow(1 - p, 3);
+                            el.position.lerpVectors(el.userData.startPos, el.userData.targetPos, ease);
+                            if (el.material) el.material.opacity = ease * 0.95;
+                            if (el.userData.borderLine && el.userData.borderLine.material) {
+                                el.userData.borderLine.material.opacity = ease * 0.85;
+                            }
+                        }
+                    });
                 }
 
                 // Cự ly tương tác phòng Kết (Bức thư tình - yêu cầu tiến sát < 1m)

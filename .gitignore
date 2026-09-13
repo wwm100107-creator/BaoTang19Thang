@@ -2,6 +2,7 @@
 index.html.bak
 *.tmp
 *.log
+assets/images_raw_backup/
 
 # OS generated
 .DS_Store
