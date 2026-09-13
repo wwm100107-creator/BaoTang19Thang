@@ -286,6 +286,127 @@
             color: #ffe4e1; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
         }
 
+        /* BẢNG MÀU ĐEN CHIA SẺ DỰ ÁN & LỜI CHÚC (PROJECT CREDITS MODAL) */
+        #project-credits-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; min-height: 100dvh;
+            background: rgba(3, 2, 6, 0.94);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            z-index: 150; display: flex; justify-content: center; align-items: center;
+            padding: 24px; opacity: 0; pointer-events: none;
+            transition: opacity 3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #project-credits-modal.active {
+            opacity: 1; pointer-events: auto;
+        }
+
+        .credits-shell {
+            position: relative; max-width: 680px; width: 100%; max-height: 88vh;
+            background: rgba(22, 12, 28, 0.7);
+            border: 1px solid rgba(255, 182, 193, 0.35);
+            border-radius: 28px; padding: 6px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9), 0 0 50px rgba(255, 105, 180, 0.25);
+            display: flex; flex-direction: column;
+        }
+
+        .credits-core {
+            background: radial-gradient(circle at 50% 20%, rgba(38, 18, 36, 0.88) 0%, rgba(12, 6, 16, 0.96) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 22px; padding: 42px 36px;
+            overflow-y: auto; text-align: center;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        }
+        .credits-core::-webkit-scrollbar { width: 6px; }
+        .credits-core::-webkit-scrollbar-track { background: transparent; }
+        .credits-core::-webkit-scrollbar-thumb { background: rgba(255, 182, 193, 0.35); border-radius: 10px; }
+
+        .credits-badge {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 4px;
+            color: #ff9ebb; margin-bottom: 24px; font-weight: 600;
+            display: inline-block; padding: 5px 18px; border-radius: 50px;
+            background: rgba(255, 158, 187, 0.12); border: 1px solid rgba(255, 158, 187, 0.3);
+        }
+
+        .credits-text {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 18px; line-height: 2.2; color: #fae8ef;
+            margin-bottom: 20px; text-align: center; font-style: normal;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .credits-developer {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 21px; font-weight: 700; line-height: 1.8;
+            margin: 24px 0;
+            background: linear-gradient(135deg, #ffffff 20%, #ffd700 70%, #ff9ebb 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .credits-wishes {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 21px; font-weight: 600; line-height: 2.1;
+            color: #ffe4e1; margin-top: 20px; margin-bottom: 30px;
+            text-shadow: 0 0 25px rgba(255, 117, 140, 0.6);
+            font-style: italic;
+        }
+
+        .credits-divider {
+            width: 70px; height: 2px;
+            background: linear-gradient(90deg, transparent, #ff758c, transparent);
+            margin: 22px auto;
+        }
+
+        .btn-credits-resume {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 14px 34px; border-radius: 50px;
+            background: linear-gradient(135deg, #ff4e78, #ff758c);
+            color: #fff; border: 1px solid rgba(255, 255, 255, 0.3);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14px; font-weight: 600; letter-spacing: 1px;
+            cursor: pointer; box-shadow: 0 8px 25px rgba(255, 78, 120, 0.5);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-credits-resume:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 35px rgba(255, 78, 120, 0.7);
+        }
+        .btn-credits-resume:active {
+            transform: scale(0.96);
+        }
+
+        /* Nút nhỏ mở lại lời ngỏ */
+        #btn-reopen-credits {
+            position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+            padding: 10px 22px; border-radius: 50px;
+            background: rgba(18, 10, 24, 0.75); border: 1px solid rgba(255, 182, 193, 0.4);
+            color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 500;
+            cursor: pointer; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 15px rgba(255, 105, 180, 0.3);
+            z-index: 45; display: none; opacity: 0; transition: all 0.4s ease;
+        }
+        #btn-reopen-credits.visible {
+            display: inline-flex; opacity: 1;
+        }
+        #btn-reopen-credits:hover {
+            background: rgba(255, 78, 120, 0.35); border-color: rgba(255, 182, 193, 0.8);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        /* Hiệu ứng chuyển động xuất hiện từng dòng nhẹ nhàng */
+        #project-credits-modal .credits-anim-item {
+            opacity: 0;
+            transform: translateY(28px);
+            filter: blur(4px);
+            transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1), transform 2s cubic-bezier(0.16, 1, 0.3, 1), filter 2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #project-credits-modal.active .credits-anim-item {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+
         @media (max-width: 768px) {
             #crosshair { display: none !important; }
             .setup-card { padding: 28px 20px; border-radius: 22px; }
@@ -296,6 +417,12 @@
             .popup-close { top: -15px; right: -10px; width: 38px; height: 38px; font-size: 20px; }
             .finale-title { font-size: 24px; }
             .finale-sub { font-size: 16px; }
+            .credits-shell { max-width: 95%; border-radius: 20px; padding: 4px; }
+            .credits-core { padding: 28px 18px; border-radius: 16px; }
+            .credits-text { font-size: 15px; line-height: 2.0; }
+            .credits-developer { font-size: 17px; }
+            .credits-wishes { font-size: 17px; line-height: 1.8; }
+            .btn-credits-resume { padding: 12px 24px; font-size: 13px; }
         }
     </style>
 </head>
@@ -390,6 +517,34 @@
             </div>
         </div>
     </div>
+
+    <!-- BẢNG MÀU ĐEN CHIA SẺ VỀ DỰ ÁN & LỜI CHÚC (PROJECT CREDITS MODAL) -->
+    <div id="project-credits-modal">
+        <div class="credits-shell">
+            <div class="credits-core">
+                <div class="credits-badge credits-anim-item" style="transition-delay: 0.5s;">✦ THÔNG ĐIỆP DỰ ÁN ✦</div>
+                <div class="credits-text credits-anim-item" style="transition-delay: 1.2s;">
+                    Dự án này anh đã ấp ủ chắc cũng được nửa năm rồi, anh định sẽ tặng em vào ngày kỉ niệm 2 năm yêu nhau của chúng ta... nhưng với anh bây giờ có lẽ mới là lúc thích hợp nhất.
+                </div>
+                <div class="credits-divider credits-anim-item" style="transition-delay: 2.2s;"></div>
+                <div class="credits-developer credits-anim-item" style="transition-delay: 2.5s;">
+                    Người phát triển và hoàn thiện: Phạm Ngọc Gia Uy
+                </div>
+                <div class="credits-divider credits-anim-item" style="transition-delay: 3.5s;"></div>
+                <div class="credits-wishes credits-anim-item" style="transition-delay: 3.8s;">
+                    Gửi em người anh yêu những lời chúc tốt đẹp nhất. Anh yêu em ! ❤️
+                </div>
+                <div class="credits-anim-item" style="transition-delay: 4.8s; margin-top: 15px;">
+                    <button class="btn-credits-resume" id="btn-close-credits">
+                        ✨ Tiếp tục ngắm pháo hoa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút nhỏ mở lại lời ngỏ khi cần -->
+    <button id="btn-reopen-credits">📜 Lời ngỏ dự án</button>
 
     <script type="importmap">
       {
@@ -732,7 +887,9 @@
                 isInitialized = true;
                 
                 controls.addEventListener('unlock', () => {
-                    if (!isViewingMedia && !isTouchDevice && !popup.classList.contains('active')) {
+                    const creditsModal = document.getElementById('project-credits-modal');
+                    const isCreditsActive = creditsModal && creditsModal.classList.contains('active');
+                    if (!isViewingMedia && !isTouchDevice && !popup.classList.contains('active') && !isCreditsActive) {
                         document.getElementById('setup-screen').style.display = 'flex';
                         btnStart.innerText = "TIẾP TỤC TRẢI NGHIỆM";
                     }
@@ -2514,6 +2671,16 @@
             showHUDText("Lá thư của em đang bay nhẹ nhàng theo gió vào dải ngân hà...", 4000);
         }
 
+        // Khởi tạo sự kiện cho Modal Thông Điệp Dự Án
+        const btnCloseCredits = document.getElementById('btn-close-credits');
+        if (btnCloseCredits) {
+            btnCloseCredits.addEventListener('click', closeProjectCreditsModal);
+        }
+        const btnReopenCredits = document.getElementById('btn-reopen-credits');
+        if (btnReopenCredits) {
+            btnReopenCredits.addEventListener('click', showProjectCreditsModal);
+        }
+
         // ==========================================
         // 5. HỆ THỐNG PHÁO HOA NGHỆ THUẬT 3D VỆT SÁNG CHÂN THỰC (TRAILING STREAK 3D PYROTECHNICS)
         // ==========================================
@@ -3027,6 +3194,45 @@
             }
         }
 
+        let creditsTimer = null;
+        let hasCreditsShown = false;
+
+        function scheduleCreditsModal(delayMs = 30000) {
+            if (creditsTimer || hasCreditsShown) return;
+            creditsTimer = setTimeout(() => {
+                showProjectCreditsModal();
+            }, delayMs);
+        }
+
+        function showProjectCreditsModal() {
+            hasCreditsShown = true;
+            const modal = document.getElementById('project-credits-modal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+            const reopenBtn = document.getElementById('btn-reopen-credits');
+            if (reopenBtn) {
+                reopenBtn.classList.remove('visible');
+            }
+            if (!isTouchDevice && controls && controls.isLocked) {
+                controls.unlock();
+            }
+        }
+
+        function closeProjectCreditsModal() {
+            const modal = document.getElementById('project-credits-modal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            const reopenBtn = document.getElementById('btn-reopen-credits');
+            if (reopenBtn) {
+                reopenBtn.classList.add('visible');
+            }
+            if (!isTouchDevice && controls && !controls.isLocked) {
+                controls.lock();
+            }
+        }
+
         function startClimaxAndFireworks() {
             isClimaxActive = true;
             targetMusicVolume = 0.55;
@@ -3035,6 +3241,9 @@
             if (scene && scene.fog) {
                 scene.fog.density = 0.002; // Bầu trời đêm mở toang không giới hạn, không còn lớp sương tối cản tầm nhìn
             }
+
+            // Sau 30 giây ngắm pháo hoa đại cảnh, từ từ pop up bảng màu đen chia sẻ thông điệp dự án
+            scheduleCreditsModal(30000);
         }
 
         function launchInteractiveFirework(customTarget = null) {
@@ -3918,6 +4127,9 @@
             updateRomanticParticles(delta, player.position);
             renderer.render(scene, camera);
         }
+
+        window.showProjectCreditsModal = showProjectCreditsModal;
+        window.closeProjectCreditsModal = closeProjectCreditsModal;
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
