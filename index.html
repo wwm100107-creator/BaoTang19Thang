@@ -2130,6 +2130,7 @@
 
                         cardMesh.userData = {
                             type: 'gallery_video_card',
+                            isHologramBillboard: true, // Tracking theo hướng nhìn người chơi giống 3 model kia
                             id: item.id,
                             videoSrc: item.videoSrc,
                             posterSrc: item.posterSrc,
@@ -3612,14 +3613,19 @@
                             lid.position.y = THREE.MathUtils.lerp(lid.position.y, 1.35, 0.05);
                             lid.rotation.x = THREE.MathUtils.lerp(lid.rotation.x, -0.38, 0.05);
                             lid.rotation.z = THREE.MathUtils.lerp(lid.rotation.z, 0.22, 0.05);
-                        } else if (el.userData && el.userData.type === 'gallery_video_card' && el.userData.animProgress < 1.0) {
-                            el.userData.animProgress += 0.025;
-                            const p = Math.min(1.0, el.userData.animProgress);
-                            const ease = 1 - Math.pow(1 - p, 3);
-                            el.position.lerpVectors(el.userData.startPos, el.userData.targetPos, ease);
-                            if (el.material) el.material.opacity = ease * 0.95;
-                            if (el.userData.borderLine && el.userData.borderLine.material) {
-                                el.userData.borderLine.material.opacity = ease * 0.85;
+                        } else if (el.userData && el.userData.type === 'gallery_video_card') {
+                            if (el.userData.animProgress < 1.0) {
+                                el.userData.animProgress += 0.025;
+                                const p = Math.min(1.0, el.userData.animProgress);
+                                const ease = 1 - Math.pow(1 - p, 3);
+                                el.position.lerpVectors(el.userData.startPos, el.userData.targetPos, ease);
+                                if (el.material) el.material.opacity = ease * 0.95;
+                                if (el.userData.borderLine && el.userData.borderLine.material) {
+                                    el.userData.borderLine.material.opacity = ease * 0.85;
+                                }
+                            } else {
+                                const baseY = el.userData.targetPos.y;
+                                el.position.y = baseY + Math.sin(elapsedTime * 1.5 + (el.userData.id || 0)) * 0.035;
                             }
                         }
                     });
