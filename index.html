@@ -642,6 +642,8 @@
         let isMuted = false;
         let targetMusicVolume = 0.4;
         let currentPlayingGalleryCard = null;
+        let currentActivePodcastNode = null;
+        let hudTimeout = null;
 
         let raycaster, moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
         let activeElements = [];
@@ -1063,6 +1065,8 @@
                 stopGalleryVideoCard(currentPlayingGalleryCard);
                 currentPlayingGalleryCard = null;
             }
+            currentActivePodcastNode = null;
+            hideHUDText();
             activeElements.forEach(obj => {
                 if (obj.userData && obj.userData.videoElement) {
                     obj.userData.videoElement.pause();
@@ -1101,12 +1105,26 @@
         }
 
         function showHUDText(text, duration = 4000, callback = null) {
+            if (hudTimeout) {
+                clearTimeout(hudTimeout);
+                hudTimeout = null;
+            }
             hud.innerHTML = text;
             hud.style.opacity = 1;
-            setTimeout(() => {
-                hud.style.opacity = 0;
-                if(callback) setTimeout(callback, 1000);
-            }, duration);
+            if (duration && duration > 0) {
+                hudTimeout = setTimeout(() => {
+                    hud.style.opacity = 0;
+                    if(callback) setTimeout(callback, 1000);
+                }, duration);
+            }
+        }
+
+        function hideHUDText() {
+            if (hudTimeout) {
+                clearTimeout(hudTimeout);
+                hudTimeout = null;
+            }
+            hud.style.opacity = 0;
         }
 
         // --- PHÒNG 0: MỞ ĐẦU (HỘP SOCOLA TRÁI TIM / VÉ MỜI) ---
@@ -1298,6 +1316,7 @@
         }
 
         function triggerPodcastNode(node) {
+            const isFirstTrigger = !node.userData.triggered;
             node.userData.triggered = true;
             
             // BẬT SPOTLIGHT VÀ CHÙM TIA SÁNG CHIẾU THẲNG XUỐNG MỐC KỶ NIỆM
@@ -1316,29 +1335,28 @@
                 node.userData.crystalGlow.color.setHex(0xffe4e8);
             }
 
-            targetMusicVolume = 0.08;
-            showHUDText(node.userData.text, 6000);
+            // HIỂN THỊ CHỮ MỐC KỶ NIỆM VĨNH VIỄN CHO ĐẾN KHI BƯỚC RA KHỎI MỐC (duration = 0)
+            showHUDText(node.userData.text, 0);
 
-            if (currentVoice) currentVoice.stop();
-            currentVoice = new THREE.Audio(audioListener);
-            audioLoader.load(
-                node.userData.audioPath,
-                (buffer) => { 
-                    currentVoice.setBuffer(buffer);
-                    currentVoice.setVolume(1.0);
-                    currentVoice.play();
-                    showHUDText(node.userData.text, buffer.duration * 1000);
-                },
-                undefined,
-                () => { showHUDText(node.userData.text, 6500); }
-            );
+            // Phát giọng nói mốc (chỉ phát lại khi lần đầu hoặc khi voice trước đã dứt)
+            if (isFirstTrigger || (currentVoice && !currentVoice.isPlaying)) {
+                targetMusicVolume = 0.08;
+                if (currentVoice) currentVoice.stop();
+                currentVoice = new THREE.Audio(audioListener);
+                audioLoader.load(
+                    node.userData.audioPath,
+                    (buffer) => { 
+                        currentVoice.setBuffer(buffer);
+                        currentVoice.setVolume(1.0);
+                        currentVoice.play();
+                    },
+                    undefined,
+                    () => {}
+                );
+            }
 
             if (node.userData.index === ASSETS_CONFIG.room1.length - 1) {
-                setTimeout(() => {
-                    targetMusicVolume = 0.4;
-                    showHUDText("Em hãy cứ bước tiếp về bất cứ hướng nào trong bóng tối...", 4000);
-                    roomReadyForNext = true;
-                }, 7000);
+                roomReadyForNext = true;
             }
         }
 
@@ -3442,14 +3460,41 @@
                     }
                 }
 
-                // Cự ly tương tác phòng 1 (nhận diện khi đi qua mốc < 2.5m)
+                // Cự ly tương tác phòng 1 (Chữ chỉ hiển thị khi ở trong mốc, chỉ biến mất khi bước ra khỏi mốc)
                 if (currentState === STATES.R1) {
+                    let insideAnyNode = null;
                     activeElements.forEach(el => {
-                        if(el.userData && el.userData.type === 'podcast_node' && !el.userData.triggered) {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 2.5) triggerPodcastNode(el);
+                        if (el.userData && el.userData.type === 'podcast_node') {
+                            const dist = Math.hypot(pos.x - el.position.x, pos.z - el.position.z);
+                            // Ngưỡng bước vào mốc: 2.4m, ngưỡng duy trì bên trong: 2.8m (chống chập chờn ở mép mốc)
+                            const threshold = (currentActivePodcastNode === el) ? 2.8 : 2.4;
+                            if (dist < threshold) {
+                                insideAnyNode = el;
+                            }
                         }
                     });
+
+                    if (insideAnyNode) {
+                        if (currentActivePodcastNode !== insideAnyNode) {
+                            currentActivePodcastNode = insideAnyNode;
+                            triggerPodcastNode(insideAnyNode);
+                        }
+                    } else {
+                        // Người chơi đã bước ra khỏi mốc -> ẩn chữ mốc đó đi
+                        if (currentActivePodcastNode) {
+                            hideHUDText();
+                            targetMusicVolume = 0.4;
+                            // Nếu vừa rời khỏi mốc cuối cùng (mốc 3), nhắc em bước tiếp
+                            if (currentActivePodcastNode.userData.index === ASSETS_CONFIG.room1.length - 1) {
+                                setTimeout(() => {
+                                    if (currentState === STATES.R1 && !currentActivePodcastNode) {
+                                        showHUDText("Em hãy cứ bước tiếp về bất cứ hướng nào trong bóng tối...", 4000);
+                                    }
+                                }, 500);
+                            }
+                            currentActivePodcastNode = null;
+                        }
+                    }
                 }
 
                 // Cự ly tương tác phòng 2 (CHỈ KÍCH HOẠT KHI THỰC SỰ BƯỚC VÀO VÒNG TRÒN CHÍNH GIỮA)
