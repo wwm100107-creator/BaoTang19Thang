@@ -650,6 +650,11 @@
         let interactableObjects = [];
         let spaceTarget = null;
         let albumLoadingTimers = [];
+        let room3VideoCards = [];
+        let isPrismGiftBoxOpened = false;
+        let sharedPlayBadgeTex = null;
+        let sharedPlayBadgeMat = null;
+        let sharedPlayBadgeGeo = null;
         
         let romanticParticles = null;
         const PETAL_COUNT = 100;
@@ -1065,6 +1070,8 @@
                 stopGalleryVideoCard(currentPlayingGalleryCard);
                 currentPlayingGalleryCard = null;
             }
+            isPrismGiftBoxOpened = false;
+            room3VideoCards = [];
             currentActivePodcastNode = null;
             hideHUDText();
             activeElements.forEach(obj => {
@@ -1743,6 +1750,7 @@
             // 4. HỘP QUÀ LĂNG TRỤ KỶ NIỆM (Liên kết 29 thước phim tình yêu)
             const posGiftBox = new THREE.Vector3().copy(center).addScaledVector(walkDir, 3.2);
             createPrismGiftBox(posGiftBox, center, walkDir);
+            preparePrismGiftBoxVideos(posGiftBox, walkDir);
         }
 
         // ==========================================
@@ -1897,6 +1905,59 @@
             }
         }
 
+        function getSharedPlayBadge() {
+            if (!sharedPlayBadgeTex) {
+                const badgeCanvas = document.createElement('canvas');
+                badgeCanvas.width = 128;
+                badgeCanvas.height = 128;
+                const bCtx = badgeCanvas.getContext('2d');
+                bCtx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                bCtx.beginPath();
+                bCtx.arc(64, 64, 48, 0, Math.PI * 2);
+                bCtx.fill();
+                bCtx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                bCtx.lineWidth = 4;
+                bCtx.stroke();
+                bCtx.fillStyle = '#ffffff';
+                bCtx.beginPath();
+                bCtx.moveTo(52, 42);
+                bCtx.lineTo(84, 64);
+                bCtx.lineTo(52, 86);
+                bCtx.closePath();
+                bCtx.fill();
+
+                sharedPlayBadgeTex = new THREE.CanvasTexture(badgeCanvas);
+                sharedPlayBadgeTex.colorSpace = THREE.SRGBColorSpace;
+                sharedPlayBadgeMat = new THREE.MeshBasicMaterial({
+                    map: sharedPlayBadgeTex,
+                    transparent: true,
+                    opacity: 0.9,
+                    depthWrite: false
+                });
+                sharedPlayBadgeGeo = new THREE.PlaneGeometry(0.24, 0.24);
+            }
+            return new THREE.Mesh(sharedPlayBadgeGeo, sharedPlayBadgeMat);
+        }
+
+        function createFastRectangleBorder(w, h, color = 0xffa0bc) {
+            const hw = w / 2, hh = h / 2;
+            const pts = new Float32Array([
+                -hw, -hh, 0.005,
+                 hw, -hh, 0.005,
+                 hw,  hh, 0.005,
+                -hw,  hh, 0.005
+            ]);
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+            const mat = new THREE.LineBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.0,
+                depthWrite: false
+            });
+            return new THREE.LineLoop(geo, mat);
+        }
+
         // ==========================================
         // 3. HỘP QUÀ LĂNG TRỤ VÀ 29 THƯỚC PHIM KỶ NIỆM
         // ==========================================
@@ -2024,9 +2085,106 @@
             interactableObjects.push(hbGift);
         }
 
+        function preparePrismGiftBoxVideos(boxPos, walkDir) {
+            const videos = ASSETS_CONFIG.room3GalleryVideos || [];
+            if (!videos.length) return;
+
+            room3VideoCards = [];
+            isPrismGiftBoxOpened = false;
+            const total = videos.length;
+
+            videos.forEach((item, index) => {
+                const phi = (index / total) * Math.PI * 2.3 + 0.4;
+                const radius = 2.8 + (index / total) * 3.4;
+                const targetX = boxPos.x + Math.cos(phi) * radius;
+                const targetZ = boxPos.z + Math.sin(phi) * radius;
+                const targetY = 1.45 + Math.sin(index * 0.5) * 0.35 + (index / total) * 0.3;
+
+                const startX = boxPos.x;
+                const startY = 0.8;
+                const startZ = boxPos.z;
+
+                // Nạp trước ảnh bìa ngay khi vào phòng 3 (giãn cách nhẹ 25ms, diễn ra âm thầm trong nền)
+                const timerId = setTimeout(() => {
+                    if (currentState !== STATES.R3) return;
+
+                    textureLoader.load(item.posterSrc, (posterTex) => {
+                        if (currentState !== STATES.R3) return;
+                        posterTex.colorSpace = THREE.SRGBColorSpace;
+                        posterTex.minFilter = THREE.LinearFilter;
+                        posterTex.magFilter = THREE.LinearFilter;
+
+                        if (renderer && renderer.initTexture) {
+                            renderer.initTexture(posterTex);
+                        }
+
+                        const aspect = (posterTex.image && posterTex.image.width && posterTex.image.height)
+                            ? (posterTex.image.width / posterTex.image.height) : 1.33;
+
+                        const cardHeight = 0.92;
+                        const cardWidth = Math.min(1.4, Math.max(0.65, cardHeight * aspect));
+
+                        const cardGeo = new THREE.PlaneGeometry(cardWidth, cardHeight);
+                        const cardMat = new THREE.MeshBasicMaterial({
+                            map: posterTex,
+                            side: THREE.DoubleSide,
+                            transparent: true,
+                            opacity: 0.0
+                        });
+                        const cardMesh = new THREE.Mesh(cardGeo, cardMat);
+                        cardMesh.position.set(startX, startY, startZ);
+                        cardMesh.scale.set(0.05, 0.05, 0.05);
+                        cardMesh.visible = false; // Ẩn sẵn, hoàn toàn không tốn tài nguyên GPU render khi chưa mở
+
+                        // Viền neon hiệu năng cao siêu nhẹ
+                        const borderLine = createFastRectangleBorder(cardWidth, cardHeight, 0xffa0bc);
+                        cardMesh.add(borderLine);
+
+                        // Biểu tượng Play dùng chung texture & material (tiết kiệm bộ nhớ & zero giật lag)
+                        const badgeMesh = getSharedPlayBadge();
+                        badgeMesh.position.set(0, 0, 0.02);
+                        cardMesh.add(badgeMesh);
+
+                        cardMesh.userData = {
+                            type: 'gallery_video_card',
+                            isHologramBillboard: true,
+                            id: item.id,
+                            videoSrc: item.videoSrc,
+                            posterSrc: item.posterSrc,
+                            posterTex: posterTex,
+                            videoElement: null,
+                            videoTex: null,
+                            playBadge: badgeMesh,
+                            borderLine: borderLine,
+                            isPlaying: false,
+                            startPos: new THREE.Vector3(startX, startY, startZ),
+                            targetPos: new THREE.Vector3(targetX, targetY, targetZ),
+                            animProgress: 0.0,
+                            isOpeningOut: false
+                        };
+
+                        scene.add(cardMesh);
+                        activeElements.push(cardMesh);
+                        room3VideoCards.push(cardMesh);
+
+                        // Trường hợp người chơi mở hộp trước khi ảnh này nạp xong
+                        if (isPrismGiftBoxOpened) {
+                            cardMesh.visible = true;
+                            cardMesh.userData.isOpeningOut = true;
+                            if (!interactableObjects.includes(cardMesh)) {
+                                interactableObjects.push(cardMesh);
+                            }
+                        }
+                    });
+                }, index * 25);
+                albumLoadingTimers.push(timerId);
+            });
+        }
+
         function openPrismGiftBox(hitbox) {
             if (!hitbox || hitbox.userData.opened) return;
             hitbox.userData.opened = true;
+            isPrismGiftBoxOpened = true;
 
             const lid = hitbox.userData.lidGroup;
             if (lid) {
@@ -2039,119 +2197,20 @@
 
             showHUDText("Hộp quà mở ra những thước phim kỷ niệm của đôi mình... ✨", 4500);
 
-            // Gọi các video xuất hiện lơ lửng quanh hộp quà (ở trạng thái chờ)
-            spawnGiftBoxVideoCards(hitbox.userData.boxPosition, hitbox.userData.walkDir);
-            checkRoom3Completion();
-        }
-
-        function spawnGiftBoxVideoCards(boxPos, walkDir) {
-            const videos = ASSETS_CONFIG.room3GalleryVideos || [];
-            if (!videos.length) return;
-
-            const total = videos.length;
-            videos.forEach((item, index) => {
+            // Kích hoạt các video bay ra ngoài mượt mà (toàn bộ mesh và texture đã sẵn sàng từ trước!)
+            room3VideoCards.forEach((cardMesh, index) => {
                 const timerId = setTimeout(() => {
                     if (currentState !== STATES.R3) return;
-
-                    // Phân bổ 29 video thành hình xoắn ốc cung tròn mềm mại quanh khu vực hộp quà
-                    const phi = (index / total) * Math.PI * 2.3 + 0.4;
-                    const radius = 2.8 + (index / total) * 3.4;
-                    const targetX = boxPos.x + Math.cos(phi) * radius;
-                    const targetZ = boxPos.z + Math.sin(phi) * radius;
-
-                    // Độ cao lơ lửng vừa vặn tầm mắt (1.35m - 2.1m)
-                    const targetY = 1.45 + Math.sin(index * 0.5) * 0.35 + (index / total) * 0.3;
-
-                    const startX = boxPos.x;
-                    const startY = 0.8;
-                    const startZ = boxPos.z;
-
-                    textureLoader.load(item.posterSrc, (posterTex) => {
-                        if (currentState !== STATES.R3) return;
-                        posterTex.colorSpace = THREE.SRGBColorSpace;
-                        posterTex.minFilter = THREE.LinearFilter;
-                        posterTex.magFilter = THREE.LinearFilter;
-
-                        const aspect = (posterTex.image && posterTex.image.width && posterTex.image.height)
-                            ? (posterTex.image.width / posterTex.image.height) : 1.33;
-
-                        const cardHeight = 0.92;
-                        const cardWidth = Math.min(1.4, Math.max(0.65, cardHeight * aspect));
-
-                        const cardGeo = new THREE.PlaneGeometry(cardWidth, cardHeight);
-                        const cardMat = new THREE.MeshBasicMaterial({
-                            map: posterTex,
-                            side: THREE.FrontSide,
-                            transparent: true,
-                            opacity: 0.0
-                        });
-                        const cardMesh = new THREE.Mesh(cardGeo, cardMat);
-                        cardMesh.position.set(startX, startY, startZ);
-                        cardMesh.lookAt(boxPos.x, startY, boxPos.z);
-                        cardMesh.rotateY(Math.PI); // Quay mặt trước ra phía người xem
-
-                        // Viền neon hologram tinh tế
-                        const borderGeo = new THREE.EdgesGeometry(cardGeo);
-                        const borderMat = new THREE.LineBasicMaterial({
-                            color: 0xffa0bc,
-                            transparent: true,
-                            opacity: 0.0
-                        });
-                        const borderLine = new THREE.LineSegments(borderGeo, borderMat);
-                        cardMesh.add(borderLine);
-
-                        // Huy hiệu nút Play biểu tượng ▶ ở giữa
-                        const badgeCanvas = document.createElement('canvas');
-                        badgeCanvas.width = 128;
-                        badgeCanvas.height = 128;
-                        const bCtx = badgeCanvas.getContext('2d');
-                        bCtx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-                        bCtx.beginPath();
-                        bCtx.arc(64, 64, 48, 0, Math.PI * 2);
-                        bCtx.fill();
-                        bCtx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-                        bCtx.lineWidth = 4;
-                        bCtx.stroke();
-                        bCtx.fillStyle = '#ffffff';
-                        bCtx.beginPath();
-                        bCtx.moveTo(52, 42);
-                        bCtx.lineTo(84, 64);
-                        bCtx.lineTo(52, 86);
-                        bCtx.closePath();
-                        bCtx.fill();
-
-                        const badgeTex = new THREE.CanvasTexture(badgeCanvas);
-                        const badgeMesh = new THREE.Mesh(
-                            new THREE.PlaneGeometry(0.24, 0.24),
-                            new THREE.MeshBasicMaterial({ map: badgeTex, transparent: true, opacity: 0.9 })
-                        );
-                        badgeMesh.position.set(0, 0, 0.02);
-                        cardMesh.add(badgeMesh);
-
-                        cardMesh.userData = {
-                            type: 'gallery_video_card',
-                            isHologramBillboard: true, // Tracking theo hướng nhìn người chơi giống 3 model kia
-                            id: item.id,
-                            videoSrc: item.videoSrc,
-                            posterSrc: item.posterSrc,
-                            posterTex: posterTex,
-                            videoElement: null,
-                            videoTex: null,
-                            playBadge: badgeMesh,
-                            borderLine: borderLine,
-                            isPlaying: false,
-                            startPos: new THREE.Vector3(startX, startY, startZ),
-                            targetPos: new THREE.Vector3(targetX, targetY, targetZ),
-                            animProgress: 0.0
-                        };
-
-                        scene.add(cardMesh);
-                        activeElements.push(cardMesh);
+                    cardMesh.visible = true;
+                    cardMesh.userData.isOpeningOut = true;
+                    if (!interactableObjects.includes(cardMesh)) {
                         interactableObjects.push(cardMesh);
-                    });
-                }, index * 90);
+                    }
+                }, index * 40);
                 albumLoadingTimers.push(timerId);
             });
+
+            checkRoom3Completion();
         }
 
         function stopGalleryVideoCard(card) {
@@ -3556,79 +3615,95 @@
                 // Cự ly tương tác phòng 3 (Hiện vật 3D, Hộp Quà và Video Gallery - yêu cầu tiến sát < 1m)
                 if (currentState === STATES.R3) {
                     let nearAnyItem = false;
+                    const px = pos.x, pz = pos.z;
+
+                    // 1. Kiểm tra 3 hiện vật & Hộp quà
                     activeElements.forEach(el => {
-                        if(el.userData.type === 'video_item' && !el.userData.activeHologram) {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            // Bán kính hiện vật ~0.9m -> khoảng cách tới bề mặt < 1.0m (khoảng cách tới tâm < 1.9m)
-                            if(dist < 1.9) {
+                        if (!el.userData) return;
+                        if (el.userData.type === 'video_item' && !el.userData.activeHologram) {
+                            const dist = Math.hypot(px - el.position.x, pz - el.position.z);
+                            if (dist < 1.9) {
                                 nearAnyItem = true;
                                 spaceTarget = el;
                                 promptNode.innerHTML = `Nhấn SPACE hoặc nhấp chuột để xem [ ${el.userData.label} ]`;
                                 promptNode.style.display = 'block';
-
                                 if (isTouchDevice) {
                                     btnMobileInteract.innerHTML = `🎬 XEM KỶ NIỆM [ ${el.userData.label} ]`;
                                     btnMobileInteract.style.display = 'flex';
                                 }
                             }
-                        } else if(el.userData.type === 'gift_box_prism' && !el.userData.opened) {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 1.8) {
-                                nearAnyItem = true;
-                                spaceTarget = el;
-                                promptNode.innerHTML = `Nhấn SPACE hoặc nhấp chuột để mở [ Hộp Quà Kỷ Niệm 🎁 ]`;
-                                promptNode.style.display = 'block';
-
-                                if (isTouchDevice) {
-                                    btnMobileInteract.innerHTML = `🎁 MỞ HỘP QUÀ KỶ NIỆM`;
-                                    btnMobileInteract.style.display = 'flex';
+                        } else if (el.userData.type === 'gift_box_prism') {
+                            if (!el.userData.opened) {
+                                const dist = Math.hypot(px - el.position.x, pz - el.position.z);
+                                if (dist < 1.8) {
+                                    nearAnyItem = true;
+                                    spaceTarget = el;
+                                    promptNode.innerHTML = `Nhấn SPACE hoặc nhấp chuột để mở [ Hộp Quà Kỷ Niệm 🎁 ]`;
+                                    promptNode.style.display = 'block';
+                                    if (isTouchDevice) {
+                                        btnMobileInteract.innerHTML = `🎁 MỞ HỘP QUÀ KỶ NIỆM`;
+                                        btnMobileInteract.style.display = 'flex';
+                                    }
                                 }
                             }
-                        } else if(el.userData.type === 'gallery_video_card') {
-                            const dist = pos.clone().setY(el.position.y).distanceTo(el.position);
-                            if(dist < 1.6) {
-                                nearAnyItem = true;
-                                spaceTarget = el;
-                                const promptTxt = el.userData.isPlaying ? "Nhấp chuột để phóng to video 🔍" : "Nhấn SPACE hoặc nhấp chuột để phát video này ▶";
-                                promptNode.innerHTML = promptTxt;
-                                promptNode.style.display = 'block';
-
-                                if (isTouchDevice) {
-                                    btnMobileInteract.innerHTML = el.userData.isPlaying ? `🔍 PHÓNG TO VIDEO` : `▶ PHÁT VIDEO NÀY`;
-                                    btnMobileInteract.style.display = 'flex';
-                                }
+                            // Mở nắp hộp mượt mà
+                            if (el.userData.opened && el.userData.lidGroup) {
+                                const lid = el.userData.lidGroup;
+                                lid.position.y = THREE.MathUtils.lerp(lid.position.y, 1.35, delta * 2.8);
+                                lid.rotation.x = THREE.MathUtils.lerp(lid.rotation.x, -0.38, delta * 2.8);
+                                lid.rotation.z = THREE.MathUtils.lerp(lid.rotation.z, 0.22, delta * 2.8);
                             }
                         }
                     });
-                    if(!nearAnyItem) { 
-                        spaceTarget = null; 
-                        promptNode.style.display = 'none'; 
-                        if (isTouchDevice) btnMobileInteract.style.display = 'none';
-                    }
 
-                    // Hiệu ứng mở nắp hộp quà và lướt các thẻ video trong không gian
-                    activeElements.forEach(el => {
-                        if (el.userData && el.userData.type === 'gift_box_prism' && el.userData.opened && el.userData.lidGroup) {
-                            const lid = el.userData.lidGroup;
-                            lid.position.y = THREE.MathUtils.lerp(lid.position.y, 1.35, 0.05);
-                            lid.rotation.x = THREE.MathUtils.lerp(lid.rotation.x, -0.38, 0.05);
-                            lid.rotation.z = THREE.MathUtils.lerp(lid.rotation.z, 0.22, 0.05);
-                        } else if (el.userData && el.userData.type === 'gallery_video_card') {
-                            if (el.userData.animProgress < 1.0) {
-                                el.userData.animProgress += 0.025;
-                                const p = Math.min(1.0, el.userData.animProgress);
+                    // 2. Video Gallery Cards (29 thẻ - xử lý lướt bay, tracking góc nhìn và kiểm tra tương tác)
+                    const pX = player.position.x, pZ = player.position.z;
+                    for (let i = 0; i < room3VideoCards.length; i++) {
+                        const card = room3VideoCards[i];
+                        if (!card.visible) continue;
+
+                        // Tracking góc nhìn hướng về người chơi
+                        card.lookAt(pX, card.position.y, pZ);
+
+                        // Animation bung từ hộp ra ngoài vị trí xoắn ốc
+                        if (card.userData.isOpeningOut) {
+                            if (card.userData.animProgress < 1.0) {
+                                card.userData.animProgress = Math.min(1.0, card.userData.animProgress + delta * 1.5);
+                                const p = card.userData.animProgress;
                                 const ease = 1 - Math.pow(1 - p, 3);
-                                el.position.lerpVectors(el.userData.startPos, el.userData.targetPos, ease);
-                                if (el.material) el.material.opacity = ease * 0.95;
-                                if (el.userData.borderLine && el.userData.borderLine.material) {
-                                    el.userData.borderLine.material.opacity = ease * 0.85;
+                                card.position.lerpVectors(card.userData.startPos, card.userData.targetPos, ease);
+                                const scale = Math.max(0.05, ease);
+                                card.scale.set(scale, scale, scale);
+                                if (card.material) card.material.opacity = ease * 0.95;
+                                if (card.userData.borderLine && card.userData.borderLine.material) {
+                                    card.userData.borderLine.material.opacity = ease * 0.85;
                                 }
                             } else {
-                                const baseY = el.userData.targetPos.y;
-                                el.position.y = baseY + Math.sin(elapsedTime * 1.5 + (el.userData.id || 0)) * 0.035;
+                                const baseY = card.userData.targetPos.y;
+                                card.position.y = baseY + Math.sin(elapsedTime * 1.5 + (card.userData.id || 0)) * 0.035;
                             }
                         }
-                    });
+
+                        // Cự ly tương tác (< 1m từ mặt thẻ)
+                        const dist = Math.hypot(px - card.position.x, pz - card.position.z);
+                        if (dist < 1.6) {
+                            nearAnyItem = true;
+                            spaceTarget = card;
+                            const promptTxt = card.userData.isPlaying ? "Nhấp chuột để phóng to video 🔍" : "Nhấn SPACE hoặc nhấp chuột để phát video này ▶";
+                            promptNode.innerHTML = promptTxt;
+                            promptNode.style.display = 'block';
+                            if (isTouchDevice) {
+                                btnMobileInteract.innerHTML = card.userData.isPlaying ? `🔍 PHÓNG TO VIDEO` : `▶ PHÁT VIDEO NÀY`;
+                                btnMobileInteract.style.display = 'flex';
+                            }
+                        }
+                    }
+
+                    if (!nearAnyItem) {
+                        spaceTarget = null;
+                        promptNode.style.display = 'none';
+                        if (isTouchDevice) btnMobileInteract.style.display = 'none';
+                    }
                 }
 
                 // Cự ly tương tác phòng Kết (Bức thư tình - yêu cầu tiến sát < 1m)
@@ -3742,7 +3817,7 @@
                     const baseY = el.userData.baseY || 2.15;
                     el.position.y = baseY + Math.sin(elapsedTime * 1.5 + el.position.x) * 0.04;
                 }
-                if (el.userData && el.userData.isHologramBillboard) {
+                if (el.userData && el.userData.isHologramBillboard && el.userData.type !== 'gallery_video_card') {
                     el.lookAt(player.position.x, el.position.y, player.position.z);
                 }
                 if (el.userData.type === 'fairy_light') {
