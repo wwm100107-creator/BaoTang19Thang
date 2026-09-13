@@ -1942,20 +1942,31 @@
         function createFastRectangleBorder(w, h, color = 0xffa0bc) {
             const hw = w / 2, hh = h / 2;
             const pts = new Float32Array([
-                -hw, -hh, 0.005,
-                 hw, -hh, 0.005,
-                 hw,  hh, 0.005,
-                -hw,  hh, 0.005
+                // Mặt trước (z = +0.003)
+                -hw, -hh,  0.003,
+                 hw, -hh,  0.003,
+                 hw,  hh,  0.003,
+                -hw,  hh,  0.003,
+                // Mặt sau (z = -0.003)
+                -hw, -hh, -0.003,
+                 hw, -hh, -0.003,
+                 hw,  hh, -0.003,
+                -hw,  hh, -0.003
             ]);
+            const indices = [
+                0, 1, 1, 2, 2, 3, 3, 0,
+                4, 5, 5, 6, 6, 7, 7, 4
+            ];
             const geo = new THREE.BufferGeometry();
             geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+            geo.setIndex(indices);
             const mat = new THREE.LineBasicMaterial({
                 color: color,
                 transparent: true,
                 opacity: 0.0,
                 depthWrite: false
             });
-            return new THREE.LineLoop(geo, mat);
+            return new THREE.LineSegments(geo, mat);
         }
 
         // ==========================================
@@ -2134,20 +2145,28 @@
                         const cardMesh = new THREE.Mesh(cardGeo, cardMat);
                         cardMesh.position.set(startX, startY, startZ);
                         cardMesh.scale.set(0.05, 0.05, 0.05);
+                        // Góc xoay cố định hiển thị 2 mặt tự nhiên (hướng tâm hộp quà & hướng ra ngoài)
+                        cardMesh.rotation.y = Math.atan2(boxPos.x - targetX, boxPos.z - targetZ);
                         cardMesh.visible = false; // Ẩn sẵn, hoàn toàn không tốn tài nguyên GPU render khi chưa mở
 
-                        // Viền neon hiệu năng cao siêu nhẹ
+                        // Viền neon hiệu năng cao 2 mặt siêu nhẹ
                         const borderLine = createFastRectangleBorder(cardWidth, cardHeight, 0xffa0bc);
                         cardMesh.add(borderLine);
 
-                        // Biểu tượng Play dùng chung texture & material (tiết kiệm bộ nhớ & zero giật lag)
+                        // Biểu tượng Play mặt trước
                         const badgeMesh = getSharedPlayBadge();
-                        badgeMesh.position.set(0, 0, 0.02);
+                        badgeMesh.position.set(0, 0, 0.015);
                         cardMesh.add(badgeMesh);
+
+                        // Biểu tượng Play mặt sau (quay 180 độ để tam giác ▶ luôn hướng sang phải)
+                        const badgeMeshBack = getSharedPlayBadge();
+                        badgeMeshBack.position.set(0, 0, -0.015);
+                        badgeMeshBack.rotation.y = Math.PI;
+                        cardMesh.add(badgeMeshBack);
 
                         cardMesh.userData = {
                             type: 'gallery_video_card',
-                            isHologramBillboard: true,
+                            isHologramBillboard: false, // Bỏ hoàn toàn tracking theo góc nhìn
                             id: item.id,
                             videoSrc: item.videoSrc,
                             posterSrc: item.posterSrc,
@@ -2155,6 +2174,7 @@
                             videoElement: null,
                             videoTex: null,
                             playBadge: badgeMesh,
+                            playBadgeBack: badgeMeshBack,
                             borderLine: borderLine,
                             isPlaying: false,
                             startPos: new THREE.Vector3(startX, startY, startZ),
@@ -2221,10 +2241,14 @@
             }
             if (card.userData.posterTex) {
                 card.material.map = card.userData.posterTex;
+                card.material.side = THREE.DoubleSide;
                 card.material.needsUpdate = true;
             }
             if (card.userData.playBadge) {
                 card.userData.playBadge.visible = true;
+            }
+            if (card.userData.playBadgeBack) {
+                card.userData.playBadgeBack.visible = true;
             }
             card.userData.isPlaying = false;
         }
@@ -2268,15 +2292,22 @@
                     if (card.userData.playBadge) {
                         card.userData.playBadge.visible = true;
                     }
+                    if (card.userData.playBadgeBack) {
+                        card.userData.playBadgeBack.visible = true;
+                    }
                     showHUDText("Video đã phát xong. Em có thể xem tiếp những video khác... ✨", 3500);
                 };
             }
 
-            // Bắt đầu phát video
+            // Bắt đầu phát video (hiển thị 2 mặt)
             card.material.map = card.userData.videoTex;
+            card.material.side = THREE.DoubleSide;
             card.material.needsUpdate = true;
             if (card.userData.playBadge) {
                 card.userData.playBadge.visible = false;
+            }
+            if (card.userData.playBadgeBack) {
+                card.userData.playBadgeBack.visible = false;
             }
 
             targetMusicVolume = 0.06;
@@ -3656,14 +3687,10 @@
                         }
                     });
 
-                    // 2. Video Gallery Cards (29 thẻ - xử lý lướt bay, tracking góc nhìn và kiểm tra tương tác)
-                    const pX = player.position.x, pZ = player.position.z;
+                    // 2. Video Gallery Cards (29 thẻ - hiển thị 2 mặt tự nhiên, không tracking góc nhìn)
                     for (let i = 0; i < room3VideoCards.length; i++) {
                         const card = room3VideoCards[i];
                         if (!card.visible) continue;
-
-                        // Tracking góc nhìn hướng về người chơi
-                        card.lookAt(pX, card.position.y, pZ);
 
                         // Animation bung từ hộp ra ngoài vị trí xoắn ốc
                         if (card.userData.isOpeningOut) {
