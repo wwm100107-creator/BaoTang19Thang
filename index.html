@@ -631,6 +631,8 @@
         let currentRoomCenter = new THREE.Vector3(0, 0, 0);
         let roomReadyForNext = false;
         let isTransitioning = false;
+        let hasEnteredCurrentRoom = true;
+        let transitionCooldownUntil = 0;
 
         const loadingManager = new THREE.LoadingManager();
         const gltfLoader = new GLTFLoader(loadingManager);
@@ -996,33 +998,62 @@
         }
 
         // ==========================================
-        // 1. CƠ CHẾ DI CHUYỂN LIỀN MẠCH 360 ĐỘ (SEAMLESS OMNIDIRECTIONAL PROGRESSION)
+        // 1. CƠ CHẾ DI CHUYỂN LIỀN MẠCH 360 ĐỘ (VÒNG TRÒN BIÊN GIỚI ẨN - HOÀN TOÀN KHÔNG RÀNG BUỘC)
         // ==========================================
+        function getRoomExitThreshold() {
+            if (currentState === STATES.START) {
+                return 7.5; // Phòng 0: Bán kính biên giới 7.5m (hộp quà ở tâm, người chơi đứng cách 2.8m)
+            } else if (currentState === STATES.R1) {
+                return 13.5; // Phòng 1: Bán kính biên giới 13.5m (3 mốc trải dài từ -8m tới +8m)
+            } else if (currentState === STATES.R2) {
+                return getRoom2BoundaryRadius(); // Phòng 2: Bán kính biên giới 27.0m (vượt qua ảnh ngoài cùng 25m)
+            } else if (currentState === STATES.R3) {
+                return 15.0; // Phòng 3: Bán kính biên giới 15.0m (bao quát 3 hiện vật & hộp quà 29 video trong 10m)
+            } else if (currentState === STATES.REND) {
+                return 10.0; // Phòng Kết: Bán kính biên giới 10.0m (bức thư tình ở tâm)
+            }
+            return 13.0;
+        }
+
         function checkSeamlessProgression(playerPos) {
-            if (!roomReadyForNext || isTransitioning) return;
+            // Khi đang trong giai đoạn bắn pháo hoa đại kết thúc thì giữ người chơi lại để chiêm ngưỡng
+            if (currentState === STATES.REND && isClimaxActive) return;
+
+            const now = performance.now();
+            if (isTransitioning || now < transitionCooldownUntil) return;
 
             const dist = Math.hypot(playerPos.x - currentRoomCenter.x, playerPos.z - currentRoomCenter.z);
-            
-            // Ngưỡng bước qua biên giới từng phòng:
-            // Phòng 2: Biên giới luôn cách tấm hình gần biên nhất đúng 2 mét (27.0m)
-            let exitThreshold = 13.0;
-            if (currentState === STATES.R2) {
-                exitThreshold = getRoom2BoundaryRadius();
+            const exitThreshold = getRoomExitThreshold();
+
+            // 1. Khi đang đi trên con đường đóm sáng từ phòng cũ tiến vào phòng mới:
+            if (!hasEnteredCurrentRoom) {
+                // Xác nhận người chơi đã chính thức đặt chân vào bên trong phòng mới
+                if (dist <= exitThreshold * 0.88) {
+                    hasEnteredCurrentRoom = true;
+                }
+                return; // Chưa vào phòng thì không thể "bước ra ngoài"
             }
 
-            // Khi người chơi bước ra ngoài biên giới theo BẤT CỨ HƯỚNG NÀO (360 độ)
+            // 2. VÒNG TRÒN BIÊN GIỚI ẨN: Khi người chơi bước chạm/vượt qua vòng tròn biên giới ở BẤT CỨ HƯỚNG NÀO (360 độ):
             if (dist > exitThreshold) {
                 isTransitioning = true;
+                hasEnteredCurrentRoom = false;
+                transitionCooldownUntil = now + 2500; // Cooldown 2.5s bảo vệ chống kích hoạt kép
                 
                 const dirX = (playerPos.x - currentRoomCenter.x) / dist;
                 const dirZ = (playerPos.z - currentRoomCenter.z) / dist;
                 const walkDir = new THREE.Vector3(dirX, 0, dirZ);
 
-                // Tâm phòng tiếp theo sinh ra phía trước mặt cô ấy (cách 18m)
-                const nextCenter = new THREE.Vector3().copy(playerPos).addScaledVector(walkDir, 18.0);
+                // Tâm phòng tiếp theo sinh ra phía trước mặt người chơi theo hướng bước đi
+                const nextDist = (currentState === STATES.R1) ? 22.0 : 18.0;
+                const nextCenter = new THREE.Vector3().copy(playerPos).addScaledVector(walkDir, nextDist);
 
                 spawnFairyPath(playerPos, nextCenter, 8);
                 advanceToNextRoom(nextCenter, walkDir);
+
+                setTimeout(() => {
+                    isTransitioning = false;
+                }, 1500);
             }
         }
 
@@ -1107,8 +1138,9 @@
             spaceTarget = null;
             promptNode.style.display = 'none';
             btnMobileInteract.style.display = 'none';
-            roomReadyForNext = false;
+            roomReadyForNext = true;
             isTransitioning = false;
+            hasEnteredCurrentRoom = (currentState === STATES.START);
         }
 
         function showHUDText(text, duration = 4000, callback = null) {
@@ -1139,6 +1171,7 @@
             currentState = STATES.START;
             currentRoomCenter.copy(center);
             clearOldRoom();
+            hasEnteredCurrentRoom = true;
 
             // 1. Nhóm Hộp Quà / Hộp Trái Tim bay lơ lửng, xoay 360 độ chậm rãi (BỎ HOÀN TOÀN CÁI BỤC PHÍA DƯỚI)
             const boxGroup = new THREE.Group();
@@ -1183,10 +1216,8 @@
         function triggerTicketInteraction() {
             interactableObjects = [];
             btnMobileInteract.style.display = 'none';
-            showHUDText("Chào mừng em đến với bảo tàng tình yêu của chúng ta...", 4000, () => {
-                showHUDText("Em hãy cứ bước tiếp về bất cứ hướng nào trong bóng tối...", 4000, () => {
-                    roomReadyForNext = true;
-                });
+            showHUDText("Chào mừng em đến với bảo tàng tình yêu của chúng ta... ❤️", 4000, () => {
+                showHUDText("Em hãy cứ bước tiếp về bất cứ hướng nào trong bóng tối để khám phá nhé... ✨", 4000);
             });
         }
 
