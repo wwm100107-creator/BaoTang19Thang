@@ -2125,10 +2125,6 @@
                         posterTex.minFilter = THREE.LinearFilter;
                         posterTex.magFilter = THREE.LinearFilter;
 
-                        if (renderer && renderer.initTexture) {
-                            renderer.initTexture(posterTex);
-                        }
-
                         const aspect = (posterTex.image && posterTex.image.width && posterTex.image.height)
                             ? (posterTex.image.width / posterTex.image.height) : 1.33;
 
@@ -3528,6 +3524,7 @@
         function animate() {
             requestAnimationFrame(animate);
             const delta = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
             const player = controls.getObject();
 
             camera = player;
@@ -3706,6 +3703,7 @@
                                     card.userData.borderLine.material.opacity = ease * 0.85;
                                 }
                             } else {
+                                card.scale.set(1.0, 1.0, 1.0);
                                 const baseY = card.userData.targetPos.y;
                                 card.position.y = baseY + Math.sin(elapsedTime * 1.5 + (card.userData.id || 0)) * 0.035;
                             }
@@ -3813,7 +3811,6 @@
                 }
             }
 
-            const elapsedTime = clock.getElapsedTime();
             activeElements.forEach(el => {
                 // Phòng 0: Hộp quà bay lơ lửng, vừa bay vừa xoay 360 độ chậm rãi
                 if (el.userData && el.userData.type === 'ticket_group') {
